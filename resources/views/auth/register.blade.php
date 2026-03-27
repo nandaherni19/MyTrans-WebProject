@@ -102,7 +102,7 @@
                     <p>Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a></p>
                 </div>
                 <div class="navigation">
-                    <a href="{{ route('home') }}" class="nav-link">Kembali ke Beranda</a>
+                    <a href="{{ route('welcome') }}" class="nav-link">Kembali ke Beranda</a>
                 </div>
             </form>
         </div>

@@ -75,7 +75,7 @@
                     <p>Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></p>
                 </div>
                 <div class="navigation">
-                    <a href="{{ route('home') }}" class="nav-link">Kembali ke Beranda</a>
+                    <a href="{{ route('welcome') }}" class="nav-link">Kembali ke Beranda</a>
                 </div>
             </form>
         </div>

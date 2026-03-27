@@ -70,7 +70,7 @@
                 </div>
                 <button type="submit" class="btn-register">Reset Kata Sandi</button>
                 <div class="navigation">
-                    <a href="{{ route('home') }}" class="nav-link">Kembali ke Beranda</a>
+                    <a href="{{ route('welcome') }}" class="nav-link">Kembali ke Beranda</a>
                 </div>
             </form>
         </div>

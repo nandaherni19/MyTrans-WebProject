@@ -43,6 +43,7 @@
 
             <div class="navigation">
                 <a href="{{ route('login') }}" class="nav-link">Kembali ke Login</a>
+
             </div>
         </div>
     </div>
