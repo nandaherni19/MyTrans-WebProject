@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyTrans Nusa</title>
 
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/landing.css') }}">
 </head>
 <body>
 
+    <!-- HEADER -->
     <header class="navbar">
-    <div class="nav-left">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
-    </div>
+        <div class="nav-logo">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
+        </div>
 
-    <nav class="nav-center">
-        <a href="#">Beranda</a>
-        <a href="#">Paket Wisata</a>
-        <a href="#">Tentang Kami</a>
-        <a href="#">Kontak</a>
-    </nav>
+        <nav class="nav-menu">
+            <a href="#landingpage" class="active">Beranda</a>
+            <span>|</span>
+            <a href="#paketwisata" >Paket Wisata</a>
+            <span>|</span>
+            <a href="#tentangkami" >Tentang Kami</a>
+            <span>|</span>
+            <a href="#kontak">Kontak</a>
+        </nav>
 
     <div class="nav-right">
         <a href="/login" class="btn-login">Masuk</a>
@@ -27,8 +31,8 @@
     </div>
 </header>
 
-    <section>
-        <img src="{{ asset('images/hero-bus.png') }}" alt="Hero Bus" width="100%">
+<section class="hero">
+        <img src="{{ asset('img/hero-bus.png') }}" alt="Bus Hero" class="hero-bg" width="100%" height="100%">
     </section>
 
     <section class="paket-section">
@@ -37,58 +41,53 @@
         Pilihan Paket Wisata Terbaik Dengan Destinasi Menarik Dan Harga Terjangkau
     </p>
 
-    <div class="paket-grid">
-        <div class="paket-card">
-            <img src="{{ asset('images/pantai.png') }}" alt="Pantai" class="paket-image">
-
-            <div class="paket-content">
-                <h3>Pantai Pacitan</h3>
-                <p class="lokasi">Pacitan</p>
-                <p class="kapasitas">Kapasitas 50 Orang</p>
-                <p class="harga-label">Harga Mulai Dari</p>
-
-                <div class="paket-footer">
-                    <h4>Rp 2.500.000</h4>
-                    <button>Lihat Detail</button>
+    <div class="catalog-grid">
+        
+        <div class="catalog-card">
+                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
+                <div class="catalog-body">
+                    <h3>Pantai Watu Karung</h3>
+                    <p class="location">📍 Pacitan</p>
+                    <p>Kapasitas 50 Orang</p>
+                    <p class="label-harga">Harga Mulai Dari</p>
+                    <div class="card-footer">
+                        <strong>Rp 1.500.000</strong>
+                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="paket-card">
-            <img src="{{ asset('images/pantai.png') }}" alt="Pantai" class="paket-image">
-
-            <div class="paket-content">
-                <h3>Pantai Pacitan</h3>
-                <p class="lokasi">Pacitan</p>
-                <p class="kapasitas">Kapasitas 50 Orang</p>
-                <p class="harga-label">Harga Mulai Dari</p>
-
-                <div class="paket-footer">
-                    <h4>Rp 2.500.000</h4>
-                    <button>Lihat Detail</button>
+            <div class="catalog-card">
+                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
+                <div class="catalog-body">
+                    <h3>Pantai Watu Karung</h3>
+                    <p class="location">📍 Pacitan</p>
+                    <p>Kapasitas 50 Orang</p>
+                    <p class="label-harga">Harga Mulai Dari</p>
+                    <div class="card-footer">
+                        <strong>Rp 1.500.000</strong>
+                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="paket-card">
-            <img src="{{ asset('images/pantai.png') }}" alt="Pantai" class="paket-image">
-
-            <div class="paket-content">
-                <h3>Pantai Pacitan</h3>
-                <p class="lokasi">Pacitan</p>
-                <p class="kapasitas">Kapasitas 50 Orang</p>
-                <p class="harga-label">Harga Mulai Dari</p>
-
-                <div class="paket-footer">
-                    <h4>Rp 2.500.000</h4>
-                    <button>Lihat Detail</button>
+            <div class="catalog-card">
+                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
+                <div class="catalog-body">
+                    <h3>Pantai Watu Karung</h3>
+                    <p class="location">📍 Pacitan</p>
+                    <p>Kapasitas 50 Orang</p>
+                    <p class="label-harga">Harga Mulai Dari</p>
+                    <div class="card-footer">
+                        <strong>Rp 1.500.000</strong>
+                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
 </section>
 
-   <section class="alasan-section">
+<section class="alasan-section">
     <h2 class="section-title">Kenapa Memilih Travel Nusantara?</h2>
     <p class="section-subtitle">Kami menyediakan layanan terbaik untuk perjalanan Anda</p>
 
@@ -127,7 +126,7 @@
             <p class="review-email">Olivia@gmail.com</p>
             <p class="review-location">📍 Pantai Pacitan</p>
 
-            <img src="{{ asset('images/pantai.png') }}" alt="Review" class="review-image">
+            <img src="{{ asset('img/pantai.png') }}" alt="Review" class="review-image">
         </div>
 
         <div class="review-card">
@@ -140,7 +139,7 @@
             <p class="review-email">Olivia@gmail.com</p>
             <p class="review-location">📍 Pantai Pacitan</p>
 
-            <img src="{{ asset('images/pantai.png') }}" alt="Review" class="review-image">
+            <img src="{{ asset('img/pantai.png') }}" alt="Review" class="review-image">
         </div>
 
         <div class="review-card">
@@ -153,46 +152,52 @@
             <p class="review-email">Olivia@gmail.com</p>
             <p class="review-location">📍 Pantai Pacitan</p>
 
-            <img src="{{ asset('images/pantai.png') }}" alt="Review" class="review-image">
+            <img src="{{ asset('img/pantai.png') }}" alt="Review" class="review-image">
         </div>
     </div>
 </section>
 
+     <!-- FOOTER -->
     <footer class="footer">
-    <div class="footer-container">
-        <div class="footer-left">
-            <div class="footer-brand">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo MyTrans" class="footer-logo">
-                <h3>MY Trans Nusa Pariwisata</h3>
+        <div class="footer-container">
+            <div class="footer-left">
+                <div class="footer-brand">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
+                    <h3>MY Trans Nusa Pariwisata</h3>
+                </div>
+
+                <p class="footer-description">
+                    MyTransNusaPariwisata menyediakan layanan paket wisata dan sewa kendaraan
+                    untuk membantu Anda menjelajahi berbagai destinasi dengan nyaman dan aman.
+                    Dengan armada yang nyaman dan driver berpengalaman, kami berkomitmen memberikan
+                    perjalanan yang menyenangkan dan berkesan.
+                </p>
             </div>
 
-            <p class="footer-description">
-                MyTransNusaPariwisata menyediakan layanan paket wisata dan sewa kendaraan
-                untuk membantu Anda menjelajahi berbagai destinasi dengan nyaman dan aman.
-                Dengan armada yang nyaman dan driver berpengalaman, kami berkomitmen memberikan
-                perjalanan yang menyenangkan dan berkesan.
-            </p>
-        </div>
+            <div class="footer-divider"></div>
 
-        <div class="footer-divider"></div>
+            <div class="footer-right">
+                <h3>Hubungi Kami</h3>
 
-        <div class="footer-right">
-            <h3>Hubungi Kami</h3>
+                <div class="footer-contact-list">
+                    <div class="contact-col">
+                        <p>📞 085664837559</p>
+                        <p>📷 @myTranss_</p>
+                        <p>🎵 @Pariwisataku_</p>
+                    </div>
 
-            <div class="footer-contact-list">
-                <p>📞 085664837559</p>
-                <p>📷 @myTranss_</p>
-                <p>🎵 @Pariwisataku_</p>
-                <p>📍 Alamat Magetan, Jawa Timur, Indonesia</p>
-                <p>✉️ Email mytransnusa@gmail.com</p>
+                    <div class="contact-col">
+                        <p>📍 Alamat Magetan, Jawa Timur, Indonesia</p>
+                        <p>📧 Email mytransnusa@gmail.com</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="footer-bottom">
-        © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
-    </div>
-</footer>
+        <div class="footer-bottom">
+            © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
+        </div>
+    </footer>
 
 </body>
 </html>

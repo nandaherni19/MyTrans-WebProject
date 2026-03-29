@@ -1,3 +1,3 @@
-<a href="{{ route('superadmin.tambah-admin') }}">
-    Tambah Admin
+<a href="{{ route('dashboard.superadmin.kelola-pengguna') }}">
+    kelola pengguna
 </a>
