@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    
+   
+}
+
+.navbar {
+    height: 70px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid #e5e5e5;
+    
+    position: fixed;   
+    top: 0;           
+    left: 0;          
+    width: 100%;       
+    z-index: 1000;     
+}
+
+.nav-logo img {
+    width: 70px;
+    height: auto;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #222;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.nav-menu a:hover {
+    color: #3b82f6;
+}
+
+.nav-menu a.active {
+    color: #3b82f6;
+}
+
+.btn-logout,
+.btn-kembali {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.btn-logout:hover {
+    background: #2563eb;
+}
+
+/* BUTTON LOGIN */
+.btn-login {
+    padding: 8px 15px;
+    border: 1px solid #3b82f6;
+    border-radius: 20px;
+    color: #3b82f6;
+
+    text-decoration: none;
+}
+
+/* BUTTON REGISTER */
+.btn-register {
+    padding: 8px 15px;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 20px;
+    text-decoration: none;
+}

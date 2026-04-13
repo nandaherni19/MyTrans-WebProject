@@ -1,135 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Password Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin-profile.css') }}">
-</head>
-<body>
+@extends('layouts.admin')
+@section('title', 'Profil Pengguna')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/profile.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+@endpush
 
-<div class="admin-layout">
-    <aside class="sidebar">
-        <div>
-            <div class="sidebar-header">
-                <div class="brand">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="brand-logo">
-                    <div class="brand-text">
-                        <h2>MY Trans Nusa</h2>
-                        <p>Admin</p>
-                    </div>
-                </div>
-            </div>
+@section('content')
+    <section class="page-header">
+        <h1>Profil Saya</h1>
+        <p>Kelola informasi profil Anda dengan mudah</p>
+    </section>
 
-            <nav class="sidebar-menu">
-                <a href="#">Dashboard</a>
-                <a href="#">Kelola Paket Wisata dan Destinasi</a>
-                <a href="#">Kelola Kendaraan</a>
-                <a href="#">Kelola Trayek</a>
-                <a href="#">Data Booking</a>
-                <a href="#">Laporan Transaksi</a>
-            </nav>
+    <section class="profile-hero-card">
+        <div class="avatar-wrapper">
+        <div class="avatar-circle">
+            @if(!empty($user->photo))
+                <img src="{{ asset($user->photo) }}" alt="Foto Profil Admin" class="avatar-image">
+            @else
+                <span class="avatar-icon">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+            @endif
+        </div>
         </div>
 
-        <div class="sidebar-bottom">
-            <a href="#" class="menu-profile">👤 Profil Saya</a>
-            <a href="#" class="menu-logout">⛔ Keluar</a>
+        <div class="profile-hero-name">
+        <h2>{{ $user->nama }}</h2>
+    </div>
+
+</section>
+
+    <section class="profile-tabs">
+            <a href="{{ route('dashboard.superadmin.profile-edit') }}" class="tab-btn">Ubah Informasi Pribadi</a>
+            <a href="{{ route('dashboard.superadmin.profile-edit-password') }}" class="tab-btn active">Ubah Password</a>
+    </section>
+
+    <section class="profile-info-card">
+        <div class="info-title">
+            <h3>Ubah Password</h3>
+            <p>Perbarui keamanan akun Anda</p>
         </div>
-    </aside>
 
-    <main class="main-content">
-        <div class="content-header">
-            <h1>Profil Saya</h1>
-            <a href="{{ url('/admin/profile') }}" class="btn-back">← Kembali</a>
+        <form action="{{ route('dashboard.superadmin.profile-password-update') }}" method="POST">
+            @csrf
+
+            <div class="password-form-group">
+                <label>Password Saat Ini</label>
+                <div class="password-input-wrapper">
+                    <span class="password-left-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" id="currentPassword" name="current_password">
+                    <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                @error('current_password')
+                    <small class="error-text">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="password-form-group">
+                <label>Password Baru</label>
+                <div class="password-input-wrapper">
+                    <span class="password-left-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" id="newPassword" name="new_password" value="{{ old('new_password') }}">
+                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                @error('new_password')
+                    <small class="error-text">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="password-form-group">
+                <label>Konfirmasi Password Baru</label>
+                <div class="password-input-wrapper">
+                    <span class="password-left-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" id="confirmPassword" name="new_password_confirmation" value="{{ old('new_password_confirmation') }}">
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                @error('new_password_confirmation')
+                    <small class="error-text">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="edit-action-wrapper">
+                <a href="{{ route('dashboard.superadmin.profile') }}" class="btn-cancel">Batal</a>
+                <button type="submit" class="btn-save">
+                    <i class="fa-solid fa-save"></i> Simpan Perubahan</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="security-tip-card">
+        <div class="security-icon">
+            <i class="fa-solid fa-shield"></i>
         </div>
+        <div class="security-text">
+            <h4>Tips Keamanan</h4>
+            <p>
+                Untuk keamanan akun Anda, pastikan menggunakan password yang kuat dan tidak membagikan informasi login Anda kepada siapapun.
+            </p>
+        </div>
+    </section>
+</main>
 
-        <section class="profile-card">
-            <div class="avatar-wrapper">
-               <div class="avatar-circle">
-    @if(!empty($adminProfile['photo']))
-        <img src="{{ asset($adminProfile['photo']) }}" alt="Foto Profil Admin" class="avatar-image">
-    @else
-        <span class="avatar-icon">👤</span>
-    @endif
-</div>
-            </div>
+@endsection
 
-            <div class="profile-name">
-                <h2>{{ $adminProfile['name'] }}</h2>
-            </div>
-        </section>
-
-        <section class="tab-section">
-            <a href="{{ url('/admin/profile/edit') }}" class="tab-link">Ubah Informasi Pribadi</a>
-            <a href="{{ url('/admin/profile/edit/password') }}" class="tab-link active">Ubah Password</a>
-        </section>
-
-        <section class="info-card">
-            <div class="info-header">
-                <h3>Ubah Password</h3>
-            </div>
-
-            <form action="{{ url('/admin/profile/password/update') }}" method="POST">
-                @csrf
-
-                <div class="password-group">
-                    <label>Password Saat Ini</label>
-                    <div class="password-input-wrapper">
-                        <span class="password-left-icon">🔒</span>
-                        <input type="password" id="currentPassword" name="current_password" value="{{ old('current_password') }}">
-                        <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">👁️</button>
-                    </div>
-                    @error('current_password')
-                        <small class="error-text">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="password-group">
-                    <label>Password Baru</label>
-                    <div class="password-input-wrapper">
-                        <span class="password-left-icon">🔒</span>
-                        <input type="password" id="newPassword" name="new_password" value="{{ old('new_password') }}">
-                        <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">👁️</button>
-                    </div>
-                    @error('new_password')
-                        <small class="error-text">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="password-group">
-                    <label>Konfirmasi Password Baru</label>
-                    <div class="password-input-wrapper">
-                        <span class="password-left-icon">🔒</span>
-                        <input type="password" id="confirmPassword" name="confirm_password" value="{{ old('confirm_password') }}">
-                        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁️</button>
-                    </div>
-                    @error('confirm_password')
-                        <small class="error-text">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="edit-button-wrapper admin-edit-actions">
-                    <a href="{{ url('/admin/profile') }}" class="btn-cancel">Batal</a>
-                    <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
-                </div>
-            </form>
-        </section>
-    </main>
-</div>
-
+@push('scripts')
 <script>
-function togglePassword(id, btn) {
+    function togglePassword(id, btn) {
     const input = document.getElementById(id);
+    const icon = btn.querySelector("i");
+
     if (input.type === 'password') {
         input.type = 'text';
-        btn.textContent = '🙈';
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
     } else {
         input.type = 'password';
-        btn.textContent = '👁️';
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
     }
 }
 </script>
-
-</body>
-</html>
+@endpush

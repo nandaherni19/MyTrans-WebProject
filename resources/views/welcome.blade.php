@@ -18,7 +18,7 @@
         <nav class="nav-menu">
             <a href="#landingpage" class="active">Beranda</a>
             <span>|</span>
-            <a href="#paketwisata" >Paket Wisata</a>
+            <a href="{{ route('guest.katalogpaketwisata') }}">Paket Wisata</a>
             <span>|</span>
             <a href="#tentangkami" >Tentang Kami</a>
             <span>|</span>
@@ -31,63 +31,47 @@
     </div>
 </header>
 
-<section class="hero">
+<section id="landingpage" class="hero">
         <img src="{{ asset('img/hero-bus.png') }}" alt="Bus Hero" class="hero-bg" width="100%" height="100%">
     </section>
 
-    <section class="paket-section">
+
+<section id="paketwisata" class="paket-section">
     <h2 class="section-title">Paket Wisata Populer</h2>
-    <p class="section-subtitle">
-        Pilihan Paket Wisata Terbaik Dengan Destinasi Menarik Dan Harga Terjangkau
-    </p>
+    <p class="section-subtitle">Pilihan paket wisata terbaru untuk perjalanan Anda</p>
 
     <div class="catalog-grid">
-        
-        <div class="catalog-card">
-                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
-                <div class="catalog-body">
-                    <h3>Pantai Watu Karung</h3>
-                    <p class="location">📍 Pacitan</p>
-                    <p>Kapasitas 50 Orang</p>
-                    <p class="label-harga">Harga Mulai Dari</p>
-                    <div class="card-footer">
-                        <strong>Rp 1.500.000</strong>
-                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
-                    </div>
-                </div>
-            </div>
-
+        @forelse($paketTerbaru as $paket)
             <div class="catalog-card">
-                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
-                <div class="catalog-body">
-                    <h3>Pantai Watu Karung</h3>
-                    <p class="location">📍 Pacitan</p>
-                    <p>Kapasitas 50 Orang</p>
-                    <p class="label-harga">Harga Mulai Dari</p>
-                    <div class="card-footer">
-                        <strong>Rp 1.500.000</strong>
-                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
-                    </div>
-                </div>
-            </div>
+                <img 
+                    src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
+                    alt="{{ $paket->nama_paket }}"
+                >
 
-            <div class="catalog-card">
-                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
                 <div class="catalog-body">
-                    <h3>Pantai Watu Karung</h3>
-                    <p class="location">📍 Pacitan</p>
-                    <p>Kapasitas 50 Orang</p>
+                    <h3>{{ $paket->nama_paket }}</h3>
+                    <p class="location">📍 {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}</p>
+                   <p>Sisa Kuota {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</p>
                     <p class="label-harga">Harga Mulai Dari</p>
+
                     <div class="card-footer">
-                        <strong>Rp 1.500.000</strong>
-                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
+                        <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
+                        <a href="{{ route('guest.detailpaket', $paket->id_paket) }}">
+    Lihat Detail
+</a>
                     </div>
                 </div>
             </div>
+        @empty
+            <div class="empty-box">
+                <h3>Belum ada data paket wisata</h3>
+            </div>
+        @endforelse
     </div>
 </section>
 
-<section class="alasan-section">
+
+<section id="tentangkami" class="alasan-section">
     <h2 class="section-title">Kenapa Memilih Travel Nusantara?</h2>
     <p class="section-subtitle">Kami menyediakan layanan terbaik untuk perjalanan Anda</p>
 
@@ -112,53 +96,18 @@
     </div>
 </section>
 
-    <section class="review-section">
-    <h2 class="section-title">Review Customer</h2>
+ <section class="cta-section">
+        <h2>Siap Memulai Pertualangan Anda?</h2>
+        <p>Booking Sekarang Dan Dapatkan Harga Terbaik Untuk Liburan Impian Anda</p>
 
-    <div class="review-grid">
-        <div class="review-card">
-            <p class="review-text">
-                “Pelayanan dari tim My Travel sangat membantu dan responsif. Perjalanannya nyaman dan destinasi yang dipilih sangat menarik”
-            </p>
-
-            <div class="review-stars">★★★★★</div>
-
-            <p class="review-email">Olivia@gmail.com</p>
-            <p class="review-location">📍 Pantai Pacitan</p>
-
-            <img src="{{ asset('img/pantai.png') }}" alt="Review" class="review-image">
+        <div class="cta-buttons">
+            <a href="{{ route('login') }}" class="btn-cta-white">Booking Sekarang</a>
+            <a href="{{ route('login') }}" class="btn-cta-white">Request Wisata</a>
         </div>
+    </section>
 
-        <div class="review-card">
-            <p class="review-text">
-                “Pelayanan dari tim My Travel sangat membantu dan responsif. Perjalanannya nyaman dan destinasi yang dipilih sangat menarik”
-            </p>
 
-            <div class="review-stars">★★★★★</div>
-
-            <p class="review-email">Olivia@gmail.com</p>
-            <p class="review-location">📍 Pantai Pacitan</p>
-
-            <img src="{{ asset('img/pantai.png') }}" alt="Review" class="review-image">
-        </div>
-
-        <div class="review-card">
-            <p class="review-text">
-                “Pelayanan dari tim My Travel sangat membantu dan responsif. Perjalanannya nyaman dan destinasi yang dipilih sangat menarik”
-            </p>
-
-            <div class="review-stars">★★★★★</div>
-
-            <p class="review-email">Olivia@gmail.com</p>
-            <p class="review-location">📍 Pantai Pacitan</p>
-
-            <img src="{{ asset('img/pantai.png') }}" alt="Review" class="review-image">
-        </div>
-    </div>
-</section>
-
-     <!-- FOOTER -->
-    <footer class="footer">
+    <footer id="kontak" class="footer">
         <div class="footer-container">
             <div class="footer-left">
                 <div class="footer-brand">
@@ -198,6 +147,35 @@
             © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
         </div>
     </footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sections = document.querySelectorAll("section[id], footer[id]");
+    const navLinks = document.querySelectorAll(".nav-menu a");
+
+    window.addEventListener("scroll", () => {
+        let scrollY = window.scrollY;
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 120;
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute("id");
+
+            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+
+                navLinks.forEach(link => link.classList.remove("active"));
+
+                const activeLink = document.querySelector(`.nav-menu a[href="#${sectionId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add("active");
+                }
+            }
+        });
+    });
+
+});
+</script>
 
 </body>
 </html>

@@ -1,68 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-</head>
-<body>
+@extends('layouts.user')
 
-<header class="topbar">
-    <div class="topbar-left">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
-    </div>
+@section('title', 'Edit Profil')
 
-    <nav class="topbar-nav">
-        <a href="#">Beranda</a>
-        <span>|</span>
-        <a href="#">Paket Wisata</a>
-        <span>|</span>
-        <a href="#">Booking</a>
-        <span>|</span>
-        <a href="#">Riwayat Booking</a>
-        <span>|</span>
-        <a href="{{ url('/profile') }}" class="active">Profil</a>
-    </nav>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/user/profile.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+@endpush
 
-    <div class="topbar-right">
-        <a href="{{ url('/profile') }}" class="btn-back">← Kembali</a>
-    </div>
-</header>
+@section('navbar_action')
+    <a href="{{ route('dashboard.user.profile') }}" class="btn-kembali">← Kembali</a>
+@endsection
 
-<main class="profile-page">
+
+@section('content')
+    <main class="profile-page">
     <section class="page-header">
         <h1>Profil Saya</h1>
         <p>Kelola informasi profil Anda dengan mudah</p>
     </section>
 
-    <form action="{{ url('/profile/update') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('dashboard.user.profile-update') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <section class="profile-hero-card">
-            <div class="profile-hero-left">
-                <div class="avatar-wrapper">
-                    <div class="avatar-circle">
-                        @if(!empty($profile['photo']))
-                            <img src="{{ asset($profile['photo']) }}" alt="Foto Profil" class="avatar-image">
-                        @else
-                            <span class="avatar-icon">👤</span>
-                        @endif
-                    </div>
+    <div class="profile-hero-left">
+        <div class="avatar-wrapper">
+            <div class="avatar-circle">
+                <img src="{{ !empty($user->photo) ? asset($user->photo) : '' }}"
+                     alt=""
+                     class="avatar-image"
+                     id="previewImage"
+                     style="{{ !empty($user->photo) ? 'display:block;' : 'display:none;' }}">
 
-                    <label for="photoInput" class="camera-badge" style="cursor: pointer;">📷</label>
-                    <input type="file" id="photoInput" name="photo" accept="image/*" hidden onchange="this.form.submit()">
+                <span class="avatar-icon" id="defaultAvatarIcon" style="{{ !empty($user->photo) ? 'display:none;' : 'display:flex;' }}">
+                    <i class="fa-solid fa-user"></i>
+                </span>
             </div>
 
-            <div class="profile-hero-right">
-                <h2>{{ $profile['name'] }}</h2>
-            </div>
-        </section>
+            <label for="photoInput" class="camera-icon">
+                <i class="fa-solid fa-camera"></i>
+            </label>
+
+            <input type="file" id="photoInput" name="photo" accept="image/*" hidden>
+        </div>
+    </div>
+
+    <div class="profile-hero-right">
+        <h2>{{ $user->nama }}</h2>
+    </div>
+</section>
 
         <section class="profile-tabs">
-            <a href="{{ url('/profile/edit') }}" class="tab-btn active">Ubah Informasi Pribadi</a>
-            <a href="{{ url('/profile/edit/password') }}" class="tab-btn">Ubah Password</a>
+            <a href="{{ route('dashboard.user.profile-edit') }}" class="tab-btn active">Ubah Informasi Pribadi</a>
+            <a href="{{ route('dashboard.user.profile-edit-password') }}" class="tab-btn">Ubah Password</a>
         </section>
 
         <section class="profile-info-card">
@@ -74,7 +64,7 @@
             <div class="info-grid">
                 <div class="info-item">
                     <label>Nama Lengkap</label>
-                    <input type="text" name="name" class="form-input" value="{{ old('name', $profile['name']) }}">
+                    <input type="text" name="name" class="form-input" value="{{ old('name', $user->nama) }}">
                     @error('name')
                         <small class="error-text">{{ $message }}</small>
                     @enderror
@@ -82,7 +72,7 @@
 
                 <div class="info-item">
                     <label>Email</label>
-                    <input type="email" name="email" class="form-input" value="{{ old('email', $profile['email']) }}">
+                    <input type="email" name="email" class="form-input" value="{{ old('email', $user->email) }}">
                     @error('email')
                         <small class="error-text">{{ $message }}</small>
                     @enderror
@@ -90,36 +80,46 @@
 
                 <div class="info-item">
                     <label>Nomor Telepon</label>
-                    <input type="text" name="phone" class="form-input" value="{{ old('phone', $profile['phone']) }}">
-                    @error('phone')
-                        <small class="error-text">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="info-item">
-                    <label>Alamat</label>
-                    <input type="text" name="address" class="form-input" value="{{ old('address', $profile['address']) }}">
-                    @error('address')
-                        <small class="error-text">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="info-item full-width-left">
-                    <label>Tanggal Lahir</label>
-                    <input type="text" name="birthdate" class="form-input" value="{{ old('birthdate', $profile['birthdate']) }}">
-                    @error('birthdate')
+                    <input type="text" name="no_hp" class="form-input" value="{{ old('no_hp', $user->no_hp) }}">
+                    @error('no_hp')
                         <small class="error-text">{{ $message }}</small>
                     @enderror
                 </div>
             </div>
 
             <div class="edit-action-wrapper">
-                <a href="{{ url('/profile') }}" class="btn-cancel">Batal</a>
-                <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
-            </div>
+                <a href="{{ route('dashboard.user.profile') }}" class="btn-cancel">Batal</a>
+               <button type="submit" class="btn-save">
+    <i class="fa-solid fa-save"></i>
+    <span>Simpan Perubahan</span>
+</button>
         </section>
     </form>
 </main>
+@endsection
 
-</body>
-</html>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const photoInput = document.getElementById('photoInput');
+    const previewImage = document.getElementById('previewImage');
+    const defaultAvatarIcon = document.getElementById('defaultAvatarIcon');
+
+    photoInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                defaultAvatarIcon.style.display = 'none';
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+@endpush

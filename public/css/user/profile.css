@@ -10,60 +10,23 @@ body {
     color: #111827;
 }
 
-.topbar {
-    height: 68px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 28px;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
-}
-
-.topbar-left {
-    display: flex;
-    align-items: center;
-}
-
-.logo {
-    height: 42px;
-    object-fit: contain;
-}
-
-.topbar-nav {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.topbar-nav a {
-    text-decoration: none;
-    color: #111827;
-}
-
-.topbar-nav a.active {
-    color: #2563eb;
-    font-weight: 600;
-}
-
-.topbar-nav span {
-    color: #6b7280;
-}
-
-.btn-back {
+.btn-back,
+.btn-kembali {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 110px;
     height: 40px;
     background: #3b82f6;
-    color: white;
+    color: #ffffff;
     text-decoration: none;
     border-radius: 14px;
     font-size: 14px;
     font-weight: 600;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    cursor: pointer;
 }
 
 .profile-page {
@@ -93,25 +56,48 @@ body {
     font-size: 14px;
 }
 
+/* HERO PROFILE */
 .profile-hero-card {
     background: #f8f8f8;
     border-radius: 22px;
-    padding: 26px 28px;
+    padding: 26px 42px;
     display: flex;
     align-items: center;
-    gap: 28px;
+    justify-content: flex-start;
+    gap: 36px;
     margin-bottom: 22px;
+    min-height: 170px;
 }
 
 .profile-hero-left {
+    width: 140px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.profile-hero-right {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.profile-hero-right h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: #0f172a;
+    letter-spacing: 0;
+    line-height: 1.2;
 }
 
 .avatar-wrapper {
     position: relative;
     width: 120px;
     height: 120px;
+    flex-shrink: 0;
 }
 
 .avatar-circle {
@@ -123,6 +109,7 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
 .avatar-image {
@@ -133,24 +120,36 @@ body {
 }
 
 .avatar-icon {
-    font-size: 52px;
-    line-height: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.camera-badge {
+.avatar-icon i {
+    font-size: 42px;
+    color: #0f172a;
+}
+
+.camera-icon {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    font-size: 22px;
+    right: 4px;
+    bottom: 4px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    border: 4px solid #f8f8f8;
+    text-decoration: none;
 }
 
-.profile-hero-right h2 {
-    font-size: 22px;
-    font-weight: 700;
-}
-
+/* TABS */
 .profile-tabs {
     background: #efefef;
     border-radius: 999px;
@@ -172,9 +171,10 @@ body {
 
 .tab-btn.active {
     background: #3b82f6;
-    color: white;
+    color: #ffffff;
 }
 
+/* CARD */
 .profile-info-card {
     background: #f8f8f8;
     border-radius: 22px;
@@ -193,6 +193,7 @@ body {
     margin-bottom: 18px;
 }
 
+/* GRID INFO */
 .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -221,57 +222,18 @@ body {
     max-width: calc(50% - 14px);
 }
 
-.profile-action {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 24px;
+.info-item.full-width-left {
+    grid-column: span 2;
+    width: 100%;
+    max-width: 100%;
 }
 
-.btn-edit {
-    min-width: 130px;
-    height: 44px;
-    background: #3b82f6;
-    color: white;
-    text-decoration: none;
-    border-radius: 14px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
+.info-item.password-full {
+    grid-column: 1 / -1;
+    width: 100%;
 }
 
-@media (max-width: 900px) {
-    .topbar {
-        flex-direction: column;
-        height: auto;
-        gap: 12px;
-        padding: 16px;
-    }
-
-    .topbar-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .profile-hero-card {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .full-width-left {
-        max-width: 100%;
-    }
-
-    .profile-action {
-        justify-content: center;
-    }
-}
-
+/* FORM */
 .form-input {
     width: 100%;
     height: 54px;
@@ -295,11 +257,32 @@ body {
     color: #dc2626;
 }
 
+/* ACTION BUTTONS */
+.profile-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
 .edit-action-wrapper {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
     margin-top: 24px;
+}
+
+.btn-edit {
+    min-width: 130px;
+    height: 44px;
+    background: #3b82f6;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .btn-cancel {
@@ -320,35 +303,52 @@ body {
     min-width: 170px;
     height: 44px;
     background: #3b82f6;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     font-size: 14px;
     font-weight: 600;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
 }
 
+/* PASSWORD FORM */
+.password-form-group {
+    margin-bottom: 18px;
+    width: 100%;
+}
+
+.password-form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
 .password-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
+    height: 54px;
     background: #e9eef5;
     border-radius: 14px;
-    height: 54px;
     padding: 0 12px;
 }
 
 .password-input-wrapper input {
+    width: 100%;
     border: none;
     background: transparent;
     flex: 1;
     font-size: 14px;
     color: #374151;
     outline: none;
+    box-sizing: border-box;
 }
 
 .password-left-icon {
@@ -362,6 +362,7 @@ body {
     font-size: 16px;
 }
 
+/* SECURITY TIP */
 .security-tip-card {
     margin-top: 24px;
     background: #f8f8f8;
@@ -386,32 +387,49 @@ body {
     color: #6b7280;
 }
 
-.password-input-wrapper {
-    width: 100%;
-}
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .topbar {
+        flex-direction: column;
+        height: auto;
+        gap: 12px;
+        padding: 16px;
+    }
 
-.password-input-wrapper input {
-    width: 100%;
-}
+    .topbar-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 
-.info-item.full-width-left {
-    width: 100%;
-    max-width: 100%;
-}
+    .profile-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 24px;
+    }
 
-.info-item.full-width-left {
-    grid-column: span 2;
-    width: 100%;
-    max-width: 100%;
-}
+    .profile-hero-left {
+        width: auto;
+        justify-content: flex-start;
+    }
 
-.password-form-group {
-    margin-bottom: 18px;
-}
+    .profile-hero-right {
+        width: 100%;
+    }
 
-.password-form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 10px;
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width-left,
+    .info-item.full-width-left,
+    .info-item.password-full {
+        max-width: 100%;
+        grid-column: auto;
+    }
+
+    .profile-action,
+    .edit-action-wrapper {
+        justify-content: center;
+    }
 }

@@ -8,9 +8,25 @@ use Illuminate\Http\Request;
 
 class UserManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $query = User::query();
+
+    // SEARCH (nama / email)
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama', 'like', '%' . $request->search . '%')
+            ->orWhere('email', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    // FILTER ROLE
+    if ($request->filled('role')) {
+        $query->where('role', $request->role);
+    }
+
+    $users = $query->paginate(10)->withQueryString();
+
         return view('dashboard.superadmin.kelola-pengguna', compact('users'));
     }
 

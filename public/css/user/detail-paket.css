@@ -10,52 +10,6 @@ body {
     color: #111;
 }
 
-/* NAVBAR */
-/* NAVBAR */
-.navbar {
-    height: 63px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.nav-logo img {
-    width: 78px;
-}
-
-.nav-menu {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.nav-menu a {
-    text-decoration: none;
-    color: #222;
-}
-
-.nav-menu a.active {
-    color: #3b82f6;
-}
-
-.nav-menu span {
-    color: #666;
-}
-
-.btn-kembali {
-    text-decoration: none;
-    background: #3b82f6;
-    color: #fff;
-    padding: 12px 22px;
-    border-radius: 18px;
-    font-size: 14px;
-    font-weight: 600;
-}
 
 /* MAIN */
 .detail-section {
@@ -167,17 +121,18 @@ body {
     background: #dedee3;
     border-radius: 18px;
     padding: 6px;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     margin-bottom: 22px;
 }
 
 .tab-btn {
-    flex: 1;
+    width: 100%;
     background: transparent;
     border: none;
     border-radius: 14px;
-    padding: 12px 0;
+    padding: 12px 16px;
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;

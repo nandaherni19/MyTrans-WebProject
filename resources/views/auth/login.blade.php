@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>MyTrans - Login</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <script src="{{ asset('js/script.js') }}" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
@@ -63,13 +63,8 @@
                 <div class="navigation forgot-link">
                     <a href="{{ route('password.request') }}" class="nav-link">Lupa Kata Sandi?</a>
                 </div>
+
                 <button type="submit" class="btn-register">Login</button>
-                <div class="divider">Atau</div>
-                <!-- Tombol untuk daftar dengan Google (placeholder, implementasi OAuth diperlukan) -->
-                <button type="button" class="btn-google">
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
-                    Login dengan google
-                </button>
 
                 <div class="login-link">
                     <p>Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></p>

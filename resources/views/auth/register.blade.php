@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>MyTrans - Register</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <script src="{{ asset('js/script.js') }}" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
@@ -36,7 +36,7 @@
             @endif
 
             <form 
-            action="{{ route('register') }}" method="POST" id="registerForm">
+            action="{{ route('register.submit') }}" method="POST" id="registerForm">
                 @csrf
                 <!-- Form fields will go here -->
                 <div class="form-group">
@@ -91,12 +91,12 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn-register">Daftar</button>
-                <div class="divider">Atau</div>
+                <!-- <div class="divider">Atau</div> -->
                 <!-- Tombol untuk daftar dengan Google (placeholder, implementasi OAuth diperlukan) -->
-                <button type="button" class="btn-google">
+                <!-- <button type="button" class="btn-google">
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
                     Daftar dengan google
-                </button>
+                </button> -->
 
                 <div class="login-link">
                     <p>Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a></p>

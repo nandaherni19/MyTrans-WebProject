@@ -1,109 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Pengguna</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('css/admin/superadmin-kelolapengguna.css') }}">
-</head>
-<body>
+@extends('layouts.admin')
+@section('title', 'Kelola Pengguna')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/kelola-pengguna.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+@endpush
 
-<div class="admin-layout">
-    <aside class="sidebar">
-        <div>
-            <div class="sidebar-header">
-                <div class="brand">
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="brand-logo">
-                    <div class="brand-text">
-                        <h2>MY Trans Nusa</h2>
-                        <p>Super admin</p>
-                    </div>
-                </div>
-            </div>
+@section('content')
+<div class="content-header">
+    <div>
+        <h1>Kelola Pengguna</h1>
+    </div>
 
-            <nav class="sidebar-menu">
-                <a href="{{ route('dashboard.admin') }}">Dashboard</a>
-                <a href="{{ route('dashboard.superadmin.kelola-pengguna') }}" class="active">Kelola pengguna</a>
-                <a href="{{ route('dashboard.superadmin.kelola-paket-wisata') }}">Kelola paket wisata dan destinasi</a>
-                <a href="{{ route('dashboard.superadmin.request-booking') }}">Request Booking</a>
-                <a href="{{ route('dashboard.superadmin.kelola-kendaraan') }}">Kelola Kendaraan</a>
-                <a href="{{ route('dashboard.superadmin.kelola-trayek') }}">Kelola Trayek</a>
-                <a href="{{ route('dashboard.superadmin.data-booking') }}">Data Booking</a>
-                <a href="{{ route('dashboard.superadmin.laporan-transaksi') }}">Laporan Transaksi</a>
-            </nav>
-        </div>
+    <div class="header-actions">
+        <form method="GET" class="filter-form">
 
-        <div class="sidebar-bottom">
-            <a href="{{ route('dashboard.superadmin.profile') }}" class="menu-profile"><i class="fa-solid fa-user"></i> Profil Saya</a>
-            <form action="{{ route('logout') }}" method="POST" style="margin-top:20px;">
-            @csrf
-            <button type="submit" style="background:none;border:none;color:#ff2800;cursor:pointer;">
-                <i class="fa-solid fa-circle-minus"></i> Logout
-            </button>
-            </form>
-        </div>
-    </aside>
+            <input type="text" name="search" 
+                placeholder="Cari nama / email..."
+                value="{{ request('search') }}">
 
-    <main class="main-content">
-        <div class="content-header">
-            <h1>Kelola Pengguna</h1>
-            <button class="btn-add" onclick="openTambah()">
-                <i class="fa-solid fa-plus"></i>
-                <span>Tambah Pengguna</span>
-            </button>
-        </div>
+            <select name="role">
+                <option value="">Semua Role</option>
+                <option value="admin" {{ request('role')=='admin'?'selected':'' }}>Admin</option>
+                <option value="superadmin" {{ request('role')=='superadmin'?'selected':'' }}>Super Admin</option>
+                <option value="user" {{ request('role')=='user'?'selected':'' }}>User</option>
+            </select>
 
-        @if(session('success'))
-            <div class="alert-success">{{ session('success') }}</div>
-        @endif
+            <button type="submit">Filter</button>
+        </form>
 
-        <section class="user-card">
-            <div class="user-card-header">
-                <h3>Daftar Pengguna</h3>
-            </div>
-
-            <div class="table-wrapper">
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>No Hp</th>
-                            <th>Role</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                <tbody>
-                    @foreach($users as $index => $user)
-                    <tr>
-                    <td>{{ $user->nama }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->no_hp }}</td>
-                    <td><span class="role-badge">{{ $user->role }}</span></td>
-                    <td class="action-cell">
-                        <button class="edit-icon" onclick="openEdit(
-                            '{{ $user->id_users }}',
-                            '{{ $user->nama }}',
-                            '{{ $user->email }}',
-                            '{{ $user->no_hp }}',
-                            '{{ $user->role }}')">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button class="delete-icon" onclick="openHapus('{{ $user->id_users }}')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+        <button class="btn-add" onclick="openTambah()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Tambah Pengguna</span>
+        </button>
+    </div>
 </div>
+
+@if(session('success'))
+    <div class="alert-success">{{ session('success') }}</div>
+@endif
+
+    <div class="main-scroll">
+        <section class="user-card">
+    <h3>Daftar Pengguna</h3>
+
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>No Hp</th>
+                <th>Role</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach($users as $ms_user)
+            <tr>
+                <td data-label="Nama">{{ $ms_user->nama }}</td>
+                <td data-label="Email">{{ $ms_user->email }}</td>
+                <td data-label="No Hp">{{ $ms_user->no_hp }}</td>
+                <td data-label="Role"><span class="role-badge">{{ $ms_user->role }}</span></td>
+                <td data-label="Aksi" class="action-cell">
+                    <div class="aksi-wrapper">
+                    <button onclick="openEdit(
+                            '{{ $ms_user->id_users }}',
+                            '{{ $ms_user->nama }}',
+                            '{{ $ms_user->email }}',
+                            '{{ $ms_user->no_hp }}',
+                            '{{ $ms_user->role }}'
+                        )" class="btn-edit">
+                        <i class="fa-solid fa-pen"></i>
+                    <span>Edit</span></button>
+                    <button onclick="openHapus('{{ $ms_user->id_users }}')" class="btn-delete">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Hapus</span>
+                    </button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</section>
 
 <!-- tambah -->
 <div id="modalTambah" class="overlay">
@@ -201,10 +179,32 @@
 
             <div class="form-group">
                 <label>Role</label>
-                <select id="editRole" name="role">
-                    <option>admin</option>
-                    <option>superadmin</option>
+                <select id="editRole" name="role" disabled>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
+                    <option value="user">User</option>
                 </select>
+                <input type="hidden" id="editRoleHidden" name="role">
+            </div>
+
+            <div id="passwordFields">
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="editPassword" name="password" placeholder="Kosongkan jika tidak ingin mengubah password">
+                        <span class="toggle-password material-symbols-outlined"
+                            onclick="togglePassword(this)">visibility</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Konfirmasi Password Baru</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="editPasswordConfirmation" name="password_confirmation" placeholder="Ulangi password baru">
+                        <span class="toggle-password material-symbols-outlined"
+                            onclick="togglePassword(this)">visibility</span>
+                    </div>
+                </div>
             </div>
 
             <div class="button-group">
@@ -224,11 +224,11 @@
         </div>
 
         <div class="delete-body">
-            <h3>Apakah Anda yakin ingin menghapus pengguna ini?</h3>
+            <h3>Apakah anda ingin menghapus pengguna ini?</h3>
             <p>Data pengguna yang dihapus tidak dapat dikembalikan.</p>
         </div>
 
-        <div class="button-group">
+        <div class="button-group delete-buttons">
             <button class="btn-batal" onclick="closeHapus()">Batal</button>
             <form id="formHapus" method="POST">
                 @csrf
@@ -238,9 +238,11 @@
         </div>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
-function togglePassword(icon) {
+    function togglePassword(icon) {
     const input = icon.previousElementSibling;
 
     if (input.type === "password") {
@@ -253,11 +255,11 @@ function togglePassword(icon) {
 }
 
 function openTambah() {
-    document.getElementById('modalTambah').style.display = 'flex';
+    document.getElementById('modalTambah').classList.add('show');
 }
 
 function closeTambah() {
-    document.getElementById('modalTambah').style.display = 'none';
+    document.getElementById('modalTambah').classList.remove('show');
 }
 
 function openEdit(id, nama, email, hp, role) {
@@ -265,38 +267,39 @@ function openEdit(id, nama, email, hp, role) {
     document.getElementById('editEmail').value = email;
     document.getElementById('editHp').value = hp;
     document.getElementById('editRole').value = role;
+    document.getElementById('editRoleHidden').value = role;
 
     document.getElementById('formEdit').action =
         '/dashboard/superadmin/kelola-pengguna/update/' + id;
 
-    document.getElementById('modalEdit').style.display = 'flex';
+    const passwordFields = document.getElementById('passwordFields');
+    const editPassword = document.getElementById('editPassword');
+    const editPasswordConfirmation = document.getElementById('editPasswordConfirmation');
+
+    if (role === 'admin' || role === 'superadmin') {
+        passwordFields.style.display = 'block';
+    } else {
+        passwordFields.style.display = 'none';
+        editPassword.value = '';
+        editPasswordConfirmation.value = '';
+    }
+
+    document.getElementById('modalEdit').classList.add('show');
 }
 
 function closeEdit() {
-    document.getElementById('modalEdit').style.display = 'none';
+    document.getElementById('modalEdit').classList.remove('show');
 }
+
 function openHapus(id) {
     document.getElementById('formHapus').action =
         '/dashboard/superadmin/kelola-pengguna/delete/' + id;
 
-    document.getElementById('modalHapus').style.display = 'flex';
+    document.getElementById('modalHapus').classList.add('show');
 }
 
 function closeHapus() {
-    document.getElementById('modalHapus').style.display = 'none';
-}
-
-// klik luar modal
-window.onclick = function(event) {
-    let tambah = document.getElementById('modalTambah');
-    let edit = document.getElementById('modalEdit');
-    let hapus = document.getElementById('modalHapus');
-
-    if (event.target === tambah) tambah.style.display = "none";
-    if (event.target === edit) edit.style.display = "none";
-    if (event.target === hapus) hapus.style.display = "none";
+    document.getElementById('modalHapus').classList.remove('show');
 }
 </script>
-
-</body>
-</html>
+@endpush

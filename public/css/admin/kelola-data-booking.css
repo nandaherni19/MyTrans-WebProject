@@ -1,0 +1,386 @@
+
+
+/* ================= CONTENT ================= */
+/* TOP BAR */
+.booking-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.booking-title h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.booking-title p {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* BUTTON */
+.btn-booking {
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: default;
+}
+
+.btn-blue {
+    background: #3b82f6;
+    color: white;
+}
+
+/* ================= HEADER KONSISTEN ================= */
+.content-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #dfe3e8;
+    padding: 10px 16px;
+    margin: 10px 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.content-header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #111827;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-scroll {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.main-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.main-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ================= FILTER ================= */
+.booking-filter-wrap {
+    margin-bottom: 20px;
+}
+
+.booking-filter {
+    display: flex;
+    gap: 12px;
+    background: #f1f3f5;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #e5e7eb;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.search-input,
+.date-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 12px;
+    color: #6b7280;
+    font-family: inherit;
+}
+
+.date-input {
+    cursor: pointer;
+}
+
+/* FILTER DATE */
+.filter-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #e5e7eb;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* ================= TABLE ================= */
+.booking-table-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* TABLE */
+.booking-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.booking-table thead tr {
+    border-bottom: 1px solid #9ca3af;
+}
+
+.booking-table th {
+    text-align: left;
+    padding: 10px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.booking-table td {
+    padding: 10px;
+    color: #374151;
+}
+
+/* ROW */
+.booking-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* AKSI */
+.aksi-cell {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-action {
+    font-size: 13px;
+    color: #111827;
+    cursor: default;
+}
+
+.icon-action:last-child {
+    color: #ef4444;
+}
+
+/* FORM CONTAINER */
+.form-container {
+    padding: 0 8px 30px;
+    box-sizing: border-box;
+}
+
+.form-title {
+    display: none;
+}
+
+/* CARD */
+.form-card {
+    background: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.form-card h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+/* GRID */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* INPUT */
+.form-group label {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.input-box {
+    background: #e5e7eb;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.form-select {
+    width: 100%;
+    min-height: 44px;
+    background: #e5e7eb;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    border: none;
+    outline: none;
+    color: #111827;
+}
+
+/* BUTTON */
+.form-action {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-cancel,
+.btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.btn-cancel {
+    background: #d1d5db;
+    color: #111827;
+}
+
+.btn-save {
+    background: #3384f6;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    background: #d1d5db;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* HAPUS MODAL */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.delete-modal {
+    width: 100%;
+    max-width: 430px;
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.delete-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #d1d5db;
+}
+
+.delete-icon-wrap {
+    font-size: 34px;
+    color: #eab308;
+    line-height: 1;
+}
+
+.delete-modal-header h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.delete-modal-body {
+    padding: 18px 24px 10px;
+    text-align: center;
+}
+
+.delete-modal-body h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.delete-modal-body p {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.delete-modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px 24px;
+}
+
+.delete-cancel-btn {
+    background: #e5e7eb;
+    color: #111827;
+    min-width: 90px;
+    height: 38px;
+    border-radius: 12px;
+}
+
+.delete-confirm-btn {
+    background: #f87171;
+    color: #ffffff;
+    min-width: 160px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.modal-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: default; /* biar nonaktif */
+}

@@ -1,41 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Paket Wisata</title>
-    <link rel="stylesheet" href="{{ asset('css/user/kpw.css') }}">
-</head>
-<body>
+@extends('layouts.user')
 
-   <!-- NAVBAR -->
-    <header class="navbar">
-        <div class="nav-logo">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
-        </div>
+@section('title', 'Katalog Paket Wisata')
 
-        <nav class="nav-menu">
-            <a href="{{ route('dashboard.user') }}">Beranda</a>
-            <span>|</span>
-            <a href="{{ route('dashboard.user.katalogpaketwisata') }}" class="active">Paket Wisata</a>
-            <span>|</span>
-            <a href="#">Booking</a>
-            <span>|</span>
-            <a href="#">Riwayat Booking</a>
-            <span>|</span>
-            <a href="#">Profil</a>
-            
-        </nav>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/user/kpw.css') }}">
+@endpush
 
-        <div class="nav-action">
-            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn-logout" style="cursor: pointer;">Keluar</button>
-            </form>
-        </div>
-    </header>
-
-
+@section('content')
     <!-- HERO TITLE -->
     <section class="hero-title">
         <h1>Katalog Paket Wisata</h1>
@@ -45,47 +16,61 @@
     <!-- SEARCH -->
     <section class="search-section">
         <div class="search-box">
-            <input type="text" placeholder="Cari paket wisata...">
+            <input type="text" id="searchPaket" placeholder="Cari paket wisata...">
+
         </div>
 
-        <a href="#" class="btn-request">request booking</a>
+        <a href="{{ route('dashboard.user.requestbooking') }}" class="btn-request">Request Booking</a>
     </section>
 
     <!-- CARD LIST -->
-    <section class="catalog-section">
-        <div class="catalog-grid">
+  <section class="catalog-section">
+    <div class="catalog-grid">
 
-            <div class="catalog-card">
-                <img src="{{ asset('img/pantai.png') }}" alt="Pantai Watu Karung">
+        @forelse($pakets as $paket)
+            <div class="catalog-card paket-card"
+                data-nama="{{ strtolower($paket->nama_paket) }}"
+                data-lokasi="{{ strtolower($paket->trayek->kotaTujuan->nama_kota ?? '-') }}">
+                <img 
+                    src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
+                    alt="{{ $paket->nama_paket }}"
+                >
+
                 <div class="catalog-body">
-                    <h3>Pantai Watu Karung</h3>
-                    <p class="location">📍 Pacitan</p>
-                    <p>Kapasitas 50 Orang</p>
+                    <h3>{{ $paket->nama_paket }}</h3>
+  
+                    <p class="location">📍 {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
+                            </p>
+
+                    <p>Sisa Kuota {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</p>
                     <p class="label-harga">Harga Mulai Dari</p>
+
                     <div class="card-footer">
-                        <strong>Rp 1.500.000</strong>
-                        <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
+                        <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
+                        @auth
+                            <a href="{{ route('dashboard.user.detailpaket', $paket->id_paket) }}">
+                                Lihat Detail
+                            </a>
+                        @else
+                            <a href="{{ route('guest.detailpaket', $paket->id_paket) }}">
+                                Lihat Detail
+                            </a>
+                        @endauth
                     </div>
                 </div>
             </div>
+        @empty
+            <div class="empty-box">
+                <h3>Belum ada data paket wisata</h3>
+            </div>
+        @endforelse
 
-            @for ($i = 0; $i < 5; $i++)
-                <div class="catalog-card">
-                    <img src="{{ asset('img/pantai.png') }}" alt="Pantai Pacitan">
-                    <div class="catalog-body">
-                        <h3>Pantai Pacitan</h3>
-                        <p class="location">📍 Pacitan</p>
-                        <p>Kapasitas 50 Orang</p>
-                        <p class="label-harga">Harga Mulai Dari</p>
-                        <div class="card-footer">
-                            <strong>Rp 2.500.000</strong>
-                            <a href="{{ route('dashboard.user.detailpaket') }}">Lihat Detail</a>
-                        </div>
-                    </div>
-                </div>
-            @endfor
-        </div>
-    </section>
+    </div>
+
+    <p id="emptySearchMessage" style="display: none; text-align: center; margin-top: 20px;">
+        Paket wisata tidak ditemukan.
+    </p>
+</section>
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -128,6 +113,38 @@
             © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
         </div>
     </footer>
+@endsection
 
-</body>
-</html>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchPaket');
+    const cards = document.querySelectorAll('.paket-card');
+    const emptyMessage = document.getElementById('emptySearchMessage');
+
+    searchInput.addEventListener('input', function () {
+        const keyword = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const nama = card.dataset.nama || '';
+            const lokasi = card.dataset.lokasi || '';
+
+            if (nama.includes(keyword) || lokasi.includes(keyword)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        if (visibleCount === 0) {
+            emptyMessage.style.display = 'block';
+        } else {
+            emptyMessage.style.display = 'none';
+        }
+    });
+});
+</script>
+@endpush
+

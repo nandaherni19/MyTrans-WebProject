@@ -1,5 +1,14 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SuperAdmin\PaketWisataController;
+use App\Http\Controllers\SuperAdmin\DestinasiController;
+use App\Http\Controllers\SuperAdmin\KendaraanController;
+use App\Http\Controllers\SuperAdmin\TrayekController;
+use App\Http\Controllers\SuperAdmin\DataBookingController;
+use App\Http\Controllers\SuperAdmin\LaporanTransaksiController; 
+use App\Http\Controllers\SuperAdmin\RequestWisataController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -8,11 +17,32 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\SuperAdmin\UserManagementController;
+use Illuminate\Http\Request;
+use App\Http\Controllers\User\PaketWisataUserController;
+use App\Models\PaketWisata;
+use App\Mail\OtpMail;
+use App\Models\Provinsi;
+use App\Models\Trayek;
+use App\Http\Controllers\User\BookingController;
 
-// home
+// home - landing page
 Route::get('/welcome', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        if (Auth::user()->role == 'admin' || Auth::user()->role == 'superadmin') {
+            return redirect()->route('dashboard.beranda-admin');
+        }
+        return redirect()->route('dashboard.user');
+    }
+
+    $paketTerbaru = PaketWisata::latest('id_paket')->take(3)->get();
+    return view('welcome', compact('paketTerbaru'));
 })->name('welcome');
+
+Route::get('/paket-wisata', [PaketWisataUserController::class, 'guestIndex'])
+    ->name('guest.katalogpaketwisata');
+
+Route::get('/paket-wisata/detail/{id}', [PaketWisataUserController::class, 'guestDetail'])
+    ->name('guest.detailpaket');
 
 // ================= LOGOUT =================
 Route::post('/logout', function () {
@@ -22,32 +52,100 @@ Route::post('/logout', function () {
 
 // ================= REGISTER =================
 Route::get('/register', function () {
+    if (Auth::check()) {
+        if (Auth::user()->role == 'admin' || Auth::user()->role == 'superadmin') {
+            return redirect()->route('dashboard.beranda-admin');
+        }
+        return redirect()->route('dashboard.user');
+    }
     return view('auth.register');
 })->name('register');
 
 Route::post('/register', function () {
     request()->validate([
         'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:ms_users,email',
+        'email' => 'required|email',
         'password' => 'required|min:6|confirmed',
         'phone_number' => 'required|string|max:20',
     ]);
 
+    $email = request('email');
+    $otp = rand(100000, 999999);
+
+    $existingUser = DB::table('ms_users')
+        ->where('email', $email)
+        ->first();
+
+    if ($existingUser) {
+        if ($existingUser->is_verified) {
+            return back()->withErrors([
+                'email' => 'Email sudah terdaftar. Silakan login.'
+            ])->withInput();
+        }
+
+        DB::table('ms_users')
+            ->where('email', $email)
+            ->update([
+                'nama' => request('name'),
+                'password' => Hash::make(request('password')),
+                'no_hp' => request('phone_number'),
+                'otp' => $otp,
+                'otp_expires_at' => Carbon::now()->addMinutes(10),
+                'updated_at' => now(),
+            ]);
+
+        try {
+            Mail::to($email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'email' => 'Gagal mengirim OTP: ' . $e->getMessage()
+            ])->withInput();
+        }
+
+        return redirect()->route('verify.otp.form', ['email' => $email])
+            ->with('success', 'Akun sudah terdaftar tetapi belum diverifikasi. OTP baru sudah dikirim ke email Anda.');
+    }
+
     DB::table('ms_users')->insert([
         'nama' => request('name'),
-        'email' => request('email'),
+        'email' => $email,
         'password' => Hash::make(request('password')),
         'no_hp' => request('phone_number'),
         'role' => 'user',
+        'otp' => $otp,
+        'otp_expires_at' => Carbon::now()->addMinutes(10),
+        'is_verified' => 0,
         'created_at' => now(),
         'updated_at' => now(),
     ]);
 
-    return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
+    try {
+        Mail::to($email)->send(new OtpMail($otp));
+    } catch (\Exception $e) {
+        DB::table('ms_users')->where('email', $email)->delete();
+
+        return back()->withErrors([
+            'email' => 'Pendaftaran gagal karena email OTP tidak bisa dikirim: ' . $e->getMessage()
+        ])->withInput();
+    }
+
+    return redirect()->route('verify.otp.form', ['email' => $email])
+        ->with('success', 'Pendaftaran berhasil. Silakan cek email Anda untuk kode OTP.');
 })->name('register.submit');
+
+// ======= VERIFY EMAIL =======
+Route::get('/verify-otp', [AuthController::class, 'showVerifyForm'])->name('verify.otp.form');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp.submit');
+Route::get('/verify-otp/resend', [AuthController::class, 'resendOtp'])->name('verify.otp.resend');
 
 // ================= LOGIN =================
 Route::get('/login', function () {
+    if (Auth::check()) {
+        if (Auth::user()->role == 'admin' || Auth::user()->role == 'superadmin') {
+            return redirect()->route('dashboard.beranda-admin');
+        }
+        return redirect()->route('dashboard.user');
+    }
     return view('auth.login');
 })->name('login');
 
@@ -57,6 +155,9 @@ Route::post('/login', function () {
         'password' => 'required|min:6',
     ]);
 
+    $email = request('email');
+    $password = request('password');
+
     $user = DB::table('ms_users')
         ->where('email', request('email'))
         ->first();
@@ -65,12 +166,36 @@ Route::post('/login', function () {
         return back()->withErrors(['email' => 'Email atau password salah']);
     }
 
+    // Kalau akun belum diverifikasi, kirim OTP baru lalu arahkan ke verifikasi
+    if (!$user->is_verified) {
+        $otp = rand(100000, 999999);
+
+        DB::table('ms_users')
+            ->where('email', $email)
+            ->update([
+                'otp' => $otp,
+                'otp_expires_at' => Carbon::now()->addMinutes(10),
+                'updated_at' => now(),
+            ]);
+
+        try {
+            Mail::to($email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'email' => 'Akun belum diverifikasi, tetapi gagal mengirim OTP baru: ' . $e->getMessage()
+            ])->withInput();
+        }
+
+        return redirect()->route('verify.otp.form', ['email' => $email])
+            ->with('success', 'Akun belum diverifikasi. Kode OTP baru sudah dikirim ke email Anda.');
+    }
+
     // login auth
     Auth::loginUsingId($user->id_users);
 
     // REDIRECT KE DASHBOARD SESUAI ROLE
     if ($user->role === 'superadmin' || $user->role === 'admin') {
-        return redirect()->route('dashboard.admin')->with('success', 'Login berhasil');
+        return redirect()->route('dashboard.beranda-admin')->with('success', 'Login berhasil');
     } else {
         return redirect()->route('dashboard.user')->with('success', 'Login berhasil');
     }
@@ -102,23 +227,8 @@ Route::post('/forgot-password', function () {
 
     $link = url('/reset-password?token=' . $token . '&email=' . request('email'));
 
-    Mail::raw("
-Halo,
-Kami menerima permintaan untuk mereset kata sandi akun Anda di MyTrans Travels.
-
-Untuk melanjutkan proses, silakan klik tautan di bawah ini:
-
-" . url('/reset-password?token=' . $token . '&email=' . request('email')) . "
-
-⚠️ Link ini hanya berlaku selama 60 menit demi keamanan akun Anda.
-
-Jika Anda tidak melakukan permintaan ini, silakan abaikan email ini. Akun Anda tetap aman.
-
-Terima Kasih,
-Tim MyTrans Travels
-    ", function ($message) {
-    $message->to(request('email'))
-            ->subject('Reset Password MyTrans');
+    Mail::raw("Halo,\nKami menerima permintaan untuk mereset kata sandi akun Anda di MyTrans Travels.\n\nSilakan klik tautan berikut:\n\n" . $link . "\n\n⚠️ Link ini hanya berlaku selama 60 menit.\n\nJika Anda tidak melakukan permintaan ini, abaikan email ini.\n\nTerima Kasih,\nTim MyTrans Travels", function ($message) {
+        $message->to(request('email'))->subject('Reset Password MyTrans');
     });
 
     return back()->with('success', 'Link reset sudah dikirim ke email!');
@@ -157,424 +267,472 @@ Route::post('/reset-password', function () {
 })->name('password.update');
 
 // ================= DASHBOARD ADMIN DAN SUPERADMIN=================
-Route::get('/dashboard/admin', function () {
-    return view('dashboard.admin');
-})->name('dashboard.admin')->middleware('auth');   
+Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
+
+    Route::get('/dashboard/admin', function () {
+        return view('dashboard.beranda-admin');
+    })->name('dashboard.beranda-admin');
+
+});
 
 // DASHBOARD SUPERADMIN - KELOLA PENGGUNA
-Route::prefix('/dashboard/superadmin/kelola-pengguna')->controller(UserManagementController::class)->middleware('auth')->group(function () {
+Route::prefix('/dashboard/superadmin/kelola-pengguna')->controller(UserManagementController::class)->middleware(['auth', 'role:superadmin'])->group(function () {
     Route::get('/', 'index')->name('dashboard.superadmin.kelola-pengguna');
     Route::post('/store', 'store')->name('dashboard.superadmin.kelola-pengguna.store');
     Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-pengguna.update');
     Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-pengguna.delete');
 });
 
-Route::get('/dashboard/superadmin/kelola-paket-wisata', fn() => 'Coming Soon')
-    ->name('dashboard.superadmin.kelola-paket-wisata');
+// DASHBOARD SUPERADMIN - KELOLA PAKET WISATA
+Route::prefix('/dashboard/superadmin/kelola-paket-wisata')->controller(PaketWisataController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('/','index')->name('dashboard.superadmin.kelola-paket-wisata');
+    // Route::get('/trayek/{id}/destinasi', [PaketWisataController::class, 'getDestinasiByTrayek']);
+    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-paket-wisata.store');
+    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-paket-wisata.update');
+    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-paket-wisata.delete');
+});
 
-Route::get('/dashboard/superadmin/request-booking', fn() => 'Coming Soon')
-    ->name('dashboard.superadmin.request-booking');
+// DASHBOARD SUPERADMIN - KELOLA REQUEST WISATA
+Route::prefix('/dashboard/superadmin/kelola-request')->middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('/', [RequestWisataController::class, 'index'])->name('dashboard.superadmin.kelola-request');
+    Route::put('/update/{id}', [RequestWisataController::class, 'update'])->name('dashboard.superadmin.kelola-request.update');
+    Route::put('/acc/{id}', [RequestWisataController::class, 'acc'])->name('dashboard.superadmin.kelola-request.acc');
+    Route::put('/reject/{id}', [RequestWisataController::class, 'reject'])->name('dashboard.superadmin.kelola-request.reject');
+});
 
-Route::get('/dashboard/superadmin/kelola-kendaraan', fn() => 'Coming Soon')
-    ->name('dashboard.superadmin.kelola-kendaraan');
+Route::middleware(['auth', 'role:admin,superadmin'])->prefix('/dashboard/superadmin/kelola-destinasi')->group(function () {
+    Route::get('/{section?}/{mode?}', [DestinasiController::class, 'index'])
+        ->name('dashboard.superadmin.kelola-destinasi');
 
-Route::get('/dashboard/superadmin/kelola-trayek', fn() => 'Coming Soon')
-    ->name('dashboard.superadmin.kelola-trayek');
+    // Provinsi
+    Route::post('/provinsi/store', [DestinasiController::class, 'storeProvinsi'])
+        ->name('dashboard.superadmin.kelola-destinasi.provinsi.store');
 
-Route::get('/dashboard/superadmin/data-booking', fn() => 'Coming Soon')
-    ->name('dashboard.superadmin.data-booking');
+    Route::put('/provinsi/update/{id}', [DestinasiController::class, 'updateProvinsi'])
+        ->name('dashboard.superadmin.kelola-destinasi.provinsi.update');
 
-Route::get('/dashboard/superadmin/laporan-transaksi', fn() => 'Coming Soon')
-    ->name('dashboard.superadmin.laporan-transaksi');
+    Route::delete('/provinsi/delete/{id}', [DestinasiController::class, 'destroyProvinsi'])
+        ->name('dashboard.superadmin.kelola-destinasi.provinsi.delete');
 
-Route::get('/superadmin/profile', function () {
+    // Kota
+    Route::post('/kota/store', [DestinasiController::class, 'storeKota'])
+        ->name('dashboard.superadmin.kelola-destinasi.kota.store');
+
+    Route::put('/kota/update/{id}', [DestinasiController::class, 'updateKota'])
+        ->name('dashboard.superadmin.kelola-destinasi.kota.update');
+
+    Route::delete('/kota/delete/{id}', [DestinasiController::class, 'destroyKota'])
+        ->name('dashboard.superadmin.kelola-destinasi.kota.delete');
+});
+
+// DASHBOARD SUPERADMIN - KELOLA KENDARAAN
+Route::prefix('/dashboard/superadmin/kelola-kendaraan')->controller(KendaraanController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('/', 'index')->name('dashboard.superadmin.kelola-kendaraan');
+    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-kendaraan.store');
+    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-kendaraan.update');
+    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-kendaraan.delete');
+});
+
+// DASHBOARD SUPERADMIN - KELOLA TRAYEK
+Route::prefix('/dashboard/superadmin/kelola-trayek')->controller(TrayekController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('/', 'index')->name('dashboard.superadmin.kelola-trayek');
+    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-trayek.store');
+    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-trayek.update');
+    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-trayek.delete');
+});
+
+// DASHBOARD SUPERADMIN - KELOLA DATA BOOKIN
+Route::prefix('/dashboard/superadmin/kelola-data-booking')->controller(DataBookingController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('/', 'index')->name('dashboard.superadmin.kelola-data-booking');
+    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-data-booking.store');
+    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-data-booking.update');
+    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-data-booking.delete');
+});
+
+// Route::get('/booking/detail', [BookingController::class, 'detail']);
+Route::prefix('/dashboard/superadmin/kelola-laporan-transaksi')->controller(LaporanTransaksiController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('/', 'index')->name('dashboard.superadmin.kelola-laporan-transaksi');
+    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-laporan-transaksi.store');
+    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-laporan-transaksi.update');
+    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-laporan-transaksi.delete');
+});
+
+// DASHBOARD SUPERADMIN - PROFILE
+// view profile
+Route::get('/dashboard/superadmin/profile', function () {
     $user = Auth::user();
     return view('dashboard.superadmin.profile', compact('user'));
-})->middleware('auth')->name('dashboard.superadmin.profile');
+})->middleware(['auth', 'role:admin,superadmin'])->name('dashboard.superadmin.profile');
+
+// edit profile
+Route::get('/dashboard/superadmin/profile-edit', function () {
+    $user = Auth::user();
+    return view('dashboard.superadmin.profile-edit', compact('user'));
+})->middleware(['auth', 'role:admin,superadmin'])->name('dashboard.superadmin.profile-edit');
+
+// update profile
+Route::post('/dashboard/superadmin/profile-edit', function (Request $request) {
+    $user = Auth::user();
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:ms_users,email,' . $user->id_users . ',id_users',
+        'no_hp' => 'required|string|max:20',
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
+
+    $user->nama = $validated['name'];
+    $user->email = $validated['email'];
+    $user->no_hp = $validated['no_hp'];
+
+    if ($request->hasFile('photo')) {
+        $folderPath = public_path('uploads/profile');
+
+        if (!File::exists($folderPath)) {
+            File::makeDirectory($folderPath, 0755, true);
+        }
+
+        $file = $request->file('photo');
+        $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+
+        $file->move($folderPath, $filename);
+
+        $user->photo = 'uploads/profile/' . $filename;
+    }
+
+    $user->save();
+
+    return redirect()->route('dashboard.superadmin.profile')
+        ->with('success', 'Profil berhasil diperbarui');
+})->middleware(['auth', 'role:admin,superadmin'])->name('dashboard.superadmin.profile-update');
+
+// view password
+Route::get('/dashboard/superadmin/profile-password', function () {
+    $user = Auth::user();
+    return view('dashboard.superadmin.profile-password', compact('user'));
+})->middleware(['auth', 'role:admin,superadmin'])->name('dashboard.superadmin.profile-password');
+
+// edit password
+Route::get('/dashboard/superadmin/profile-edit-password', function () {
+    $user = Auth::user();
+    return view('dashboard.superadmin.profile-edit-password', compact('user'));
+})->middleware(['auth', 'role:admin,superadmin'])->name('dashboard.superadmin.profile-edit-password');
+
+// update password
+Route::post('/dashboard/superadmin/profile-edit-password', function (Request $request) {
+    $user = Auth::user();
+
+    $validated = $request->validate([
+        'current_password' => 'required|string',
+        'new_password' => 'required|string|min:6|confirmed',
+    ]);
+
+    if (!Hash::check($validated['current_password'], $user->password)) {
+        return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai'])->withInput();
+    }
+
+    $user->password = Hash::make($validated['new_password']);
+    $user->save();
+
+    return redirect()->route('dashboard.superadmin.profile-password')->with('success', 'Password berhasil diperbarui');
+})->middleware(['auth', 'role:admin,superadmin'])->name('dashboard.superadmin.profile-password-update');
+
+
+
 
 // ================= DASHBOARD USER =================
 Route::get('/dashboard/user', function () {
-    return view('dashboard.user');
-})->name('dashboard.user')->middleware('auth');
+    $pakets = PaketWisata::latest('id_paket')->take(3)->get();
 
-// DASHBOARD USER - KATALOG PAKET WISATA & DETAIL PAKET 
-Route::get('/dashboard/user/katalogpaketwisata', function () {
-    return view('dashboard.user.katalogpaketwisata');
-})->name('dashboard.user.katalogpaketwisata');
-
-// DASHBOARD USER - DETAIL PAKET 
-Route::get('/dashboard/user/detailpaket', function () {
-    return view('dashboard.user.detailpaket');
-})->name('dashboard.user.detailpaket');
+    return view('dashboard.beranda-user', compact('pakets'));
+})->name('dashboard.user')->middleware(['auth', 'role:user']);
 
 Route::get('/test-db', function () {
     return DB::table('ms_users')->get();
 });
 
-/*
-|--------------------------------------------------------------------------
-| DATA SESSION DEFAULT - USER
-|--------------------------------------------------------------------------
-*/
+// DASHBOARD USER - PROFIL
+// view profile
+Route::get('/dashboard/user/profile', function () {
+    $user = Auth::user();
+    return view('dashboard.user.profile', compact('user'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.profile');
 
-function defaultProfile()
-{
-    return session('profile', [
-        'name' => 'Asha Farasya',
-        'email' => 'ashafarasya21@gmail.com',
-        'phone' => '089512345789',
-        'address' => 'Madiun, Jawa Timur',
-        'birthdate' => '1 Juni 2006',
-        'photo' => null,
-    ]);
-}
+// edit profile
+Route::get('/dashboard/user/profile-edit', function () {
+    $user = Auth::user();
+    return view('dashboard.user.profile-edit', compact('user'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.profile-edit');
 
-function defaultPassword()
-{
-    return session('password_data', [
-        'current_password' => 'password123',
-    ]);
-}
+// update profile
+Route::post('/dashboard/user/profile-edit', function (Request $request) {
+    $user = Auth::user();
 
-/*
-|--------------------------------------------------------------------------
-| USER - HALAMAN TAMPILAN
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/profile', function () {
-    $profile = defaultProfile();
-    return view('profile', compact('profile'));
-});
-
-Route::get('/profile/password', function () {
-    $profile = defaultProfile();
-    $passwordData = defaultPassword();
-    return view('profile-password', compact('profile', 'passwordData'));
-});
-
-/*
-|--------------------------------------------------------------------------
-| USER - HALAMAN EDIT
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/profile/edit', function () {
-    $profile = defaultProfile();
-    return view('profile-edit', compact('profile'));
-});
-
-Route::get('/profile/edit/password', function () {
-    $profile = defaultProfile();
-    $passwordData = defaultPassword();
-    return view('profile-edit-password', compact('profile', 'passwordData'));
-});
-
-/*
-|--------------------------------------------------------------------------
-| USER - UPDATE INFORMASI PRIBADI
-|--------------------------------------------------------------------------
-*/
-
-Route::post('/profile/update', function (Request $request) {
     $validated = $request->validate([
         'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'phone' => 'required|string|max:20',
-        'address' => 'required|string|max:255',
-        'birthdate' => 'required|string|max:255',
-        'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'email' => 'required|email|max:255|unique:ms_users,email,' . $user->id_users . ',id_users',
+        'no_hp' => 'required|string|max:20',
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
     ]);
 
-    $profile = defaultProfile();
-
-    $profile['name'] = $validated['name'];
-    $profile['email'] = $validated['email'];
-    $profile['phone'] = $validated['phone'];
-    $profile['address'] = $validated['address'];
-    $profile['birthdate'] = $validated['birthdate'];
+    $user->nama = $validated['name'];
+    $user->email = $validated['email'];
+    $user->no_hp = $validated['no_hp'];
 
     if ($request->hasFile('photo')) {
         $file = $request->file('photo');
-        $filename = time() . '_' . $file->getClientOriginalName();
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $path = public_path('uploads/profile');
 
-        $file->move(public_path('uploads/profile'), $filename);
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
 
-        $profile['photo'] = 'uploads/profile/' . $filename;
+        $file->move($path, $filename);
+
+        $user->photo = 'uploads/profile/' . $filename;
     }
 
-    session(['profile' => $profile]);
+    $user->save();
 
-    return redirect('/profile')->with('success', 'Profil berhasil diperbarui');
-});
+    return redirect()->route('dashboard.user.profile')->with('success', 'Profil berhasil diperbarui');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.profile-update');
 
-/*
-|--------------------------------------------------------------------------
-| USER - UPDATE PASSWORD
-|--------------------------------------------------------------------------
-*/
+// view password
+Route::get('/dashboard/user/profile-password', function () {
+    $user = Auth::user();
+    return view('dashboard.user.profile-password', compact('user'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.profile-password');
 
-Route::post('/profile/password/update', function (Request $request) {
-    $passwordData = defaultPassword();
+// edit password
+Route::get('/dashboard/user/profile-edit-password', function () {
+    $user = Auth::user();
+    return view('dashboard.user.profile-edit-password', compact('user'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.profile-edit-password');
+
+// update password
+Route::post('/dashboard/user/profile-edit-password', function (Request $request) {
+    $user = Auth::user();
 
     $validated = $request->validate([
-        'current_password' => 'required|string',
-        'new_password' => 'required|string|min:3',
-        'confirm_password' => 'required|string|same:new_password',
+        'current_password' => 'required',
+        'new_password' => 'required|min:6|confirmed',
     ]);
 
-    if ($validated['current_password'] !== $passwordData['current_password']) {
-        return back()->withErrors([
-            'current_password' => 'Password saat ini tidak sesuai.',
-        ])->withInput();
+    if (!Hash::check($validated['current_password'], $user->password)) {
+        return back()->withErrors(['current_password' => 'Password salah']);
     }
 
-    session([
-        'password_data' => [
-            'current_password' => $validated['new_password'],
+    $user->password = Hash::make($validated['new_password']);
+    $user->save();
+
+    return redirect()->route('dashboard.user.profile')->with('success', 'Password berhasil diubah');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.profile-password-update');
+
+
+
+//===================LAPORAN TRANSAKSI===================
+
+Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])
+    ->name('laporan-transaksi.index');
+
+/*|--------------------------------------------------------------------------
+| REQUEST WISATA - USER
+|--------------------------------------------------------------------------*/
+Route::get('/dashboard/user/requestbooking/{step?}', function (Illuminate\Http\Request $request, $step = 'home') {
+    if ($step === 'home') {
+        $request->session()->forget('request_booking');
+    }
+
+    $provinsis = collect();
+    $trayeks = collect();
+
+    if ($step === 'destinasi') {
+        $provinsis = Provinsi::orderBy('nama_provinsi')->get();
+        $trayeks = Trayek::with('kotaTujuan')->get();
+    }
+
+    return view('dashboard.user.requestbooking', compact('step', 'provinsis', 'trayeks'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.requestbooking');
+
+
+Route::post('/dashboard/user/requestbooking/informasi', function (Illuminate\Http\Request $request) {
+    $validated = $request->validate(
+        [
+            'nama_lengkap' => 'required|string|max:255',
+            'email' => 'required|email',
+            'no_ktp' => 'required|string|max:30',
+            'no_telepon' => 'required|string|max:20',
+            'tanggal_keberangkatan' => 'required|date',
+            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_keberangkatan',
+            'jumlah_peserta' => 'required|integer|min:1',
+        ],
+        [
+            'nama_lengkap.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'email.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'email.email' => 'Data Informasi WAJIB diisi lengkap.',
+            'no_ktp.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'no_telepon.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'tanggal_keberangkatan.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'tanggal_kembali.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'tanggal_kembali.after_or_equal' => 'Tanggal kembali tidak boleh sebelum tanggal keberangkatan.',
+            'jumlah_peserta.required' => 'Data Informasi WAJIB diisi lengkap.',
+            'jumlah_peserta.min' => 'Jumlah peserta minimal 1.',
         ]
-    ]);
+    );
 
-    return redirect('/profile/password')->with('success', 'Password berhasil diperbarui');
-});
+    session(['request_booking.informasi' => $validated]);
 
-/*
-|--------------------------------------------------------------------------
-| DATA SESSION DEFAULT - ADMIN
-|--------------------------------------------------------------------------
-*/
+    return redirect()->route('dashboard.user.requestbooking', 'destinasi');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.requestbooking.informasi.store');
 
-function defaultAdminProfile()
-{
-    return session('admin_profile', [
-        'name' => 'Super Admin',
-        'email' => 'superadmin21@gmail.com',
-        'phone' => '089512345789',
-        'photo' => null,
-    ]);
-}
+Route::post('/dashboard/user/requestbooking/destinasi', function (Illuminate\Http\Request $request) {
+    $validated = $request->validate(
+    [
+        'provinsi' => 'required',
+        'kota_tujuan' => 'required',
+        'provinsi_input' => 'required|string|max:255',
+        'kota_asal' => 'required|string|max:255',
+        'titik_jemput' => 'required|string|max:255',
+        'alamat' => 'required|string|max:500',
+        'catatan' => 'nullable|string|max:1000',
+    ],
+    [
+        'provinsi.required' => 'Data destinasi wajib diisi lengkap.',
+        'kota_tujuan.required' => 'Data destinasi wajib diisi lengkap.',
+        'provinsi_input.required' => 'Data destinasi wajib diisi lengkap.',
+        'kota_asal.required' => 'Data destinasi wajib diisi lengkap.',
+        'titik_jemput.required' => 'Data destinasi wajib diisi lengkap.',
+        'alamat.required' => 'Alamat lengkap wajib diisi.',
+    ]
+    );
 
-function defaultAdminPassword()
-{
-    return session('admin_password', [
-        'current_password' => 'password123',
-    ]);
-}
+    session(['request_booking.destinasi' => $validated]);
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN - HALAMAN TAMPILAN
-|--------------------------------------------------------------------------
-*/
+    return redirect()->route('dashboard.user.requestbooking', 'ringkasan');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.requestbooking.destinasi.store');
 
-Route::get('/admin/profile', function () {
-    $adminProfile = defaultAdminProfile();
-    return view('admin-profile', compact('adminProfile'));
-});
+Route::get('/api/kota-by-provinsi/{nama_provinsi}', function ($nama_provinsi) {
+    $provinsi = \App\Models\Provinsi::where('nama_provinsi', $nama_provinsi)->first();
+    if (!$provinsi) return response()->json([]);
 
-Route::get('/admin/profile/password', function () {
-    $adminProfile = defaultAdminProfile();
-    $adminPassword = defaultAdminPassword();
-    return view('admin-profile-password', compact('adminProfile', 'adminPassword'));
-});
+    $kotas = \App\Models\Kota::where('id_provinsi', $provinsi->id_provinsi)->get();
+    return response()->json($kotas);
+})->middleware(['auth']);
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN - HALAMAN EDIT
-|--------------------------------------------------------------------------
-*/
+Route::post('/dashboard/user/requestbooking/store', function () {
 
-Route::get('/admin/profile/edit', function () {
-    $adminProfile = defaultAdminProfile();
-    return view('admin-profile-edit', compact('adminProfile'));
-});
+    $informasi = session('request_booking.informasi');
+    $destinasi = session('request_booking.destinasi');
 
-Route::get('/admin/profile/edit/password', function () {
-    $adminProfile = defaultAdminProfile();
-    $adminPassword = defaultAdminPassword();
-    return view('admin-profile-edit-password', compact('adminProfile', 'adminPassword'));
-});
-
-/*
-|--------------------------------------------------------------------------
-| ADMIN - UPDATE INFORMASI PRIBADI
-|--------------------------------------------------------------------------
-*/
-
-Route::post('/admin/profile/update', function (Request $request) {
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'phone' => 'required|string|max:20',
-        'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
-
-    $adminProfile = defaultAdminProfile();
-
-    $adminProfile['name'] = $validated['name'];
-    $adminProfile['email'] = $validated['email'];
-    $adminProfile['phone'] = $validated['phone'];
-
-    if ($request->hasFile('photo')) {
-        $file = $request->file('photo');
-        $filename = time() . '_' . $file->getClientOriginalName();
-
-        $file->move(public_path('uploads/profile'), $filename);
-
-        $adminProfile['photo'] = 'uploads/profile/' . $filename;
+    if (!$informasi || !$destinasi) {
+        return back()->withErrors('Data tidak lengkap');
     }
 
-    session(['admin_profile' => $adminProfile]);
-
-    return redirect('/admin/profile')->with('success', 'Profil admin berhasil diperbarui.');
-});
-
-/*
-|--------------------------------------------------------------------------
-| ADMIN - UPDATE PASSWORD
-|--------------------------------------------------------------------------
-*/
-
-Route::post('/admin/profile/password/update', function (Request $request) {
-    $adminPassword = defaultAdminPassword();
-
-    $validated = $request->validate([
-        'current_password' => 'required|string',
-        'new_password' => 'required|string|min:3',
-        'confirm_password' => 'required|string|same:new_password',
+    DB::table('ms_request_wisata')->insert([
+        'id_user' => Auth::user()->getAuthIdentifier(),
+        'no_ktp' => $informasi['no_ktp'],
+        'tanggal_keberangkatan' => $informasi['tanggal_keberangkatan'],
+        'tanggal_kembali' => $informasi['tanggal_kembali'],
+        'jumlah_peserta' => $informasi['jumlah_peserta'],
+        'provinsi_asal' => $destinasi['provinsi_input'],
+        'kota_asal' => $destinasi['kota_asal'],
+        'kota_tujuan' => $destinasi['kota_tujuan'],
+        'titik_jemput' => $destinasi['titik_jemput'],
+        'alamat' => $destinasi['alamat'],
+        'catatan' => $destinasi['catatan'] ?? null,
+        'status_request' => 'pending',
+        'created_at' => now(),
+        'updated_at' => now(),
     ]);
 
-    if ($validated['current_password'] !== $adminPassword['current_password']) {
-        return back()->withErrors([
-            'current_password' => 'Password saat ini tidak sesuai.',
-        ])->withInput();
+    session()->forget('request_booking');
+
+    return redirect()->route('dashboard.user.requestbooking', 'request');
+})->name('dashboard.user.requestbooking.store')->middleware(['auth', 'role:user']);
+
+/*|--------------------------------------------------------------------------
+| RIWAYAT BOOKING - USER
+|--------------------------------------------------------------------------*/
+Route::get('/dashboard/user/riwayatbooking/{filter?}/{page?}', function ($filter = 'semua', $page = null) {
+    return view('dashboard.user.riwayatbooking', compact('filter', 'page'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.riwayatbooking');
+
+
+/*|--------------------------------------------------------------------------
+| DETAIL PESANAN - USER
+|--------------------------------------------------------------------------*/
+Route::get('/dashboard/user/detail-pesanan', function () {
+    return view('dashboard.user.detailpesanan');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.detailpesanan');
+
+//----PAKET WISATA USER
+Route::get('/dashboard/user/katalogpaketwisata', [PaketWisataUserController::class, 'index'])
+    ->name('dashboard.user.katalogpaketwisata')
+        ;
+
+Route::get('/dashboard/user/detailpaket/{id}', [PaketWisataUserController::class, 'detail'])
+    ->name('dashboard.user.detailpaket')
+        ;
+
+//BOOKING USER
+Route::get('/dashboard/user/booking/{page?}', function (Illuminate\Http\Request $request, $page = 'booking') {
+    $selectedPaketId = $request->session()->get('selected_paket');
+    $paket = null;
+    $showWarning = false;
+    $user = Auth::user();
+
+    if ($selectedPaketId) {
+        $paket = PaketWisata::find($selectedPaketId);
     }
 
-    session([
-        'admin_password' => [
-            'current_password' => $validated['new_password'],
-        ]
-    ]);
-
-    return redirect('/admin/profile/password')->with('success', 'Password admin berhasil diperbarui.');
-});
-
-/*
-|--------------------------------------------------------------------------
-| DATA SESSION DEFAULT - SUPER ADMIN
-|--------------------------------------------------------------------------
-*/
-
-function defaultSuperAdminProfile()
-{
-    return session('superadmin_profile', [
-        'name' => 'Super Admin',
-        'email' => 'superadmin@gmail.com',
-        'phone' => '081234567890',
-        'photo' => null,
-    ]);
-}
-
-/*
-|--------------------------------------------------------------------------
-| SUPER ADMIN - HALAMAN TAMPILAN
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/superadmin/profile', function () {
-    $superadminProfile = defaultSuperAdminProfile();
-    return view('superadmin-profile', compact('superadminProfile'));
-});
-
-Route::get('/superadmin/profile/password', function () {
-    $superadminProfile = defaultSuperAdminProfile();
-    $superadminPassword = defaultSuperAdminPassword();
-    return view('superadmin-profile-password', compact('superadminProfile', 'superadminPassword'));
-});
-
-/*
-|--------------------------------------------------------------------------
-| SUPER ADMIN - HALAMAN EDIT
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/superadmin/profile/edit', function () {
-    $superadminProfile = defaultSuperAdminProfile();
-    return view('superadmin-profile-edit', compact('superadminProfile'));
-});
-
-Route::get('/superadmin/profile/edit/password', function () {
-    $superadminProfile = defaultSuperAdminProfile();
-    $superadminPassword = defaultSuperAdminPassword();
-    return view('superadmin-profile-edit-password', compact('superadminProfile', 'superadminPassword'));
-});
-
-/*
-|--------------------------------------------------------------------------
-| SUPER ADMIN - UPDATE INFORMASI PRIBADI
-|--------------------------------------------------------------------------
-*/
-
-Route::post('/superadmin/profile/update', function (Request $request) {
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'phone' => 'required|string|max:20',
-        'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
-
-    $profile = defaultSuperAdminProfile();
-
-    $profile['name'] = $validated['name'];
-    $profile['email'] = $validated['email'];
-    $profile['phone'] = $validated['phone'];
-
-    if ($request->hasFile('photo')) {
-        $file = $request->file('photo');
-        $filename = time() . '_' . $file->getClientOriginalName();
-
-        $file->move(public_path('uploads/profile'), $filename);
-
-        $profile['photo'] = 'uploads/profile/' . $filename;
+    if (!$paket) {
+        $showWarning = true;
     }
 
-    session(['superadmin_profile' => $profile]);
+    return view('dashboard.user.booking', compact('page', 'showWarning', 'paket', 'user'));
+})->middleware(['auth', 'role:user'])->name('dashboard.user.booking');
 
-    return redirect('/superadmin/profile')->with('success', 'Profil berhasil diperbarui');
-});
 
-/*
-|--------------------------------------------------------------------------
-| SUPER ADMIN - UPDATE PASSWORD
-|--------------------------------------------------------------------------
-*/
+Route::get('/dashboard/user/booking/paket/{id}', function ($id) {
+    session(['selected_paket' => $id]);
+    return redirect()->route('dashboard.user.booking');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.booking.paket');
 
-Route::post('/superadmin/profile/password/update', function (Request $request) {
-    $superadminPassword = defaultSuperAdminPassword();
+// booking-qris
+Route::post('/dashboard/user/booking/qris', [BookingController::class, 'qris'])
+    ->name('dashboard.user.booking.qris');
 
-    $validated = $request->validate([
-        'current_password' => 'required|string',
-        'new_password' => 'required|string|min:3',
-        'confirm_password' => 'required|string|same:new_password',
+
+//cek validasi no ktp / pilih metode pembayaran untuk booking
+Route::post('/dashboard/user/booking/check', function (Illuminate\Http\Request $request) {
+    $selectedPaketId = $request->session()->get('selected_paket');
+    $paket = PaketWisata::find($selectedPaketId);
+
+    if (!$paket) {
+        return redirect()->route('dashboard.user.katalogpaketwisata')
+            ->with('error', 'Paket wisata tidak ditemukan atau belum dipilih.');
+    }
+
+    $request->validate([
+        'no_ktp' => 'required|digits:16',
+        'jumlah_peserta' => 'required|integer|min:1',
+        'metode_pembayaran' => 'required|in:dp,pelunasan',
     ], [
-        'current_password.required' => 'Password saat ini wajib diisi.',
-        'new_password.required' => 'Password baru wajib diisi.',
-        'new_password.min' => 'Password baru minimal 3 karakter.',
-        'confirm_password.required' => 'Konfirmasi password wajib diisi.',
-        'confirm_password.same' => 'Konfirmasi password harus sama dengan password baru.',
+        'no_ktp.required' => 'No KTP wajib diisi.',
+        'no_ktp.digits' => 'No KTP harus 16 digit.',
+        'jumlah_peserta.required' => 'Masukkan jumlah peserta.',
+        'jumlah_peserta.integer' => 'Jumlah peserta harus berupa angka.',
+        'jumlah_peserta.min' => 'Jumlah peserta minimal 1.',
+        'metode_pembayaran.required' => 'Pilih metode pembayaran terlebih dahulu.',
+        'metode_pembayaran.in' => 'Metode pembayaran tidak valid.',
     ]);
 
-    if ($validated['current_password'] !== $superadminPassword['current_password']) {
+    if ($request->jumlah_peserta > $paket->sisa_kursi) {
         return back()->withErrors([
-            'current_password' => 'Password saat ini tidak sesuai.',
+            'jumlah_peserta' => 'Jumlah peserta melebihi sisa kuota yang tersedia. Sisa kuota saat ini ' . $paket->sisa_kursi . ' orang.'
         ])->withInput();
     }
 
-    session([
-        'superadmin_password' => [
-            'current_password' => $validated['new_password'],
-        ]
-    ]);
-
-    return redirect('/superadmin/profile/password')->with('success', 'Password super admin berhasil diperbarui.');
-});
+    return redirect()->route('dashboard.user.booking', 'qris');
+})->middleware(['auth', 'role:user'])->name('dashboard.user.booking.check');

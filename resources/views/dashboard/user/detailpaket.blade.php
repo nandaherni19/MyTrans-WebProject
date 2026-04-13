@@ -1,224 +1,204 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Paket Wisata</title>
-    <link rel="stylesheet" href="{{ asset('css/user/detail-paket.css') }}">
-</head>
-<body>
+@extends('layouts.user')
 
-<!-- NAVBAR -->
-    <header class="navbar">
-        <div class="nav-logo">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
-        </div>
+@section('title', 'Detail Paket Wisata')
 
-        <nav class="nav-menu">
-            <a href="#">Beranda</a>
-            <span>|</span>
-            <a href="#" class="active">Paket Wisata</a>
-            <span>|</span>
-            <a href="#">Booking</a>
-            <span>|</span>
-            <a href="#">Riwayat Booking</a>
-            <span>|</span>
-            <a href="#">Profil</a>
-            
-        </nav>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/user/detail-paket.css') }}">
+@endpush
 
-        <div class="nav-action">
-            <a href="javascript:history.back()" class="btn-kembali">← Kembali</a>
-        </div>
-    </header>
+@section('content')
+<section class="detail-section">
+    <div class="detail-container">
 
-    <!-- MAIN -->
-    <section class="detail-section">
-        <div class="detail-container">
+        <!-- LEFT CONTENT -->
+        <div class="detail-left">
+            <img
+                src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}"
+                alt="{{ $paket->nama_paket }}"
+                class="detail-image"
+            >
 
-            <!-- LEFT CONTENT -->
-            <div class="detail-left">
-                <img src="{{ asset('img/pantaiwatukarung2.jpg') }}" alt="Pantai Watu Karung" class="detail-image">
+            <h1 class="detail-title">{{ $paket->nama_paket }}</h1>
 
-                <h1 class="detail-title">Paket Wisata Pantai Watu Karung</h1>
-                <div class="rating">
-                    <span class="star">⭐</span>
-                    <span class="rating-number">4.8</span>
-                </div>
+            <div class="rating">
+                <span class="star">⭐</span>
+                <span class="rating-number">4.8</span>
+            </div>
 
-                <div class="info-box">
-                    <div class="info-item">
-                        <div class="info-icon blue">📅</div>
-                        <div>
-                            <p class="info-label">Durasi</p>
-                            <h4>3 Hari 2 Malam</h4>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon green">👤</div>
-                        <div>
-                            <p class="info-label">Kapasitas</p>
-                            <h4>50 Orang</h4>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon purple">📍</div>
-                        <div>
-                            <p class="info-label">Trayek</p>
-                            <h4>Magetan - Pacitan</h4>
-                        </div>
+            <div class="info-box">
+                <div class="info-item">
+                    <div class="info-icon blue">📅</div>
+                    <div>
+                        <p class="info-label">Durasi</p>
+                        <h4>{{ $paket->durasi }}</h4>
                     </div>
                 </div>
 
-                <!-- TAB BUTTON -->
-                <div class="tab-switcher">
-                    <button class="tab-btn active" onclick="showTab('deskripsi')">Deskripsi</button>
-                    <button class="tab-btn" onclick="showTab('fasilitas')">Fasilitas</button>
-                </div>
-
-                <!-- TAB DESKRIPSI -->
-                <div id="deskripsi" class="tab-content active">
-                    <div class="content-card">
-                        <h3>Tentang Paket Wisata</h3>
-                        <p>
-                            Pantai Watu Karung merupakan salah satu destinasi selancar terkenal dengan ombak
-                            yang dapat mencapai ketinggian hingga sekitar 4 meter, sehingga banyak diminati oleh
-                            para peselancar, termasuk peselancar dunia seperti Bruce Irons. Popularitas pantai ini
-                            semakin meningkat setelah foto Bruce Irons saat berselancar di Watu Karung menjadi sampul
-                            majalah selancar internasional Waves, yang kemudian menarik perhatian peselancar dari berbagai negara.
-                        </p>
-
-                        <p>
-                            Selain ombaknya yang menantang, Pantai Watu Karung juga menawarkan pemandangan matahari
-                            terbenam yang indah di tengah laut karena posisinya yang menghadap ke selatan dan sedikit ke barat.
-                            Di sisi timur pantai terdapat sungai bernama Kali Congkel dengan air jernih berwarna kehijauan
-                            yang menambah daya tarik keindahan alam di kawasan ini.
-                        </p>
-
-                        <h4>Lokasi :</h4>
-                        <p>
-                            Pringkuku, Ketro, Watukarung, Kecamatan Pacitan, Kabupaten Pacitan,
-                            Jawa Timur 63552, Indonesia
-                        </p>
+                <div class="info-item">
+                    <div class="info-icon green">👤</div>
+                    <div>
+                        <p class="info-label">Kapasitas</p>
+                        <h4>{{ $paket->kapasitas }}</h4>
                     </div>
                 </div>
 
-                <!-- TAB FASILITAS -->
-                <div id="fasilitas" class="tab-content">
-                    <div class="content-card">
-                        <h3>Fasilitas yang didapatkan</h3>
+                <div class="info-item">
+                    <div class="info-icon purple">📍</div>
+                    <div>
+                        <p class="info-label">Trayek</p>
+                        <h4>
+                            {{ $paket->trayek->kotaAsal->nama_kota ?? '-' }}
+                             →
+                            {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
+</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB BUTTON -->
+            <div class="tab-switcher">
+                <button class="tab-btn active" onclick="showTab('deskripsi', this)">Deskripsi</button>
+                <button class="tab-btn" onclick="showTab('fasilitas', this)">Fasilitas</button>
+                <button class="tab-btn" onclick="showTab('trayek', this)">Trayek</button>
+            </div>
+
+            <!-- TAB DESKRIPSI -->
+            <div id="deskripsi" class="tab-content active">
+                <div class="content-card">
+                    <h3>Tentang Paket Wisata</h3>
+                    <p>{{ $paket->deskripsi ?? '-' }}</p>
+                </div>
+            </div>
+
+            <!-- TAB FASILITAS -->
+            <div id="fasilitas" class="tab-content">
+                <div class="content-card">
+                    <h3>Fasilitas yang didapatkan</h3>
+
+                    @php
+                        $fasilitas = preg_split('/\r\n|\r|\n/', $paket->fasilitas_didapat ?? '');
+                        $fasilitas = array_filter($fasilitas);
+                    @endphp
+
+                    @if(count($fasilitas) > 0)
                         <ul class="check-list">
-                            <li>Transportasi wisata yang nyaman selama perjalanan</li>
-                            <li>Tiket masuk kawasan wisata Pantai Watu Karung</li>
-                            <li>Tour guide atau pemandu wisata berpengalaman</li>
-                            <li>Makan selama perjalanan wisata</li>
-                            <li>Air mineral selama perjalanan</li>
-                            <li>Dokumentasi perjalanan wisata</li>
-                            <li>Parkir kendaraan di area wisata</li>
+                            @foreach($fasilitas as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
                         </ul>
-
-                        <h3>Fasilitas yang tidak didapatkan</h3>
-                        <ul class="minus-list">
-                            <li>Pengeluaran pribadi selama wisata</li>
-                            <li>Sewa papan selancar atau perlengkapan surfing</li>
-                            <li>Tiket wahana tambahan di area wisata</li>
-                            <li>Tips untuk driver atau tour guide</li>
-                            <li>Aktivitas tambahan di luar itinerary perjalanan</li>
-                        </ul>
-                    </div>
+                    @else
+                        <p>{{ $paket->fasilitas_didapat ?? '-' }}</p>
+                    @endif
                 </div>
             </div>
 
-            <!-- RIGHT CARD -->
-            <div class="detail-right">
-                <div class="booking-card">
-                    <p class="price-label">Harga mulai dari</p>
-                    <h2>Rp 1.500.000</h2>
-                    <p class="per-person">per orang</p>
-
-                    <a href="#" class="btn-booking">Booking Sekarang</a>
-
-                    <ul class="benefit-list">
-                        <li>✅ Konfirmasi Instan</li>
-                        <li>✅ Pembatalan Gratis 24 Jam</li>
-                        <li>✅ Dijamin Harga Terbaik</li>
-                    </ul>
-
-                    <hr>
-
-                    <h3>Butuh Bantuan?</h3>
-                    <p class="help-text">Hubungi kami untuk informasi lebih lanjut</p>
-
-                    <a href="#" class="btn-service">Hubungi Customer Service</a>
+            <!-- TAB TRAYEK -->
+            <div id="trayek" class="tab-content">
+                <div class="content-card">
+                    <h3>Trayek Perjalanan</h3>
+                    <h4>Rute Perjalanan</h4>
+                         <p>
+                            {{ $paket->trayek->kotaAsal->nama_kota ?? '-' }}
+                             →
+                            {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
+                        </p>
                 </div>
             </div>
-
+            
         </div>
-    </section>
 
-    <script>
-        function showTab(tabId) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const buttons = document.querySelectorAll('.tab-btn');
+        <!-- RIGHT CARD -->
+        <div class="detail-right">
+            <div class="booking-card">
+                <p class="price-label">Harga mulai dari</p>
+                <h2>Rp {{ number_format($paket->harga, 0, ',', '.') }}</h2>
+                <p class="per-person">per paket</p>
 
-            tabs.forEach(tab => tab.classList.remove('active'));
-            buttons.forEach(btn => btn.classList.remove('active'));
+               <a href="{{ route('dashboard.user.booking.paket', $paket->id_paket) }}" class="btn-booking">
+    Booking Sekarang
+</a>
+                <ul class="benefit-list">
+                    <li>✅ Konfirmasi Instan</li>
+                    <li>✅ Pembatalan Gratis 24 Jam</li>
+                    <li>✅ Dijamin Harga Terbaik</li>
+                </ul>
 
-            document.getElementById(tabId).classList.add('active');
+                <hr>
 
-            if (tabId === 'deskripsi') {
-                buttons[0].classList.add('active');
-            } else {
-                buttons[1].classList.add('active');
-            }
-        }
-    </script>
+                <h3>Butuh Bantuan?</h3>
+                <p class="help-text">Hubungi kami untuk informasi lebih lanjut</p>
 
-<!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-left">
-                <div class="footer-brand">
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
-                    <h3>MY Trans Nusa Pariwisata</h3>
-                </div>
+            
 
-                <p class="footer-description">
-                    MyTransNusaPariwisata menyediakan layanan paket wisata dan sewa kendaraan
-                    untuk membantu Anda menjelajahi berbagai destinasi dengan nyaman dan aman.
-                    Dengan armada yang nyaman dan driver berpengalaman, kami berkomitmen memberikan
-                    perjalanan yang menyenangkan dan berkesan.
-                </p>
-            </div>
+                <a href="https://wa.me/6285664837559?text={{ urlencode('Halo Admin MyTrans Nusa
+                    Saya tertarik dengan paket wisata ' . $paket->nama_paket . '  
+                    Apakah masih tersedia kuota?  
+                    Mohon info lengkapnya ya kak 
+                    Terima kasih ') }}" 
+                    target="_blank"
+                    class="btn-service">
+                    Hubungi Customer Service
+                </a>
 
-            <div class="footer-divider"></div>
-
-            <div class="footer-right">
-                <h3>Hubungi Kami</h3>
-
-                <div class="footer-contact-list">
-                    <div class="contact-col">
-                        <p>📞 085664837559</p>
-                        <p>📷 @myTranss_</p>
-                        <p>🎵 @Pariwisataku_</p>
-                    </div>
-
-                    <div class="contact-col">
-                        <p>📍 Alamat Magetan, Jawa Timur, Indonesia</p>
-                        <p>📧 Email mytransnusa@gmail.com</p>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <div class="footer-bottom">
-            © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-left">
+            <div class="footer-brand">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
+                <h3>MY Trans Nusa Pariwisata</h3>
+            </div>
+
+            <p class="footer-description">
+                MyTransNusaPariwisata menyediakan layanan paket wisata dan sewa kendaraan
+                untuk membantu Anda menjelajahi berbagai destinasi dengan nyaman dan aman.
+                Dengan armada yang nyaman dan driver berpengalaman, kami berkomitmen memberikan
+                perjalanan yang menyenangkan dan berkesan.
+            </p>
         </div>
-    </footer>
 
+        <div class="footer-divider"></div>
 
+        <div class="footer-right">
+            <h3>Hubungi Kami</h3>
 
-</body>
-</html>
+            <div class="footer-contact-list">
+                <div class="contact-col">
+                    <p>📞 085664837559</p>
+                    <p>📷 @myTranss_</p>
+                    <p>🎵 @Pariwisataku_</p>
+                </div>
+
+                <div class="contact-col">
+                    <p>📍 Alamat Magetan, Jawa Timur, Indonesia</p>
+                    <p>📧 Email mytransnusa@gmail.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
+    </div>
+</footer>
+@endsection
+
+@push('scripts')
+<script>
+    function showTab(tabId, element) {
+        const tabs = document.querySelectorAll('.tab-content');
+        const buttons = document.querySelectorAll('.tab-btn');
+
+        tabs.forEach(tab => tab.classList.remove('active'));
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        element.classList.add('active');
+    }
+</script>
+@endpush

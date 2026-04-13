@@ -1,116 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profil Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin-profile.css') }}">
-</head>
-<body>
+@extends('layouts.admin')
+@section('title', 'Profil Pengguna')
 
-<div class="admin-layout">
-    <aside class="sidebar">
-        <div>
-            <div class="sidebar-header">
-                <div class="brand">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="brand-logo">
-                    <div class="brand-text">
-                        <h2>MY Trans Nusa</h2>
-                        <p>Admin</p>
-                    </div>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/profile.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+@endpush
+
+@section('content')
+    <section class="page-header">
+        <h1>Profil Saya</h1>
+        <p>Kelola informasi profil Anda dengan mudah</p>
+    </section>
+
+    <form action="{{ route('dashboard.superadmin.profile-update') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+
+        <section class="profile-hero-card">
+    <div class="avatar-wrapper">
+        <div class="avatar-circle">
+            @if(!empty($user->photo))
+                <img src="{{ asset($user->photo) }}"
+                     alt=""
+                     class="avatar-image"
+                     id="previewImage"
+                     onerror="this.style.display='none'; document.getElementById('defaultAvatarIcon').style.display='flex';">
+            @else
+                <img src=""
+                     alt=""
+                     class="avatar-image"
+                     id="previewImage"
+                     style="display:none;">
+            @endif
+
+            <span class="avatar-icon" id="defaultAvatarIcon" style="{{ !empty($user->photo) ? 'display:none;' : 'display:flex;' }}">
+                <i class="fa-solid fa-user"></i>
+            </span>
+        </div>
+
+        <label for="photoInput" class="camera-icon">
+            <i class="fa-solid fa-camera"></i>
+        </label>
+
+        <input type="file" id="photoInput" name="photo" accept="image/*" hidden>
+    </div>
+
+    <div class="profile-hero-name">
+        <h2>{{ $user->nama }}</h2>
+    </div>
+</section>
+
+        <section class="profile-tabs">
+            <a href="{{ route('dashboard.superadmin.profile-edit') }}" class="tab-btn active">Ubah Informasi Pribadi</a>
+            <a href="{{ route('dashboard.superadmin.profile-edit-password') }}" class="tab-btn">Ubah Password</a>
+        </section>
+
+        <section class="profile-info-card">
+            <div class="info-title">
+                <h3>Edit Profil</h3>
+                <p>Lengkapi identitas Anda</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Nama Lengkap</label>
+                    <input type="text" name="name" class="form-input" value="{{ old('name', $user->nama) }}">
+                    @error('name')
+                        <small class="error-text">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="info-item">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-input" value="{{ old('email', $user->email) }}">
+                    @error('email')
+                        <small class="error-text">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="info-item">
+                    <label>Nomor Telepon</label>
+                    <input type="text" name="no_hp" class="form-input" value="{{ old('no_hp', $user->no_hp) }}">
+                    @error('no_hp')
+                        <small class="error-text">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
 
-            <nav class="sidebar-menu">
-                <a href="#">Dashboard</a>
-                <a href="#">Kelola Paket Wisata dan Destinasi</a>
-                <a href="#">Kelola Kendaraan</a>
-                <a href="#">Kelola Trayek</a>
-                <a href="#">Data Booking</a>
-                <a href="#">Laporan Transaksi</a>
-            </nav>
-        </div>
+            <div class="edit-action-wrapper">
+                <a href="{{ route('dashboard.superadmin.profile') }}" class="btn-cancel">Batal</a>
+                <button type="submit" class="btn-save">
+                    <i class="fa-solid fa-save"></i>
+                    <span>Simpan Perubahan</span>
+                </button>
+            </div>
+        </section>
+    </form>
+</main>
+@endsection
 
-        <div class="sidebar-bottom">
-            <a href="#" class="menu-profile">👤 Profil Saya</a>
-            <a href="#" class="menu-logout">⛔ Keluar</a>
-        </div>
-    </aside>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const photoInput = document.getElementById('photoInput');
+    const previewImage = document.getElementById('previewImage');
 
-    <main class="main-content">
-        <div class="content-header">
-            <h1>Profil Saya</h1>
-            <a href="{{ url('/admin/profile') }}" class="btn-back">← Kembali</a>
-        </div>
+    if (photoInput && previewImage) {
+        photoInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
 
-        <form action="{{ url('/admin/profile/update') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+    previewImage.src = event.target.result;
+    previewImage.style.display = 'block';
 
-            <section class="profile-card">
-    <div class="avatar-wrapper">
-        <div class="avatar-circle">
-            @if(!empty($adminProfile['photo']))
-                <img src="{{ asset($adminProfile['photo']) }}" alt="Foto Profil Admin" class="avatar-image">
-            @else
-                <span class="avatar-icon">👤</span>
-            @endif
-        </div>
-
-        <label for="photoInput" class="camera-icon">📷</label>
-        <input type="file" id="photoInput" name="photo" accept="image/*" hidden onchange="this.form.submit()">
-    </div>
-
-    <div class="profile-name">
-        <h2>{{ $adminProfile['name'] }}</h2>
-    </div>
-</section>
-</section>
-
-            <section class="tab-section">
-                <a href="{{ url('/admin/profile/edit') }}" class="tab-link active">Ubah Informasi Pribadi</a>
-                <a href="{{ url('/admin/profile/edit/password') }}" class="tab-link">Ubah Password</a>
-            </section>
-
-            <section class="info-card">
-                <div class="info-header">
-                    <h3>Edit Profil</h3>
-                </div>
-
-                <div class="info-grid">
-                    <div class="info-box">
-                        <label>Nama Lengkap</label>
-                        <input type="text" name="name" class="form-input" value="{{ old('name', $adminProfile['name']) }}">
-                        @error('name')
-                            <small class="error-text">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="info-box">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-input" value="{{ old('email', $adminProfile['email']) }}">
-                        @error('email')
-                            <small class="error-text">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="info-box">
-                        <label>Nomor Telepon</label>
-                        <input type="text" name="phone" class="form-input" value="{{ old('phone', $adminProfile['phone']) }}">
-                        @error('phone')
-                            <small class="error-text">{{ $message }}</small>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="edit-button-wrapper admin-edit-actions">
-                    <a href="{{ url('/admin/profile') }}" class="btn-cancel">Batal</a>
-                    <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
-                </div>
-            </section>
-        </form>
-    </main>
-</div>
-
-</body>
-</html>
+    const defaultIcon = document.getElementById('defaultAvatarIcon');
+    if (defaultIcon) {
+        defaultIcon.style.display = 'none';
+    }
+};
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+@endpush

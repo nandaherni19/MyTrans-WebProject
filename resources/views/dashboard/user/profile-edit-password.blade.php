@@ -1,36 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Password</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-</head>
-<body>
+@extends('layouts.user')
 
-<header class="topbar">
-    <div class="topbar-left">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
-    </div>
+@section('title', 'Edit Password Saya')
 
-    <nav class="topbar-nav">
-        <a href="#">Beranda</a>
-        <span>|</span>
-        <a href="#">Paket Wisata</a>
-        <span>|</span>
-        <a href="#">Booking</a>
-        <span>|</span>
-        <a href="#">Riwayat Booking</a>
-        <span>|</span>
-        <a href="{{ url('/profile') }}" class="active">Profil</a>
-    </nav>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/user/profile.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+@endpush
 
-    <div class="topbar-right">
-        <a href="{{ url('/profile') }}" class="btn-back">← Kembali</a>
-    </div>
-</header>
+@section('navbar_action')
+    <a href="{{ route('dashboard.user.profile') }}" class="btn-kembali">← Kembali</a>
+@endsection
 
+@section('content')
 <main class="profile-page">
     <section class="page-header">
         <h1>Profil Saya</h1>
@@ -38,26 +19,28 @@
     </section>
 
     <section class="profile-hero-card">
-        <div class="profile-hero-left">
-            <div class="avatar-wrapper">
-                <div class="avatar-circle">
-    @if(!empty($profile['photo']))
-        <img src="{{ asset($profile['photo']) }}" alt="Foto Profil" class="avatar-image">
-    @else
-        <span class="avatar-icon">👤</span>
-    @endif
-</div>
+    <div class="profile-hero-left">
+        <div class="avatar-wrapper">
+            <div class="avatar-circle">
+                @if(!empty($user->photo))
+                    <img src="{{ asset($user->photo) }}" alt="" class="avatar-image">
+                @else
+                    <span class="avatar-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                @endif
             </div>
         </div>
+    </div>
 
-        <div class="profile-hero-right">
-            <h2>{{ $profile['name'] }}</h2>
-        </div>
-    </section>
+    <div class="profile-hero-right">
+        <h2>{{ $user->nama }}</h2>
+    </div>
+</section>
 
     <section class="profile-tabs">
-        <a href="{{ url('/profile/edit') }}" class="tab-btn">Ubah Informasi Pribadi</a>
-        <a href="{{ url('/profile/edit/password') }}" class="tab-btn active">Ubah Password</a>
+        <a href="{{ route('dashboard.user.profile-edit') }}" class="tab-btn">Ubah Informasi Pribadi</a>
+        <a href="{{ route('dashboard.user.profile-edit-password') }}" class="tab-btn active">Ubah Password</a>
     </section>
 
     <section class="profile-info-card">
@@ -66,15 +49,19 @@
             <p>Perbarui keamanan akun Anda</p>
         </div>
 
-        <form action="{{ url('/profile/password/update') }}" method="POST">
+        <form action="{{ route('dashboard.user.profile-password-update') }}" method="POST">
             @csrf
 
             <div class="password-form-group">
                 <label>Password Saat Ini</label>
                 <div class="password-input-wrapper">
-                    <span class="password-left-icon">🔒</span>
-                    <input type="password" id="currentPassword" name="current_password" value="{{ old('current_password') }}">
-                    <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">👁️</button>
+                    <span class="password-left-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" id="currentPassword" name="current_password">
+                    <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
                 @error('current_password')
                     <small class="error-text">{{ $message }}</small>
@@ -84,9 +71,13 @@
             <div class="password-form-group">
                 <label>Password Baru</label>
                 <div class="password-input-wrapper">
-                    <span class="password-left-icon">🔒</span>
+                    <span class="password-left-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
                     <input type="password" id="newPassword" name="new_password" value="{{ old('new_password') }}">
-                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">👁️</button>
+                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
                 @error('new_password')
                     <small class="error-text">{{ $message }}</small>
@@ -96,24 +87,33 @@
             <div class="password-form-group">
                 <label>Konfirmasi Password Baru</label>
                 <div class="password-input-wrapper">
-                    <span class="password-left-icon">🔒</span>
-                    <input type="password" id="confirmPassword" name="confirm_password" value="{{ old('confirm_password') }}">
-                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁️</button>
+                    <span class="password-left-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" id="confirmPassword" name="new_password_confirmation" value="{{ old('new_password_confirmation') }}">
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
-                @error('confirm_password')
+                @error('new_password_confirmation')
                     <small class="error-text">{{ $message }}</small>
                 @enderror
             </div>
 
             <div class="edit-action-wrapper">
-                <a href="{{ url('/profile/password') }}" class="btn-cancel">Batal</a>
-                <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
+                <a href="{{ route('dashboard.user.profile') }}" class="btn-cancel">Batal</a>
+                <button type="submit" class="btn-save">
+                    <i class="fa-solid fa-save"></i>
+                    <span>Simpan Perubahan</span>
+                </button>
             </div>
         </form>
     </section>
 
     <section class="security-tip-card">
-        <div class="security-icon">🛡️</div>
+        <div class="security-icon">
+            <i class="fa-solid fa-shield"></i>
+        </div>
         <div class="security-text">
             <h4>Tips Keamanan</h4>
             <p>
@@ -122,19 +122,23 @@
         </div>
     </section>
 </main>
+@endsection
 
+@push('scripts')
 <script>
-function togglePassword(id, btn) {
-    const input = document.getElementById(id);
-    if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = '🙈';
-    } else {
-        input.type = 'password';
-        btn.textContent = '👁️';
-    }
-}
-</script>
+    function togglePassword(id, btn) {
+        const input = document.getElementById(id);
+        const icon = btn.querySelector("i");
 
-</body>
-</html>
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = 'password';
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+</script>
+@endpush
