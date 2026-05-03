@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kendaraan;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,9 @@ public function store(Request $request)
         'status_kendaraan' => 'required|in:tersedia,tidak_tersedia,maintenance',
         'foto_kendaraan'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
     ]);
+
+    // bersihkan format harga
+        $data['harga_sewa'] = str_replace(['Rp', 'RP', '.', ' '], '', $request->harga_sewa);
 
     // UPLOAD GAMBAR
     if ($request->hasFile('foto_kendaraan')) {
@@ -56,7 +60,12 @@ public function store(Request $request)
 
         $data['harga_sewa'] = str_replace(['Rp', 'RP', '.', ' '], '', $request->harga_sewa);
 
+        // jika upload gambar baru → hapus lama
         if ($request->hasFile('foto_kendaraan')) {
+            if ($kendaraan->foto_kendaraan) {
+                Storage::disk('public')->delete($kendaraan->foto_kendaraan);
+            }
+
             $data['foto_kendaraan'] = $request->file('foto_kendaraan')
                 ->store('kendaraan', 'public');
         }
@@ -71,6 +80,12 @@ public function store(Request $request)
     public function destroy($id)
     {
         $kendaraan = Kendaraan::findOrFail($id);
+
+        if ($kendaraan->paketWisata()->exists()) {
+        return redirect()
+            ->back()
+            ->with('error', 'Kendaraan masih digunakan oleh paket wisata!');
+        }
 
         if ($kendaraan->foto_kendaraan) {
             Storage::disk('public')->delete($kendaraan->foto_kendaraan);

@@ -8,19 +8,13 @@ use App\Models\PaketWisata;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Define the application's command schedule.
-     */
     protected function schedule(Schedule $schedule)
     {
         {
             $schedule->command('app:nonaktifkan-paket')->daily();
+            $schedule->command('booking:update-selesai')->dailyAt('00:00');
         }
     }
-
-    /**
-     * Register the commands for the application.
-     */
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');

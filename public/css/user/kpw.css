@@ -8,6 +8,11 @@ body {
     font-family: Arial, sans-serif;
     background: #efefef;
     color: #111;
+    overflow: hidden;
+}
+
+html, body {
+    overflow-x: hidden;
 }
 
 
@@ -79,6 +84,7 @@ body {
     flex-wrap: wrap;
     gap: 28px;
     justify-content: center;
+    overflow: hidden;
 }
 
 .catalog-card {
@@ -90,7 +96,7 @@ body {
 }
 
 .catalog-card img {
-    width: calc(100% - 22px);
+    width: calc(100% - 22px); 
     height: 150px;
     object-fit: cover;
     display: block;
@@ -117,6 +123,34 @@ body {
 .catalog-body .location {
     font-size: 11px;
     margin-bottom: 8px;
+}
+
+.paket-info-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 7px;
+}
+
+.paket-info-label {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.4;
+    min-width: 140px;
+}
+
+.paket-info-value {
+    font-size: 11px;
+    color: #111;
+    line-height: 1.4;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.label-harga {
+    color: #6b6b6b;
+    font-size: 11px;
 }
 
 .label-harga {
@@ -160,6 +194,9 @@ body {
     display: flex;
     gap: 24px;
     align-items: center;
+    width: 100%;
+    overflow: hidden;
+
 }
 
 .footer-left,
@@ -206,6 +243,7 @@ body {
     display: flex;
     gap: 26px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 .contact-col p {
@@ -221,6 +259,43 @@ body {
     border-top: 1.5px solid #5d5d5d;
     text-align: center;
     font-size: 12px;
+}
+
+/* TITLE + BADGE */
+.paket-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.paket-title-row h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+    flex: 1;
+}
+
+.tipe-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Open Trip → biru */
+.tipe-badge.open-trip {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+/* Paket Wisata → hijau */
+.tipe-badge.paket-wisata {
+    background: #dcfce7;
+    color: #16a34a;
 }
 
 /* RESPONSIVE */

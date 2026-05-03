@@ -10,7 +10,6 @@
 <section class="detail-section">
     <div class="detail-container">
 
-        <!-- LEFT CONTENT -->
         <div class="detail-left">
             <img
                 src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}"
@@ -30,39 +29,43 @@
                     <div class="info-icon blue">📅</div>
                     <div>
                         <p class="info-label">Durasi</p>
-                        <h4>{{ $paket->durasi }}</h4>
+                        <h4>{{ $paket->durasi }} hari</h4>
                     </div>
                 </div>
 
                 <div class="info-item">
                     <div class="info-icon green">👤</div>
                     <div>
-                        <p class="info-label">Kapasitas</p>
-                        <h4>{{ $paket->kapasitas }}</h4>
+                        @if($paket->tipe === 'open_trip')
+                            <p class="info-label">Kapasitas</p>
+                            <h4>{{ $paket->kapasitas }} orang</h4>
+                        @else
+                            <p class="info-label">Minimal Peserta</p>
+                            <h4>{{ $paket->min_peserta }} orang</h4>
+                        @endif
                     </div>
                 </div>
 
                 <div class="info-item">
                     <div class="info-icon purple">📍</div>
                     <div>
-                        <p class="info-label">Trayek</p>
+                        <p class="info-label">Lokasi</p>
                         <h4>
-                            {{ $paket->trayek->kotaAsal->nama_kota ?? '-' }}
-                             →
-                            {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
-</h4>
+                            {{ $paket->kota->nama_kota ?? '-' }}
+                            @if($paket->kota && $paket->kota->provinsi)
+                                , {{ $paket->kota->provinsi->nama_provinsi }}
+                            @endif
+                        </h4>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB BUTTON -->
             <div class="tab-switcher">
                 <button class="tab-btn active" onclick="showTab('deskripsi', this)">Deskripsi</button>
                 <button class="tab-btn" onclick="showTab('fasilitas', this)">Fasilitas</button>
-                <button class="tab-btn" onclick="showTab('trayek', this)">Trayek</button>
+                <button class="tab-btn" onclick="showTab('lokasi', this)">Lokasi</button>
             </div>
 
-            <!-- TAB DESKRIPSI -->
             <div id="deskripsi" class="tab-content active">
                 <div class="content-card">
                     <h3>Tentang Paket Wisata</h3>
@@ -70,13 +73,12 @@
                 </div>
             </div>
 
-            <!-- TAB FASILITAS -->
             <div id="fasilitas" class="tab-content">
                 <div class="content-card">
                     <h3>Fasilitas yang didapatkan</h3>
 
                     @php
-                        $fasilitas = preg_split('/\r\n|\r|\n/', $paket->fasilitas_didapat ?? '');
+                        $fasilitas = preg_split('/\r\n|\r|\n/', $paket->fasilitas ?? '');
                         $fasilitas = array_filter($fasilitas);
                     @endphp
 
@@ -87,39 +89,67 @@
                             @endforeach
                         </ul>
                     @else
-                        <p>{{ $paket->fasilitas_didapat ?? '-' }}</p>
+                        <p>-</p>
                     @endif
                 </div>
             </div>
 
-            <!-- TAB TRAYEK -->
-            <div id="trayek" class="tab-content">
+            <div id="lokasi" class="tab-content">
                 <div class="content-card">
-                    <h3>Trayek Perjalanan</h3>
-                    <h4>Rute Perjalanan</h4>
-                         <p>
-                            {{ $paket->trayek->kotaAsal->nama_kota ?? '-' }}
-                             →
-                            {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
+                    <h3>Lokasi Tujuan</h3>
+                    <p>
+                        {{ $paket->kota->nama_kota ?? '-' }}
+                        @if($paket->kota && $paket->kota->provinsi)
+                            , {{ $paket->kota->provinsi->nama_provinsi }}
+                        @endif
+                    </p>
+
+                    @if($paket->kotaLayanan->isNotEmpty())
+                        <h4>Kota yang Dilayani</h4>
+                        <p>{{ $paket->kotaLayanan->pluck('nama_kota')->join(', ') }}</p>
+                    @endif
+
+                    @if($paket->tipe === 'open_trip')
+                        <h4>Jadwal Open Trip</h4>
+                        <p>
+                            Berangkat:
+                            {{ $paket->tanggal_berangkat ? \Carbon\Carbon::parse($paket->tanggal_berangkat)->format('d M Y') : '-' }}
                         </p>
+                        <p>
+                            Kembali:
+                            {{ $paket->tanggal_kembali ? \Carbon\Carbon::parse($paket->tanggal_kembali)->format('d M Y') : '-' }}
+                        </p>
+                        <p>
+                            Sisa Kuota: {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}
+                        </p>
+                    @else
+                        <h4>Paket Wisata Custom</h4>
+                        <p>Tanggal perjalanan dapat direquest saat booking.</p>
+                    @endif
                 </div>
             </div>
-            
         </div>
 
-        <!-- RIGHT CARD -->
         <div class="detail-right">
             <div class="booking-card">
                 <p class="price-label">Harga mulai dari</p>
                 <h2>Rp {{ number_format($paket->harga, 0, ',', '.') }}</h2>
-                <p class="per-person">per paket</p>
 
-               <a href="{{ route('dashboard.user.booking.paket', $paket->id_paket) }}" class="btn-booking">
-    Booking Sekarang
-</a>
+                <p class="per-person">
+                    @if($paket->tipe === 'open_trip')
+                        per orang, sudah termasuk kendaraan
+                    @else
+                        per orang, belum termasuk kendaraan
+                    @endif
+                </p>
+
+                <a href="{{ route('dashboard.user.booking.paket', $paket->id_paket) }}" class="btn-booking">
+                    Booking Sekarang
+                </a>
+
                 <ul class="benefit-list">
                     <li>✅ Konfirmasi Instan</li>
-                    <li>✅ Pembatalan Gratis 24 Jam</li>
+                    <li>✅ Admin siap membantu</li>
                     <li>✅ Dijamin Harga Terbaik</li>
                 </ul>
 
@@ -128,18 +158,25 @@
                 <h3>Butuh Bantuan?</h3>
                 <p class="help-text">Hubungi kami untuk informasi lebih lanjut</p>
 
-            
+                @php
+                    $lokasi = $paket->kota->nama_kota ?? '-';
+                    $provinsi = $paket->kota && $paket->kota->provinsi ? $paket->kota->provinsi->nama_provinsi : '-';
+                    $tipe = $paket->tipe === 'open_trip' ? 'Open Trip' : 'Paket Wisata';
 
-                <a href="https://wa.me/6285664837559?text={{ urlencode('Halo Admin MyTrans Nusa
-                    Saya tertarik dengan paket wisata ' . $paket->nama_paket . '  
-                    Apakah masih tersedia kuota?  
-                    Mohon info lengkapnya ya kak 
-                    Terima kasih ') }}" 
+                    $pesanWa = "Halo Admin MyTrans Nusa Pariwisata,%0A%0A"
+                        . "Saya tertarik dengan paket wisata berikut:%0A"
+                        . "Nama Paket: " . $paket->nama_paket . "%0A"
+                        . "Tipe: " . $tipe . "%0A"
+                        . "Lokasi: " . $lokasi . ", " . $provinsi . "%0A"
+                        . "Harga: Rp " . number_format($paket->harga, 0, ',', '.') . "%0A%0A"
+                        . "Apakah paket ini masih tersedia? Mohon info lengkapnya ya kak. Terima kasih.";
+                @endphp
+
+                <a href="https://wa.me/6285664837559?text={{ $pesanWa }}"
                     target="_blank"
                     class="btn-service">
                     Hubungi Customer Service
                 </a>
-
             </div>
         </div>
 

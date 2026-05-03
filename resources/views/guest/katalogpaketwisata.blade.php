@@ -22,37 +22,98 @@
 
     <section class="catalog-section">
         <div class="catalog-grid">
+
             @forelse($pakets as $paket)
-                <div class="catalog-card paket-card-guest"
-                    data-nama="{{ strtolower($paket->nama_paket) }}"
-                    data-lokasi="{{ strtolower($paket->trayek->kotaTujuan->nama_kota ?? '-') }}">
-                    
-                    <img 
-                        src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
-                        alt="{{ $paket->nama_paket }}"
-                    >
+    <div class="catalog-card paket-card-guest"
+        data-nama="{{ strtolower($paket->nama_paket) }}"
+        data-lokasi="{{ strtolower($paket->kota->nama_kota ?? '-') }}">
 
-                    <div class="catalog-body">
-                        <h3>{{ $paket->nama_paket }}</h3>
+        <img 
+            src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
+            alt="{{ $paket->nama_paket }}"
+        >
 
-                        <p class="location">📍 {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}</p>
+        <div class="catalog-body">
+            <div class="paket-title-row">
+                <h3>{{ $paket->nama_paket }}</h3>
 
-                        <p>Sisa Kuota {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</p>
-                        <p class="label-harga">Harga Mulai Dari</p>
+                <span class="tipe-badge 
+                    {{ $paket->tipe === 'open_trip' ? 'open-trip' : 'paket-wisata' }}">
+                    {{ $paket->tipe === 'open_trip' ? 'Open Trip' : 'Paket Wisata' }}
+                </span>
+            </div>
 
-                        <div class="card-footer">
-                            <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
-                            <a href="{{ route('guest.detailpaket', $paket->id_paket) }}">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
+            <p class="location">
+                📍 {{ $paket->kota->nama_kota ?? '-' }}
+                @if($paket->kota && $paket->kota->provinsi)
+                    , {{ $paket->kota->provinsi->nama_provinsi }}
+                @endif
+            </p>
+
+            {{-- TAMBAHKAN INI --}}
+                    @if($paket->kotaLayanan->isNotEmpty())
+                        <p class="location">
+                            🚐 Kota Dilayani: {{ $paket->kotaLayanan->pluck('nama_kota')->join(', ') }}
+                        </p>
+                    @endif
+
+            @if($paket->tipe === 'open_trip')
+                <div class="paket-info-row">
+                    <span class="paket-info-label">Tanggal Berangkat</span>
+                    <span class="paket-info-value">
+                        {{ $paket->tanggal_berangkat ? \Carbon\Carbon::parse($paket->tanggal_berangkat)->format('d.m.Y') : '-' }}
+                    </span>
                 </div>
-            @empty
-                <div class="empty-box">
-                    <h3>Belum ada data paket wisata</h3>
+
+                <div class="paket-info-row">
+                    <span class="paket-info-label">Tanggal Kembali</span>
+                    <span class="paket-info-value">
+                        {{ $paket->tanggal_kembali ? \Carbon\Carbon::parse($paket->tanggal_kembali)->format('d.m.Y') : '-' }}
+                    </span>
                 </div>
-            @endforelse
+
+                <div class="paket-info-row">
+                    <span class="paket-info-label">Sisa Kuota</span>
+                    <span class="paket-info-value">
+                        {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}
+                    </span>
+                </div>
+            @else
+                <div class="paket-info-row">
+                    <span class="paket-info-label">Tanggal</span>
+                    <span class="paket-info-value">Request</span>
+                </div>
+
+                <div class="paket-info-row">
+                    <span class="paket-info-label">Minimal Peserta</span>
+                    <span class="paket-info-value">
+                        {{ $paket->min_peserta ?? '-' }} orang
+                    </span>
+                </div>
+            @endif
+
+            <div class="paket-info-row">
+                <span class="paket-info-label">Durasi</span>
+                <span class="paket-info-value">
+                    {{ $paket->durasi }} hari
+                </span>
+            </div>
+
+            <div class="card-footer">
+                <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
+
+                <a href="{{ route('guest.detailpaket', $paket->id_paket) }}">
+                    Lihat Detail
+                </a>
+            </div>
+        </div>
+    </div>
+@empty
+    <div class="empty-box">
+        <h3>Belum ada data paket wisata</h3>
+    </div>
+@endforelse
+
         </div>
 
         <p id="emptySearchMessageGuest" style="display: none; text-align: center; margin-top: 20px;">

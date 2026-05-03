@@ -85,12 +85,14 @@
 
 .action-cell {
     white-space: nowrap;
+    text-align: right;
 }
 
 .aksi-wrapper {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    align-items: center;
+    flex-wrap: nowrap;
 }
 
 .btn-detail,

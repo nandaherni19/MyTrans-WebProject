@@ -51,45 +51,99 @@
         </p>
 
         <div class="catalog-grid">
-    @forelse($pakets as $paket)
-        <div class="catalog-card">
-            <img 
-                src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
-                alt="{{ $paket->nama_paket }}"
-            >
-            <div class="catalog-body">
-                <h3>{{ $paket->nama_paket }}</h3>
-                <p class="location">📍 {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
-                            </p>
-                <p>Sisa Kuota {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</p>
-                <p class="label-harga">Harga Mulai Dari</p>
-                <div class="card-footer">
-                    <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
-                    <a href="{{ route('dashboard.user.detailpaket', $paket->id_paket) }}">Lihat Detail</a>
-                </div>
-            </div>
-        </div>
-    @empty
-        <p>Belum ada paket wisata.</p>
-    @endforelse
-</div>
-       
+            @forelse($pakets as $paket)
+                <div class="catalog-card paket-card"
+                    data-nama="{{ strtolower($paket->nama_paket) }}"
+                    data-lokasi="{{ strtolower($paket->kota->nama_kota ?? '-') }}">
 
-  
+                    <img 
+                        src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
+                        alt="{{ $paket->nama_paket }}"
+                    >
+
+                    <div class="catalog-body">
+                        <div class="paket-title-row">
+                            <h3>{{ $paket->nama_paket }}</h3>
+
+                            <span class="tipe-badge {{ $paket->tipe === 'open_trip' ? 'open-trip' : 'paket-wisata' }}">
+                                {{ $paket->tipe === 'open_trip' ? 'Open Trip' : 'Paket Wisata' }}
+                            </span>
+                        </div>
+
+                        <p class="location">
+                            📍 {{ $paket->kota->nama_kota ?? '-' }}
+                            @if($paket->kota && $paket->kota->provinsi)
+                                , {{ $paket->kota->provinsi->nama_provinsi }}
+                            @endif
+                        </p>
+
+                        @if($paket->tipe === 'open_trip')
+                            <div class="paket-info-row">
+                                <span class="paket-info-label">Tanggal Berangkat</span>
+                                <span class="paket-info-value">
+                                    {{ $paket->tanggal_berangkat ? \Carbon\Carbon::parse($paket->tanggal_berangkat)->format('d.m.Y') : '-' }}
+                                </span>
+                            </div>
+
+                            <div class="paket-info-row">
+                                <span class="paket-info-label">Tanggal Kembali</span>
+                                <span class="paket-info-value">
+                                    {{ $paket->tanggal_kembali ? \Carbon\Carbon::parse($paket->tanggal_kembali)->format('d.m.Y') : '-' }}
+                                </span>
+                            </div>
+
+                            <div class="paket-info-row">
+                                <span class="paket-info-label">Sisa Kuota</span>
+                                <span class="paket-info-value">
+                                    {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}
+                                </span>
+                            </div>
+                        @else
+                            <div class="paket-info-row">
+                                <span class="paket-info-label">Tanggal</span>
+                                <span class="paket-info-value">Request</span>
+                            </div>
+
+                            <div class="paket-info-row">
+                                <span class="paket-info-label">Minimal Peserta</span>
+                                <span class="paket-info-value">
+                                    {{ $paket->min_peserta ?? '-' }} orang
+                                </span>
+                            </div>
+                        @endif
+
+                        <div class="paket-info-row">
+                            <span class="paket-info-label">Durasi</span>
+                            <span class="paket-info-value">
+                                {{ $paket->durasi }} hari
+                            </span>
+                        </div>
+
+                        <div class="card-footer">
+                            <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
+                            <a href="{{ route('dashboard.user.detailpaket', $paket->id_paket) }}">
+                                Lihat Detail
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <p>Belum ada paket wisata.</p>
+            @endforelse
+        </div>
     </section>
 
     <!-- CTA -->
-     <section class="cta-section">
+    <section class="cta-section">
         <h2>Siap Memulai Pertualangan Anda?</h2>
         <p>Booking Sekarang Dan Dapatkan Harga Terbaik Untuk Liburan Impian Anda</p>
 
         <div class="cta-buttons">
-            <a href="{{ route('dashboard.user.booking') }}" class="btn-cta-white">Booking Sekarang</a>
-        <a href="{{ route('dashboard.user.requestbooking') }}" class="btn-cta-white">Request Wisata</a>
+            <a href="{{ route('dashboard.user.katalogpaketwisata') }}" class="btn-cta-white">Booking Sekarang</a>
+            <a href="{{ route('dashboard.user.requestbooking') }}" class="btn-cta-white">Request Wisata</a>
         </div>
     </section>
 
-   
     <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-container">
@@ -131,7 +185,6 @@
             © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
         </div>
     </footer>
-
 @endsection
 
 @push('scripts')
@@ -139,4 +192,3 @@
     console.log('Halaman beranda loaded');
 </script>
 @endpush
-

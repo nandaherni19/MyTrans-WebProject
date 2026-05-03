@@ -367,12 +367,12 @@ body {
     display: flex;
     align-items: center;
     padding: 0 16px;
-    margin-bottom: 14px;
+    margin-bottom: 20px;
     background: #f8f8f8;
 }
 
 .payment-method:last-child {
-    margin-bottom: 0;
+    margin-bottom: 20px;
 }
 
 .payment-method.selected {
@@ -560,78 +560,101 @@ body {
 
 /* QRIS PAGE */
 .qris-page {
-    max-width: 620px;
+    max-width: 1200px;
     margin: 0 auto;
     padding-top: 12px;
 }
 
 .qris-title {
     text-align: center;
-    font-size: 18px;
+    font-size: 28px;
     font-weight: 800;
     color: #111;
-    margin-bottom: 14px;
+    margin-bottom: 24px;
+}
+
+.qris-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.qris-left {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.qris-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 20px;
 }
 
 .qris-card,
 .info-card {
     background: #f8f8f8;
     border: 1px solid #e4e4e4;
-    border-radius: 14px;
+    border-radius: 18px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .qris-card {
-    width: 270px;
-    margin: 0 auto 20px;
-    padding: 14px 14px 18px;
+    width: 100%;
+    max-width: 380px;
+    padding: 20px 20px 24px;
     text-align: center;
 }
 
 .qris-label {
-    font-size: 13px;
+    font-size: 22px;
     font-weight: 800;
     color: #111;
-    text-align: left;
-    margin-bottom: 10px;
+    text-align: center;
+    margin-bottom: 16px;
 }
 
 .qris-image {
-    width: 150px;
-    height: 150px;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
     object-fit: contain;
     display: block;
-    margin: 0 auto 18px;
+    margin: 0 auto;
 }
 
 .save-qr-btn {
     width: 100%;
-    min-height: 38px;
+    min-height: 42px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #11a84b;
     color: #fff;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    margin-top: 18px;
 }
 
 .expired-box {
     border: 1px solid #ff9d68;
     background: #fff9f6;
-    border-radius: 10px;
-    padding: 12px 14px;
+    border-radius: 14px;
+    padding: 16px 18px;
     display: flex;
-    gap: 12px;
-    margin-bottom: 18px;
+    gap: 14px;
+    margin-bottom: 0;
 }
 
 .expired-icon {
     color: #ff8a4c;
-    font-size: 22px;
+    font-size: 26px;
     margin-top: 2px;
 }
 
@@ -643,53 +666,60 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    flex-wrap: wrap;
+    font-size: 16px;
     font-weight: 700;
     color: #444;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .expired-top strong {
     color: #ff5a36;
-    font-size: 13px;
+    font-size: 18px;
 }
 
 .expired-content p {
-    font-size: 11px;
+    font-size: 14px;
     color: #555;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .expired-content small {
-    font-size: 11px;
+    font-size: 13px;
     color: #777;
 }
 
 .info-card {
-    padding: 16px 16px 10px;
-    margin-bottom: 18px;
+    padding: 20px 20px 14px;
+    margin-bottom: 0;
 }
 
 .info-card h3 {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 800;
     color: #111;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .info-row {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    font-size: 13px;
+    font-size: 14px;
     color: #777;
-    margin-bottom: 12px;
+    margin-bottom: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9e9e9;
+}
+
+.info-row:last-child {
+    border-bottom: none;
 }
 
 .info-row strong {
     color: #222;
     text-align: right;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -739,10 +769,22 @@ body {
     .calendar-layout {
         grid-template-columns: 1fr;
     }
+
+    .qris-wrapper {
+        flex-direction: column-reverse;
+    }
+
+    .qris-right {
+        width: 100%;
+        position: static;
+    }
+
+    .qris-card {
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 768px) {
-    
     .booking-container {
         padding: 18px 16px 30px;
     }
@@ -754,6 +796,215 @@ body {
     .info-row {
         flex-direction: column;
         gap: 4px;
+    }
+
+    .info-row strong {
+        text-align: left;
+    }
+
+    .qris-title {
+        font-size: 22px;
+    }
+
+    .qris-image {
+        max-width: 240px;
+    }
+
+    .expired-top {
+        font-size: 14px;
+    }
+
+    .expired-top strong {
+        font-size: 16px;
+    }
+}
+
+.cash-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.cash-icon {
+    font-size: 48px;
+    color: #9ca3af;
+    margin-bottom: 15px;
+}
+
+.cash-text {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.btn-wa {
+    display: block;
+    width: 100%;
+    background: #16a34a;
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-wa:hover {
+    background: #15803d;
+}
+
+.payment-method .cash-icon {
+    font-size: 22px;
+    color: #111;
+    margin-bottom: 0;
+}
+
+.payment-method .cash-icon i {
+    font-size: 22px;
+}
+
+.payment-method .payment-icon {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    margin-right: 10px;
+}
+
+
+/*BOOKING*/
+.qris-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.qris-left {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.qris-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 20px;
+}
+
+.qris-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.qris-label {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #111827;
+}
+
+.qris-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.expired-box,
+.info-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.expired-box {
+    border: 1px solid #ffd0b5;
+    background: #fff8f3;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.expired-icon {
+    font-size: 26px;
+    color: #ff7a30;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.expired-top {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.expired-top strong {
+    color: #ff5a1f;
+}
+
+.info-card h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #111827;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row span {
+    color: #6b7280;
+}
+
+.info-row strong {
+    color: #111827;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .qris-wrapper {
+        flex-direction: column-reverse;
+    }
+
+    .qris-right {
+        width: 100%;
+        position: static;
+    }
+
+    .qris-card {
+        max-width: 100%;
+    }
+
+    .qris-image {
+        max-width: 260px;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .info-row strong {

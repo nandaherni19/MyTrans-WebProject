@@ -3,21 +3,36 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\PaketWisata;
 
 class Kendaraan extends Model
 {
     protected $table = 'ms_kendaraan';
     protected $primaryKey = 'id_kendaraan';
-    public $incrementing = true;
-    protected $keyType = 'int';  
+    public $timestamps = false;
 
     protected $fillable = [
-        'nama_kendaraan', 
-        'jenis_kendaraan', 
+        'nama_kendaraan',
+        'jenis_kendaraan',
         'kapasitas',
         'plat_nomor',
         'harga_sewa',
-        'status_kendaraan', 
+        'status_kendaraan',
         'foto_kendaraan'
     ];
+
+    public function paketWisata()
+    {
+        return $this->hasMany(PaketWisata::class, 'id_kendaraan', 'id_kendaraan');
+    }
+
+    public function bookings()
+    {
+        return $this->belongsToMany(
+            Booking::class,
+            'tr_booking_kendaraan',
+            'id_kendaraan',
+            'id_booking'
+        );
+    }
 }

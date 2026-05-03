@@ -1,49 +1,38 @@
 <header class="navbar">
     <div class="nav-logo">
-        <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
+        <img src="{{ asset('img/logo.png') }}">
+        <span class="nav-logo-text">MyTrans Nusa</span>
     </div>
 
     <nav class="nav-menu">
-        <a href="{{ route('dashboard.user') }}" class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">
-            Beranda
-        </a>
-        <span>|</span>
+        @auth
+            <!-- USER -->
+            <a href="{{ route('dashboard.user') }}" class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Beranda</a>
 
-        <a href="{{ route('dashboard.user.katalogpaketwisata') }}" class="{{ request()->routeIs('dashboard.user.katalogpaketwisata') ? 'active' : '' }}">
-            Paket Wisata
-        </a>
-        <span>|</span>
+            <a href="{{ route('dashboard.user.katalogpaketwisata') }}" class="{{ request()->routeIs('dashboard.user.katalogpaketwisata') ? 'active' : '' }}">Paket Wisata</a>
 
-       <a href="{{ route('dashboard.user.booking') }}"
-            class="{{ request()->routeIs('dashboard.user.booking') ? 'active' : '' }}">
-            Booking
-        </a>
-        <span>|</span>
+            <a href="{{ route('dashboard.user.riwayatbooking') }}" class="{{ request()->routeIs('dashboard.user.riwayatbooking') ? 'active' : '' }}">Riwayat</a>
 
-       <a href="{{ route('dashboard.user.riwayatbooking',) }}"
-            class="{{ request()->routeIs('dashboard.user.riwayatbooking') ? 'active' : '' }}">
-            Riwayat Booking
-        </a>
-        <span>|</span>
+            <a href="{{ route('dashboard.user.profile') }}" class="{{ request()->routeIs('dashboard.user.profile*') ? 'active' : '' }}">Profil</a>
+        @else
+            <!-- GUEST -->
+            <a href="{{ route('welcome') }}" class="{{ request()->routeIs('welcome') ? 'active' : '' }}">Beranda</a>
 
-        <a href="{{ route('dashboard.user.profile') }}" class="{{ request()->routeIs('dashboard.user.profile', 'dashboard.user.profile-password', 'dashboard.user.profile-edit', 'dashboard.user.profile-edit-password') ? 'active' : '' }}">
-            Profil
-        </a>
+            <a href="{{ route('guest.katalogpaketwisata') }}" class="{{ request()->routeIs('guest.katalogpaketwisata*') ? 'active' : '' }}">Paket Wisata</a>
+
+            <a href="{{ route('welcome') }}#tentang">Tentang</a>
+            <a href="{{ route('welcome') }}#kontak">Kontak</a>
+        @endauth
     </nav>
 
-     <div class="nav-action">
-        @hasSection('navbar_action')
-            @yield('navbar_action')
+    <div class="nav-right">
+        @auth
+            <button onclick="bukaModalLogout()" class="btn-nav-login">Keluar</button>
         @else
-           
-
-
-                <button type="button" onclick="bukaModalLogout()" class="btn-logout">Keluar</button>
-            </form>
-        @endif
+            <a href="{{ route('login') }}" class="btn-nav-login">Masuk</a>
+            <a href="{{ route('register') }}" class="btn-nav-register">Daftar</a>
+        @endauth
     </div>
-    
-
 </header>
 
 <script>

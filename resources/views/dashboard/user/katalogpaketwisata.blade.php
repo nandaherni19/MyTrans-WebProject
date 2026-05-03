@@ -7,46 +7,101 @@
 @endpush
 
 @section('content')
-    <!-- HERO TITLE -->
-    <section class="hero-title">
-        <h1>Katalog Paket Wisata</h1>
-        <p>Temukan Paket Wisata Impian Anda!</p>
-    </section>
+<section class="hero-title">
+    <h1>Katalog Paket Wisata</h1>
+    <p>Temukan Paket Wisata Impian Anda!</p>
+</section>
 
-    <!-- SEARCH -->
-    <section class="search-section">
-        <div class="search-box">
-            <input type="text" id="searchPaket" placeholder="Cari paket wisata...">
+<section class="search-section">
+    <div class="search-box">
+        <input type="text" id="searchPaket" placeholder="Cari paket wisata...">
+    </div>
 
-        </div>
+    <a href="{{ route('dashboard.user.requestbooking') }}" class="btn-request">Request Booking</a>
+</section>
 
-        <a href="{{ route('dashboard.user.requestbooking') }}" class="btn-request">Request Booking</a>
-    </section>
-
-    <!-- CARD LIST -->
-  <section class="catalog-section">
+<section class="catalog-section">
     <div class="catalog-grid">
 
         @forelse($pakets as $paket)
             <div class="catalog-card paket-card"
                 data-nama="{{ strtolower($paket->nama_paket) }}"
-                data-lokasi="{{ strtolower($paket->trayek->kotaTujuan->nama_kota ?? '-') }}">
+                data-lokasi="{{ strtolower($paket->kota->nama_kota ?? '-') }}">
+
                 <img 
                     src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
                     alt="{{ $paket->nama_paket }}"
                 >
 
                 <div class="catalog-body">
-                    <h3>{{ $paket->nama_paket }}</h3>
-  
-                    <p class="location">📍 {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}
-                            </p>
+                    <div class="paket-title-row">
+                        <h3>{{ $paket->nama_paket }}</h3>
 
-                    <p>Sisa Kuota {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</p>
-                    <p class="label-harga">Harga Mulai Dari</p>
+                        <span class="tipe-badge 
+                            {{ $paket->tipe === 'open_trip' ? 'open-trip' : 'paket-wisata' }}">
+                            {{ $paket->tipe === 'open_trip' ? 'Open Trip' : 'Paket Wisata' }}
+                        </span>
+                    </div>
+
+                    <p class="location">
+                        📍 {{ $paket->kota->nama_kota ?? '-' }}
+                        @if($paket->kota && $paket->kota->provinsi)
+                            , {{ $paket->kota->provinsi->nama_provinsi }}
+                        @endif
+                    </p>
+
+                    {{-- TAMBAHKAN INI --}}
+                    @if($paket->kotaLayanan->isNotEmpty())
+                        <p class="location">
+                            🚐 Kota Dilayani: {{ $paket->kotaLayanan->pluck('nama_kota')->join(', ') }}
+                        </p>
+                    @endif
+
+                    @if($paket->tipe === 'open_trip')
+                        <div class="paket-info-row">
+                            <span class="paket-info-label">Tanggal Berangkat</span>
+                            <span class="paket-info-value">
+                                {{ $paket->tanggal_berangkat ? \Carbon\Carbon::parse($paket->tanggal_berangkat)->format('d.m.Y') : '-' }}
+                            </span>
+                        </div>
+
+                        <div class="paket-info-row">
+                            <span class="paket-info-label">Tanggal Kembali</span>
+                            <span class="paket-info-value">
+                                {{ $paket->tanggal_kembali ? \Carbon\Carbon::parse($paket->tanggal_kembali)->format('d.m.Y') : '-' }}
+                            </span>
+                        </div>
+
+                        <div class="paket-info-row">
+                            <span class="paket-info-label">Sisa Kuota</span>
+                            <span class="paket-info-value">
+                                {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}
+                            </span>
+                        </div>
+                    @else
+                        <div class="paket-info-row">
+                            <span class="paket-info-label">Tanggal</span>
+                            <span class="paket-info-value">Request</span>
+                        </div>
+
+                        <div class="paket-info-row">
+                            <span class="paket-info-label">Minimal Peserta</span>
+                            <span class="paket-info-value">
+                                {{ $paket->min_peserta ?? '-' }} orang
+                            </span>
+                        </div>
+                    @endif
+
+                    <div class="paket-info-row">
+                        <span class="paket-info-label">Durasi</span>
+                        <span class="paket-info-value">
+                            {{ $paket->durasi }} hari
+                        </span>
+                    </div>
 
                     <div class="card-footer">
                         <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
+
                         @auth
                             <a href="{{ route('dashboard.user.detailpaket', $paket->id_paket) }}">
                                 Lihat Detail
@@ -71,48 +126,6 @@
         Paket wisata tidak ditemukan.
     </p>
 </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-left">
-                <div class="footer-brand">
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
-                    <h3>MY Trans Nusa Pariwisata</h3>
-                </div>
-
-                <p class="footer-description">
-                    MyTransNusaPariwisata menyediakan layanan paket wisata dan sewa kendaraan
-                    untuk membantu Anda menjelajahi berbagai destinasi dengan nyaman dan aman.
-                    Dengan armada yang nyaman dan driver berpengalaman, kami berkomitmen memberikan
-                    perjalanan yang menyenangkan dan berkesan.
-                </p>
-            </div>
-
-            <div class="footer-divider"></div>
-
-            <div class="footer-right">
-                <h3>Hubungi Kami</h3>
-
-                <div class="footer-contact-list">
-                    <div class="contact-col">
-                        <p>📞 085664837559</p>
-                        <p>📷 @myTranss_</p>
-                        <p>🎵 @Pariwisataku_</p>
-                    </div>
-
-                    <div class="contact-col">
-                        <p>📍 Alamat Magetan, Jawa Timur, Indonesia</p>
-                        <p>📧 Email mytransnusa@gmail.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            © 2026 <strong>MyTransPariwisata</strong>. All rights reserved.
-        </div>
-    </footer>
 @endsection
 
 @push('scripts')
@@ -138,13 +151,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        if (visibleCount === 0) {
-            emptyMessage.style.display = 'block';
-        } else {
-            emptyMessage.style.display = 'none';
-        }
+        emptyMessage.style.display = visibleCount === 0 ? 'block' : 'none';
     });
 });
 </script>
 @endpush
-

@@ -47,7 +47,8 @@ body {
 .brand-logo {
     width: 40px;
     height: 40px;
-    object-fit: contain;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .brand-text h2 {
@@ -66,27 +67,61 @@ body {
 }
 
 .sidebar-menu a {
-    display: block;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
     padding: 10px 16px;
-    margin: 4px 10px;
-    border-radius: 8px;
+    margin: 6px 10px;
+    border-radius: 10px;
 
     font-size: 13px;
     color: #111;
     text-decoration: none;
 
-    transition: 0.2s;
+    transition: all 0.25s ease;
 }
 
+/* HOVER */
 .sidebar-menu a:hover {
-    background: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.7);
+    transform: translateX(4px);
 }
 
 /* ACTIVE */
 .sidebar-menu a.active {
-    background: #2f80ed;
-    color: white;
+    background: linear-gradient(135deg, #2f80ed, #56ccf2);
+    color: #fff;
     font-weight: 600;
+
+    box-shadow: 0 6px 16px rgba(47,128,237,0.3);
+    transform: translateX(6px);
+}
+
+/* GARIS KIRI ACTIVE */
+.sidebar-menu a.active::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 4px;
+    height: 60%;
+    border-radius: 4px;
+
+    background: #2f80ed;
+}
+
+/* ICON (kalau pakai) */
+.sidebar-menu a i {
+    font-size: 14px;
+}
+
+.sidebar-menu a,
+.sidebar-menu a::before {
+    transition: all 0.25s ease;
 }
 
 /* BOTTOM */
@@ -100,6 +135,7 @@ body {
 .sidebar-bottom form {
     margin: 0;
 }
+
 
 .menu-profile,
 .menu-logout {
@@ -123,9 +159,31 @@ body {
 .menu-logout {
     color: #ef4444;
 }
+
 .menu-logout {
     appearance: none;
     -webkit-appearance: none;
+}
+
+.menu-profile.active-bottom {
+    background: linear-gradient(135deg, #2f80ed, #56ccf2);
+    color: white;
+    font-weight: 600;
+
+    box-shadow: 0 6px 16px rgba(47,128,237,0.3);
+}
+
+/* garis kiri */
+.menu-profile.active-bottom::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    border-radius: 4px;
+    background: #2f80ed;
 }
 
 /* CONTENT */
@@ -134,7 +192,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* overflow: hidden; */
     margin-left: 240px;
     margin-top: 0;
     width: calc(100% - 240px);

@@ -167,6 +167,9 @@ body {
     font-size: 14px;
     font-weight: 600;
     border-radius: 999px;
+    border: none;          
+    outline: none;         
+    box-shadow: none;     
 }
 
 .tab-btn.active {

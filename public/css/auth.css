@@ -29,8 +29,11 @@ body {
 }
 
 .logo-top img {
-    width: 65px;
+    width: 90px;
+    height: 90px;
     margin-bottom: 8px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .logo-top h1 {

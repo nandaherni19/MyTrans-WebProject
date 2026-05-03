@@ -9,6 +9,7 @@
 <div class="content-header">
     <div>
         <h1>Kelola Pengguna</h1>
+        <p>Kelola Pengguna dan Perbarui Data Pengguna</p>
     </div>
 
     <div class="header-actions">
@@ -88,6 +89,15 @@
     <div class="modal-box">
         <h2>Tambah Pengguna</h2>
 
+        {{-- TAMBAHKAN INI --}}
+        @if($errors->any())
+            <div style="background:#fee2e2; color:#dc2626; padding:10px; border-radius:6px; margin-bottom:12px;">
+                @foreach($errors->all() as $error)
+                    <p style="margin:2px 0;">• {{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('dashboard.superadmin.kelola-pengguna.store') }}">
             @csrf
             <div class="form-group">
@@ -143,13 +153,6 @@
             </div>
         </form>
     </div>
-    @if($errors->any())
-    <div style="color:red">
-        @foreach($errors->all() as $error)
-            <p>{{ $error }}</p>
-        @endforeach
-    </div>
-@endif
 </div>
 
 
@@ -242,6 +245,12 @@
 
 @push('scripts')
 <script>
+    @if($errors->any() && old('nama'))
+        document.addEventListener('DOMContentLoaded', function () {
+            openTambah();
+        });
+    @endif
+
     function togglePassword(icon) {
     const input = icon.previousElementSibling;
 

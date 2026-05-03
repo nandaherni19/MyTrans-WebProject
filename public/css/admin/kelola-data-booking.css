@@ -1,6 +1,3 @@
-
-
-/* ================= CONTENT ================= */
 /* TOP BAR */
 .booking-topbar {
     display: flex;
@@ -241,6 +238,24 @@
     outline: none;
     color: #111827;
 }
+.selected-kendaraan-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f3f4f6;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.btn-remove-kendaraan {
+    border: none;
+    background: #ef4444;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
 
 /* BUTTON */
 .form-action {
@@ -383,4 +398,23 @@
     font-size: 13px;
     font-weight: 500;
     cursor: default; /* biar nonaktif */
+}
+
+/* ================= SCROLL TABLE ================= */
+.scrollable-card {
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+}
+
+.scrollable-card::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-card::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.scrollable-card::-webkit-scrollbar-track {
+    background: transparent;
 }

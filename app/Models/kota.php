@@ -13,6 +13,7 @@ class Kota extends Model
     protected $fillable = [
         'nama_kota',
         'id_provinsi',
+        'is_area_cabang',
     ];
 
     public function provinsi()
@@ -20,13 +21,18 @@ class Kota extends Model
         return $this->belongsTo(Provinsi::class, 'id_provinsi', 'id_provinsi');
     }
 
-    public function trayekAsal()
+    public function paketWisata()
     {
-        return $this->hasMany(Trayek::class, 'id_kota_asal', 'id_kota');
+        return $this->hasMany(PaketWisata::class, 'id_kota', 'id_kota');
     }
 
-    public function trayekTujuan()
+    public function paketLayanan()
     {
-        return $this->hasMany(Trayek::class, 'id_kota_tujuan', 'id_kota');
+        return $this->belongsToMany(
+            PaketWisata::class,
+            'tr_paket_kota',
+            'id_kota',
+            'id_paket'
+        );
     }
 }

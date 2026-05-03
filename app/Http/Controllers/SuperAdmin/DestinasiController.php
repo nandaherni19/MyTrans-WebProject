@@ -98,12 +98,13 @@ class DestinasiController extends Controller
     public function destroyKota($id)
     {
         $kota = Kota::findOrFail($id);
-        $trayekCount = $kota->trayekAsal()->count() + $kota->trayekTujuan()->count();
+        $paketCount = $kota->paketWisata()->count();
 
-        if ($trayekCount > 0) {
-            return back()->with('error', 'Kota tidak dapat dihapus karena masih digunakan oleh ' . $trayekCount . ' trayek. Hapus trayek terkait terlebih dahulu.');
-        }
-        $kota->delete();
+            if ($paketCount > 0) {
+                return back()->with('error', 'Kota tidak dapat dihapus karena masih digunakan oleh paket wisata!');
+            }
+
+            $kota->delete();
 
         return back()->with('success', 'Kota berhasil dihapus.');
     }

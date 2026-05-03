@@ -1,113 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyTrans Nusa</title>
+@extends('layouts.guest')
 
-    <link rel="stylesheet" href="{{ asset('css/user/landing.css') }}">
-</head>
-<body>
+@section('title', 'MyTrans Nusa Pariwisata')
 
-    <!-- HEADER -->
-    <header class="navbar">
-        <div class="nav-logo">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo MyTrans">
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/home.css') }}">
+@endpush
+
+@section('content')
+
+<!-- HERO -->
+<section id="beranda" class="hero">
+    <img src="{{ asset('img/hero-bus.png') }}" alt="Bus Hero" class="hero-bg">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div class="hero-badge">Est. 2024 &nbsp;·&nbsp; Magetan, Jawa Timur</div>
+        <h1>Jelajahi Indonesia<br>dengan <em>Perjalanan</em><br>yang Berkesan</h1>
+        <p>Temukan paket wisata terbaik dengan harga terjangkau, armada nyaman, dan pelayanan yang terpercaya bersama MyTrans Nusa Pariwisata.</p>
+        <div class="hero-actions">
+            <a href="{{ route('guest.katalogpaketwisata') }}" class="btn-hero-primary">
+                🗺️ Lihat Paket Wisata
+            </a>
+            <a href="/login" class="btn-hero-secondary">Request Perjalanan</a>
         </div>
-
-        <nav class="nav-menu">
-            <a href="#landingpage" class="active">Beranda</a>
-            <span>|</span>
-            <a href="{{ route('guest.katalogpaketwisata') }}">Paket Wisata</a>
-            <span>|</span>
-            <a href="#tentangkami" >Tentang Kami</a>
-            <span>|</span>
-            <a href="#kontak">Kontak</a>
-        </nav>
-
-    <div class="nav-right">
-        <a href="/login" class="btn-login">Masuk</a>
-        <a href="/register" class="btn-register">Daftar</a>
     </div>
-</header>
 
-<section id="landingpage" class="hero">
-        <img src="{{ asset('img/hero-bus.png') }}" alt="Bus Hero" class="hero-bg" width="100%" height="100%">
-    </section>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <span class="stat-icon">🚌</span>
+            <div>
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Armada Kendaraan</div>
+            </div>
+        </div>
+        <div class="hero-stat">
+            <span class="stat-icon">📍</span>
+            <div>
+                <div class="stat-number">100+</div>
+                <div class="stat-label">Destinasi Wisata</div>
+            </div>
+        </div>
+        <div class="hero-stat">
+            <span class="stat-icon">😊</span>
+            <div>
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Pelanggan Puas</div>
+            </div>
+        </div>
+        <div class="hero-stat">
+            <span class="stat-icon">⭐</span>
+            <div>
+                <div class="stat-number">4.9</div>
+                <div class="stat-label">Rating Pelanggan</div>
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- STORY -->
+<section id="tentang" class="story-section">
+    <div>
+        <div class="section-label">Tentang Kami</div>
+        <h2 class="section-title">Perjalanan Dimulai dari<br>Kepercayaan Anda</h2>
+        <p class="section-body">
+            MyTrans Nusa Pariwisata hadir sejak 2024 dengan misi menyediakan layanan wisata yang nyaman, aman, dan terjangkau untuk masyarakat Indonesia.
+        </p>
+        <p class="section-body">
+            Dengan armada yang terawat, driver berpengalaman, dan tim yang berdedikasi, kami berkomitmen memberikan pengalaman perjalanan yang tak terlupakan ke berbagai destinasi terbaik di Indonesia.
+        </p>
 
+        <div class="story-metrics">
+            <div class="metric-card">
+                <div class="metric-number">98%</div>
+                <div class="metric-label">Tingkat Kepuasan Pelanggan</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">500+</div>
+                <div class="metric-label">Trip Sukses Diselesaikan</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="story-images">
+        <img src="{{ asset('img/hero-bus.png') }}" alt="Bus MyTrans" class="story-img" style="object-position: center;">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80" alt="Destinasi" class="story-img">
+        <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&q=80" alt="Perjalanan" class="story-img">
+    </div>
+</section>
+
+<!-- WHY CHOOSE -->
+<section class="why-section">
+    <div class="section-label">Keunggulan Kami</div>
+    <h2 class="section-title">Kenapa Memilih MyTrans?</h2>
+    <p class="why-subtitle">Kami menyediakan layanan terbaik untuk setiap perjalanan Anda</p>
+
+    <div class="why-grid">
+        <div class="why-card">
+            <div class="why-icon">📍</div>
+            <h3>Berbagai Destinasi</h3>
+            <p>Jelajahi destinasi wisata terbaik di seluruh Indonesia dengan panduan lokal yang berpengalaman.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon">🚌</div>
+            <h3>Kendaraan Premium</h3>
+            <p>Armada pariwisata modern dengan AC, kursi nyaman, dan fasilitas lengkap untuk kenyamanan perjalanan Anda.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon">🛡️</div>
+            <h3>Aman & Terpercaya</h3>
+            <p>Driver profesional berpengalaman dan terlatih, dengan track record keselamatan yang sangat baik.</p>
+        </div>
+    </div>
+</section>
+
+<!-- PAKET POPULER -->
 <section id="paketwisata" class="paket-section">
-    <h2 class="section-title">Paket Wisata Populer</h2>
-    <p class="section-subtitle">Pilihan paket wisata terbaru untuk perjalanan Anda</p>
+    <div class="paket-header">
+        <div>
+            <div class="section-label">Pilihan Terbaik</div>
+            <h2 class="section-title">Paket Wisata Populer</h2>
+        </div>
+        <a href="{{ route('guest.katalogpaketwisata') }}" class="btn-lihat-semua">Lihat Semua →</a>
+    </div>
 
     <div class="catalog-grid">
         @forelse($paketTerbaru as $paket)
-            <div class="catalog-card">
-                <img 
-                    src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" 
-                    alt="{{ $paket->nama_paket }}"
-                >
-
-                <div class="catalog-body">
+        <div class="catalog-card">
+            <img src="{{ $paket->gambar ? asset('storage/' . $paket->gambar) : asset('img/pantai.png') }}" alt="{{ $paket->nama_paket }}">
+            <div class="catalog-body">
+                <div class="paket-title-row">
                     <h3>{{ $paket->nama_paket }}</h3>
-                    <p class="location">📍 {{ $paket->trayek->kotaTujuan->nama_kota ?? '-' }}</p>
-                   <p>Sisa Kuota {{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</p>
-                    <p class="label-harga">Harga Mulai Dari</p>
+                    <span class="tipe-badge {{ $paket->tipe === 'open_trip' ? 'open-trip' : 'paket-wisata' }}">
+                        {{ $paket->tipe === 'open_trip' ? 'Open Trip' : 'Paket Wisata' }}
+                    </span>
+                </div>
 
-                    <div class="card-footer">
-                        <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
-                        <a href="{{ route('guest.detailpaket', $paket->id_paket) }}">
-    Lihat Detail
-</a>
+                <p class="location">📍 {{ $paket->kota->nama_kota ?? '-' }}@if($paket->kota && $paket->kota->provinsi), {{ $paket->kota->provinsi->nama_provinsi }}@endif</p>
+
+                @if($paket->kotaLayanan->isNotEmpty())
+                    <p class="location">🚐 {{ $paket->kotaLayanan->pluck('nama_kota')->join(', ') }}</p>
+                @endif
+
+                @if($paket->tipe === 'open_trip')
+                    <div class="paket-info-row">
+                        <span class="paket-info-label">Berangkat</span>
+                        <span class="paket-info-value">{{ $paket->tanggal_berangkat ? \Carbon\Carbon::parse($paket->tanggal_berangkat)->format('d M Y') : '-' }}</span>
                     </div>
+                    <div class="paket-info-row">
+                        <span class="paket-info-label">Sisa Kuota</span>
+                        <span class="paket-info-value">{{ $paket->sisa_kursi }}/{{ $paket->kapasitas }}</span>
+                    </div>
+                @else
+                    <div class="paket-info-row">
+                        <span class="paket-info-label">Tanggal</span>
+                        <span class="paket-info-value">Request</span>
+                    </div>
+                    <div class="paket-info-row">
+                        <span class="paket-info-label">Min. Peserta</span>
+                        <span class="paket-info-value">{{ $paket->min_peserta ?? '-' }} orang</span>
+                    </div>
+                @endif
+
+                <div class="paket-info-row">
+                    <span class="paket-info-label">Durasi</span>
+                    <span class="paket-info-value">{{ $paket->durasi }} hari</span>
+                </div>
+
+                <div class="card-footer">
+                    <strong>Rp {{ number_format($paket->harga, 0, ',', '.') }}</strong>
+                    <a href="{{ route('guest.detailpaket', $paket->id_paket) }}">Lihat Detail</a>
                 </div>
             </div>
+        </div>
         @empty
-            <div class="empty-box">
-                <h3>Belum ada data paket wisata</h3>
-            </div>
+        <div class="empty-box"><h3>Belum ada paket wisata</h3></div>
         @endforelse
     </div>
 </section>
 
-
-<section id="tentangkami" class="alasan-section">
-    <h2 class="section-title">Kenapa Memilih Travel Nusantara?</h2>
-    <p class="section-subtitle">Kami menyediakan layanan terbaik untuk perjalanan Anda</p>
-
-    <div class="alasan-grid">
-        <div class="alasan-card">
-            <div class="icon-circle">📍</div>
-            <h3>Berbagai Destinasi</h3>
-            <p>Jelajahi destinasi wisata terbaik di seluruh Indonesia</p>
-        </div>
-
-        <div class="alasan-card">
-            <div class="icon-circle">🚌</div>
-            <h3>Kendaraan Nyaman</h3>
-            <p>Armada pariwisata dengan fasilitas lengkap</p>
-        </div>
-
-        <div class="alasan-card">
-            <div class="icon-circle">🛡️</div>
-            <h3>Aman & Terpercaya</h3>
-            <p>Perjalanan aman dengan pelayanan yang terpercaya</p>
-        </div>
+<!-- CTA -->
+<section class="cta-section">
+    <h2>Siap Memulai Petualangan Anda?</h2>
+    <p>Booking sekarang dan dapatkan harga terbaik untuk liburan impian Anda bersama MyTrans Nusa.</p>
+    <div class="cta-buttons">
+        <a href="{{ route('login') }}" class="btn-cta-primary">🎟️ Booking Sekarang</a>
+        <a href="{{ route('login') }}" class="btn-cta-outline">Request Wisata</a>
     </div>
 </section>
 
- <section class="cta-section">
-        <h2>Siap Memulai Pertualangan Anda?</h2>
-        <p>Booking Sekarang Dan Dapatkan Harga Terbaik Untuk Liburan Impian Anda</p>
-
-        <div class="cta-buttons">
-            <a href="{{ route('login') }}" class="btn-cta-white">Booking Sekarang</a>
-            <a href="{{ route('login') }}" class="btn-cta-white">Request Wisata</a>
-        </div>
-    </section>
-
-
-    <footer id="kontak" class="footer">
+<!-- FOOTER -->
+    <footer class="footer">
         <div class="footer-container">
             <div class="footer-left">
                 <div class="footer-brand">
@@ -148,34 +230,27 @@
         </div>
     </footer>
 
+@endsection
+
+@push('scripts')
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+const sections = document.querySelectorAll("section[id], footer[id]");
+const navLinks = document.querySelectorAll(".nav-menu a");
 
-    const sections = document.querySelectorAll("section[id], footer[id]");
-    const navLinks = document.querySelectorAll(".nav-menu a");
+window.addEventListener("scroll", () => {
+    let scrollY = window.scrollY + window.innerHeight; // 👈 penting
 
-    window.addEventListener("scroll", () => {
-        let scrollY = window.scrollY;
+    sections.forEach(section => {
+        const top = section.offsetTop;
+        const id = section.getAttribute("id");
 
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - 120;
-            const sectionHeight = section.offsetHeight;
-            const sectionId = section.getAttribute("id");
+        if (scrollY >= top + 100) {
+            navLinks.forEach(l => l.classList.remove("active"));
 
-            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-
-                navLinks.forEach(link => link.classList.remove("active"));
-
-                const activeLink = document.querySelector(`.nav-menu a[href="#${sectionId}"]`);
-                if (activeLink) {
-                    activeLink.classList.add("active");
-                }
-            }
-        });
+            const active = document.querySelector(`.nav-menu a[href*="#${id}"]`);
+            if (active) active.classList.add("active");
+        }
     });
-
 });
 </script>
-
-</body>
-</html>
+@endpush

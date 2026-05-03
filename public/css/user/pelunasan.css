@@ -1,0 +1,255 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f7fb;
+}
+
+.pelunasan-page {
+    width: 100%;
+    max-width: 860px;
+    margin: 55px auto;
+    padding: 0 20px;
+}
+
+.page-title {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.pelunasan-card {
+    background: white;
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.04);
+}
+
+.pelunasan-card h2 {
+    font-size: 26px;
+    margin-bottom: 12px;
+}
+
+.payment-summary {
+    margin-top: 18px;
+    display: grid;
+    gap: 0;
+    max-width: 100%;
+    background: #f7f8fa;
+    border-radius: 18px;
+    padding: 18px 22px;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #e2e5ea;
+}
+
+.payment-row:last-child {
+    border-bottom: none;
+}
+
+.payment-row strong {
+    font-weight: 800;
+    text-align: right;
+}
+
+.sisa-highlight {
+    color: #e00000;
+    font-weight: 800;
+}
+
+.actions {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.btn-primary,
+.btn-outline {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    font-size: 16px;
+}
+
+.btn-primary {
+    border: none;
+    background: #2f80ed;
+    color: white;
+    display: flex;
+    align-items: center;     
+    justify-content: center; 
+    gap: 8px;
+}
+
+.btn-primary i {
+    font-size: 22px;
+}
+
+.btn-primary:hover {
+    background: #1c5ed6;
+}
+
+.btn-outline {
+    border: 1.5px solid #2f80ed;
+    background: white;
+    color: #2f80ed;
+}
+
+.btn-outline:hover {
+    background: #eef5ff;
+}
+
+.payment-choice.active {
+    background: #2f80ed;
+    color: white;
+    border: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    width: 460px;
+    max-width: 92%;
+    padding: 34px 28px 30px;
+    border-radius: 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+}
+
+.close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-size: 26px;
+    cursor: pointer;
+    color: #334155;
+}
+
+.modal-icon {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #e8f1ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+}
+
+.modal-content h3 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #17233c;
+}
+
+.modal-content p {
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.cash-info-box {
+    margin: 22px 0;
+    padding: 18px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: #f8fbff;
+    text-align: left;
+}
+
+.cash-info-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+}
+
+.cash-info-item:not(:last-child) {
+    border-bottom: 1px solid #dbeafe;
+}
+
+.cash-info-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #e0efff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2f80ed;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.cash-info-text strong {
+    display: block;
+    font-size: 15px;
+    color: #17233c;
+    margin-bottom: 4px;
+}
+
+.cash-info-text span {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.modal-content .btn-primary {
+    margin-top: 6px;
+    border-radius: 9px;
+    padding: 15px 18px;
+    font-size: 15px;
+}
+
+.qris-image {
+    width: 260px;
+    max-width: 100%;
+    margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+    .pelunasan-page {
+        max-width: 100%;
+        margin: 35px auto;
+    }
+
+    .page-title {
+        font-size: 30px;
+    }
+
+    .pelunasan-card {
+        padding: 24px;
+    }
+
+    .payment-row {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .actions {
+        width: 100%;
+    }
+}

@@ -16,8 +16,12 @@
 @endphp
 
 @section('content')
-<div class="page-top">
-    <h1>Kelola Lokasi Wisata</h1>
+<div class="lokasi-topbar">
+<div class="lokasi-title">
+                <h1>Kelola Lokasi Wisata</h1>
+                <p>Kelola Lokasi Wisata dan Perbarui Lokasi Wisata</p>
+            </div>
+
 </div>
 
 <div class="tabs">
@@ -25,6 +29,7 @@
     <span>|</span>
     <a href="{{ url('/dashboard/superadmin/kelola-destinasi/kota') }}" class="{{ $isKota ? 'active' : '' }}">Kota</a>
 </div>
+
 
 @if(session('success'))
     <div class="alert-success">

@@ -14,32 +14,49 @@
         </div>
 
         <nav class="sidebar-menu">
-            <a href="{{ route('dashboard.beranda-admin') }}">Dashboard</a>
+            <a href="{{ route('dashboard.beranda-admin') }}"
+                class="{{ request()->routeIs('dashboard.beranda-admin') ? 'active' : '' }}">
+                Dashboard
+                </a>
             @if(Auth::user()->role === 'superadmin')
-            <a href="{{ route('dashboard.superadmin.kelola-pengguna') }}">Kelola pengguna</a>
+            <a href="{{ route('dashboard.superadmin.kelola-pengguna') }}"
+                class="{{ request()->routeIs('dashboard.superadmin.kelola-pengguna') ? 'active' : '' }}">
+                Kelola pengguna
+            </a>
             @endif
-            <a href="{{ route('dashboard.superadmin.kelola-paket-wisata') }}">Kelola paket wisata</a>
-            <a href="{{ route('dashboard.superadmin.kelola-request') }}">Kelola request wisata</a>
-            <a href="{{ route('dashboard.superadmin.kelola-destinasi') }}">Kelola Lokasi Wisata</a>
-            <a href="{{ route('dashboard.superadmin.kelola-kendaraan') }}">Kelola Kendaraan</a>
-            <a href="{{ route('dashboard.superadmin.kelola-trayek') }}">Kelola Trayek</a>
-            <a href="{{ route('dashboard.superadmin.kelola-data-booking') }}">Data Booking</a>
-            <a href="{{ route('dashboard.superadmin.kelola-laporan-transaksi') }}">Laporan</a>
+            <a href="{{ route('dashboard.superadmin.kelola-paket-wisata') }}"
+                class="{{ request()->routeIs('dashboard.superadmin.kelola-paket-wisata') ? 'active' : '' }}">
+                Kelola paket wisata
+            </a>
+            <a href="{{ route('dashboard.superadmin.kelola-destinasi') }}"
+                class="{{ request()->routeIs('dashboard.superadmin.kelola-destinasi') ? 'active' : '' }}">
+                Kelola Lokasi Wisata
+            </a>
+            <a href="{{ route('dashboard.superadmin.kelola-kendaraan') }}"
+                class="{{ request()->routeIs('dashboard.superadmin.kelola-kendaraan') ? 'active' : '' }}">
+                Kelola Kendaraan
+            </a>
+            <a href="{{ route('dashboard.superadmin.kelola-data-booking') }}"
+                class="{{ request()->routeIs('dashboard.superadmin.kelola-data-booking') ? 'active' : '' }}">
+                Data Booking
+            </a>
+            <a href="{{ route('dashboard.superadmin.kelola-laporan-transaksi') }}"
+                class="{{ request()->routeIs('dashboard.superadmin.kelola-laporan-transaksi') ? 'active' : '' }}">
+                Laporan
+            </a>
         </nav>
     </div>
 
     <div class="sidebar-bottom">
-        <a href="{{ route('dashboard.superadmin.profile') }}" class="menu-profile">
+        <a href="{{ route('dashboard.superadmin.profile') }}"
+            class="menu-profile {{ request()->routeIs('dashboard.superadmin.profile') ? 'active-bottom' : '' }}">
             👤 Profil Saya
-        </a>
+            </a>
 
-        <!-- <form action="{{ route('logout') }}" method="POST">
-            @csrf -->
             <button class="menu-logout" type="button" onclick="bukaModalLogout()">
                 ⛔ Keluar
             </button>
-        <!-- </form> -->
-    </div>
+        </div>
 </aside>
 
 <!-- overlay gelap -->

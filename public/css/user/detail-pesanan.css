@@ -123,11 +123,18 @@ h3 {
 
 /* BUTTON */
 .actions {
-  margin-top: 35px !important;
-  padding-top: 10px;
+  margin-top: 25px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actions a,
+.actions button {
+  text-decoration: none;
+  width: auto;
 }
 
 .btn-outline {
@@ -164,3 +171,98 @@ h3 {
   background: #1c5ed6;
 }
 
+.btn-whatsapp {
+  background: #22c55e;
+}
+
+.btn-whatsapp:hover {
+  background: #16a34a;
+}
+
+.btn-cancel {
+  background: #ef4444;
+}
+
+.btn-cancel:hover {
+  background: #dc2626;
+}
+
+.payment-note {
+  display: block;
+  margin-top: 10px;
+  color: #f59e0b;
+  text-align: right;
+}
+
+@media print {
+  
+  html, body {
+    zoom: 0.9;
+  }
+
+  body {
+    background: #fff !important;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .navbar,
+  .actions,
+  button,
+  .btn-primary,
+  .btn-outline {
+    display: none !important;
+  }
+
+  .page {
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  .header-card {
+    background: #2f80ed !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border-radius: 12px !important;
+    padding: 22px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    margin-top: 10px !important;
+    page-break-inside: avoid;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 18px !important;
+  }
+
+  .divider {
+    background: #2f80ed !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .duration {
+    background: #eef4ff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .price-box div,
+  .total {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 20mm 14mm 20mm 14mm;
+  }
+}

@@ -46,6 +46,7 @@ class UserManagementController extends Controller
             'password' => bcrypt($request->password),
             'no_hp' => $request->no_hp,
             'role' => $request->role,
+            'is_verified' => true, // ← tambah ini
         ]);
 
         return redirect()->route('dashboard.superadmin.kelola-pengguna')

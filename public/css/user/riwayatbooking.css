@@ -51,6 +51,8 @@ body {
     border-radius: 12px;
     font-size: 14px;
     font-weight: 700;
+     text-decoration: none;
+    display: inline-block; 
 }
 
 .filter-tab.active {
@@ -355,6 +357,40 @@ body {
     line-height: 1.35;
     min-height: 106px;
     background: #fff;
+}
+
+.booking-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.detail-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.detail-primary {
+  background: #2f80ed;
+  color: white;
+}
+
+.detail-outline {
+  background: white;
+  color: #2f80ed;
+  border: 1.5px solid #2f80ed;
+}
+
+.detail-primary:hover {
+  background: #1c5ed6;
+}
+
+.detail-outline:hover {
+  background: #eef5ff;
 }
 
 /* RESPONSIVE */

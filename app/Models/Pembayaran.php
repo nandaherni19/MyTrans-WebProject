@@ -8,17 +8,35 @@ class Pembayaran extends Model
 {
     protected $table = 'tr_pembayaran';
     protected $primaryKey = 'id_pembayaran';
+    public $timestamps = false;
 
     protected $fillable = [
-        'jenis_pembayaran',
+        'id_booking',
         'jumlah_bayar',
         'tanggal_bayar',
-        'status_booking', // harus e  d ganti status pembayaran ga si, enum e pending, dp. lunas, gagal
-        'id_booking'
+        'metode_pembayaran',
+        'transaction_status',
+        'kode_pembayaran',
+        'jumlah_refund',
+        'status_refund',
+        'created_at',
+    ];
+
+    protected $casts = [
+        'id_booking'    => 'integer',
+        'jumlah_bayar'  => 'integer',
+        'tanggal_bayar' => 'datetime',
+        'created_at'    => 'datetime',
+        
     ];
 
     public function booking()
     {
-        return $this->belongsTo(Booking::class, 'id_booking');
+        return $this->belongsTo(Booking::class, 'id_booking', 'id_booking');
     }
+
+    public function paymentGateway()
+{
+    return $this->hasOne(PaymentGateway::class, 'id_pembayaran', 'id_pembayaran');
+}
 }

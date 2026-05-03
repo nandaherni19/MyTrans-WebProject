@@ -6,21 +6,27 @@
 @endpush
 
 @section('content')
-    <div class="content-header">
-        <div>
+    <div class="kendaraan-topbar">
+        <div class="kendaraan-title">
             <h1>Kelola Kendaraan</h1>
+            <p>Kelola dan Konfirmasi Kendaraan</p>
         </div>
+        
 
         <div class="header-actions">
             <button type="button" class="btn-primary" onclick="openTambah()">
-            <i class="fa-solid fa-plus"></i>    
-            <span>Tambah Kendaraan</span>
-        </button>
+                <i class="fa-solid fa-plus"></i>    
+                <span>Tambah Kendaraan</span>
+            </button>
         </div>
     </div>
 
     @if(session('success'))
         <div class="alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert-error">{{ session('error') }}</div>
     @endif
 
     <div class="main-scroll">
@@ -117,7 +123,7 @@
 
                 <div class="tambah-group">
                     <label>Kapasitas <span>*</span></label>
-                    <input type="number" name="kapasitas" min="16" required>
+                    <input type="number" name="kapasitas" min="6" required>
                 </div>
 
                 <div class="tambah-group">
