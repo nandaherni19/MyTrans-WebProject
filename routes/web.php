@@ -292,14 +292,6 @@ Route::prefix('/dashboard/superadmin/kelola-paket-wisata')->controller(PaketWisa
     Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-paket-wisata.delete');
 });
 
-// DASHBOARD SUPERADMIN - KELOLA REQUEST WISATA
-Route::prefix('/dashboard/superadmin/kelola-request')->middleware(['auth', 'role:admin,superadmin'])->group(function () {
-    Route::get('/', [RequestWisataController::class, 'index'])->name('dashboard.superadmin.kelola-request');
-    Route::put('/update/{id}', [RequestWisataController::class, 'update'])->name('dashboard.superadmin.kelola-request.update');
-    Route::put('/acc/{id}', [RequestWisataController::class, 'acc'])->name('dashboard.superadmin.kelola-request.acc');
-    Route::put('/reject/{id}', [RequestWisataController::class, 'reject'])->name('dashboard.superadmin.kelola-request.reject');
-});
-
 Route::middleware(['auth', 'role:admin,superadmin'])->prefix('/dashboard/superadmin/kelola-destinasi')->group(function () {
     Route::get('/{section?}/{mode?}', [DestinasiController::class, 'index'])
         ->name('dashboard.superadmin.kelola-destinasi');
