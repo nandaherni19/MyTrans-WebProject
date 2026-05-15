@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\PaketWisata;
 use App\Models\Kendaraan;
 use App\Models\Kota;
-use App\Models\TitikJemput;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class PaketWisataController extends Controller
 {
@@ -18,13 +18,15 @@ class PaketWisataController extends Controller
             ->whereNotNull('tanggal_berangkat')
             ->where('tanggal_berangkat', '<', Carbon::now())
             ->update(['status' => 'nonaktif']);
+        
 
-        $pakets = PaketWisata::with(['kota.provinsi', 'kendaraan', 'titikJemput', 'kotaLayanan'])->get();
+        $pakets = PaketWisata::with(['kota.provinsi', 'kendaraan', 'kotaLayanan'])
+     ->orderByRaw("status = 'aktif' DESC")
+            ->get();
         $kotas = Kota::with('provinsi')->get();
         $kendaraans = Kendaraan::all();
-        $titikJemputs = TitikJemput::all();
 
-        return view('dashboard.superadmin.kelola-paket-wisata', compact('pakets', 'kotas', 'kendaraans', 'titikJemputs'));
+        return view('dashboard.superadmin.kelola-paket-wisata', compact('pakets', 'kotas', 'kendaraans'));
     }
 
     public function store(Request $request)
@@ -38,7 +40,7 @@ class PaketWisataController extends Controller
             'durasi' => 'required|integer|min:1',
             'fasilitas' => 'nullable|string|max:255',
             'status' => 'required|in:aktif,nonaktif',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:512',
             'id_kendaraan' => 'nullable|exists:ms_kendaraan,id_kendaraan',
         ];
 
@@ -48,10 +50,9 @@ class PaketWisataController extends Controller
             $rules['tanggal_kembali'] = 'required|date|after_or_equal:tanggal_berangkat';
             $rules['id_kendaraan'] = 'required|exists:ms_kendaraan,id_kendaraan';
             $rules['min_peserta'] = 'nullable|integer|min:1';
-            $rules['titik_jemput']      = 'nullable|array';
-            $rules['titik_jemput.*'] = 'nullable|string|max:100';
-            $rules['kota_layanan']      = 'nullable|array';
-            $rules['kota_layanan.*']    = 'exists:ms_kota,id_kota';
+
+            $rules['kota_layanan'] = 'nullable|array';
+            $rules['kota_layanan.*'] = 'exists:ms_kota,id_kota';
         }
 
         if ($request->tipe === 'paket') {
@@ -99,28 +100,6 @@ class PaketWisataController extends Controller
             'tanggal_kembali' => $request->tipe === 'open_trip' ? $request->tanggal_kembali : null,
         ]);
 
-        // sync titik jemput ke tr_titik_jemput (hanya open trip)
-        if ($request->tipe === 'open_trip') {
-
-            $titikJemputIds = collect($request->titik_jemput ?? [])
-                ->map(function ($value) {
-                    // kalau angka = berarti pilih dari database
-                    if (is_numeric($value)) {
-                        return $value;
-                    }
-
-                    // kalau teks = input baru → simpan ke DB
-                    return \App\Models\TitikJemput::firstOrCreate([
-                        'nama' => trim($value)
-                    ])->id_titik_jemput;
-                })
-                ->toArray();
-
-            $paket->titikJemput()->sync($titikJemputIds);
-
-            $paket->kotaLayanan()->sync($request->kota_layanan ?? []);
-        }
-
         return redirect()->back()->with('success', 'Data berhasil ditambahkan');
     }
 
@@ -137,7 +116,7 @@ class PaketWisataController extends Controller
             'durasi' => 'required|integer|min:1',
             'fasilitas' => 'nullable|string|max:255',
             'status' => 'required|in:aktif,nonaktif',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:512',
             'id_kendaraan' => 'nullable|exists:ms_kendaraan,id_kendaraan',
         ];
 
@@ -171,30 +150,17 @@ class PaketWisataController extends Controller
         ];
 
         if ($request->hasFile('gambar')) {
+            // Hapus gambar lama
+            if ($paket->gambar && Storage::disk('public')->exists($paket->gambar)) {
+                Storage::disk('public')->delete($paket->gambar);
+            }
+
             $data['gambar'] = $request->file('gambar')->store('paket', 'public');
         }
 
         $paket->update($data);
 
-        if ($request->tipe === 'open_trip') {
-        $titikJemputIds = collect($request->titik_jemput ?? [])
-            ->map(function ($value) {
-                if (is_numeric($value)) {
-                    return $value;
-                }
-
-                return \App\Models\TitikJemput::firstOrCreate([
-                    'nama' => trim($value)
-                ])->id_titik_jemput;
-            })
-            ->toArray();
-
-        $paket->titikJemput()->sync($titikJemputIds);
-    } else {
-        $paket->titikJemput()->detach();
-    }
-
-$paket->kotaLayanan()->sync($request->kota_layanan ?? []);
+        $paket->kotaLayanan()->sync($request->kota_layanan ?? []);
 
         return redirect()->back()->with('success', 'Data berhasil diupdate');
     }
@@ -202,9 +168,11 @@ $paket->kotaLayanan()->sync($request->kota_layanan ?? []);
     public function destroy($id)
     {
         $paket = PaketWisata::findOrFail($id);
-
+        // Hapus gambar
+        if ($paket->gambar && Storage::disk('public')->exists($paket->gambar)) {
+            Storage::disk('public')->delete($paket->gambar);
+        }
         // hapus relasi dulu sebelum delete
-        $paket->titikJemput()->detach();
         $paket->kotaLayanan()->detach();
 
         $paket->delete();

@@ -20,6 +20,6 @@ class OtpMail extends Mailable
     public function build()
     {
         return $this->subject('Kode OTP Verifikasi Akun MyTrans')
-                    ->view('emails.otp');
+            ->view('emails.otp');
     }
 }

@@ -5,22 +5,20 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     public function show()
     {
         $user = Auth::user();
-
         return view('dashboard.superadmin.profile', compact('user'));
     }
 
     public function edit()
     {
         $user = Auth::user();
-
         return view('dashboard.superadmin.profile-edit', compact('user'));
     }
 
@@ -32,7 +30,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:ms_users,email,' . $user->id_users . ',id_users',
             'no_hp' => 'required|string|max:20',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:512',
         ]);
 
         $user->nama = $validated['name'];
@@ -40,18 +38,20 @@ class ProfileController extends Controller
         $user->no_hp = $validated['no_hp'];
 
         if ($request->hasFile('photo')) {
-            $folderPath = public_path('uploads/profile');
 
-            if (!File::exists($folderPath)) {
-                File::makeDirectory($folderPath, 0755, true);
+            // HAPUS FOTO LAMA (biar clean seperti user controller)
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
             }
 
-            $file = $request->file('photo');
-            $filename = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+            // buat nama file unik
+            $filename = time() . '.' . $request->file('photo')->getClientOriginalExtension();
 
-            $file->move($folderPath, $filename);
+            // simpan ke storage/public/profile
+            $request->file('photo')->storeAs('profile', $filename, 'public');
 
-            $user->photo = 'uploads/profile/' . $filename;
+            // simpan path ke DB
+            $user->photo = 'profile/' . $filename;
         }
 
         $user->save();
@@ -62,16 +62,12 @@ class ProfileController extends Controller
 
     public function password()
     {
-        $user = Auth::user();
-
-        return view('dashboard.superadmin.profile-password', compact('user'));
+        return redirect()->route('dashboard.superadmin.profile');
     }
 
     public function editPassword()
     {
-        $user = Auth::user();
-
-        return view('dashboard.superadmin.profile-edit-password', compact('user'));
+        return redirect()->route('dashboard.superadmin.profile');
     }
 
     public function updatePassword(Request $request)
@@ -92,7 +88,7 @@ class ProfileController extends Controller
         $user->password = Hash::make($validated['new_password']);
         $user->save();
 
-        return redirect()->route('dashboard.superadmin.profile-password')
+        return redirect()->route('dashboard.superadmin.profile')
             ->with('success', 'Password berhasil diperbarui');
     }
 }

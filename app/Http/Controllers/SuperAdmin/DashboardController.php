@@ -25,10 +25,10 @@ class DashboardController extends Controller
         $totalCustomer = User::where('role', 'user')->count();
 
         // Pelanggan baru bulan ini
-            $customerBaru = User::where('role', 'user')
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->whereYear('created_at', Carbon::now()->year)
-                ->count();
+        $customerBaru = User::where('role', 'user')
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
 
         // ── Kendaraan tersedia hari ini ──
         $today = Carbon::today()->format('Y-m-d');
@@ -42,7 +42,7 @@ class DashboardController extends Controller
             ->unique()
             ->toArray();
 
-        $totalKendaraan    = Kendaraan::count();
+        $totalKendaraan = Kendaraan::count();
         $kendaraanTersedia = $totalKendaraan - count($dipakaiIds);
 
         // ── Kendaraan perlu perawatan (tidak ada field khusus, set 0) ──
@@ -77,8 +77,17 @@ class DashboardController extends Controller
             $chartDaily[] = (int) ($pendapatanHarian[$dow] ?? 0);
         }
 
+        // ── Paket wisata terlaris ──
+        $paketTerlaris = Booking::with('paket')
+            ->select('id_paket', DB::raw('count(*) as total_booking'))
+            ->whereNotNull('id_paket')
+            ->groupBy('id_paket')
+            ->orderByDesc('total_booking')
+            ->first();
+
         // ── 5 booking terbaru ──
-        $recentBookings = Booking::with(['pelanggan', 'paket'])
+        $recentBookings = Booking::with(['user', 'paket'])
+            ->select('*')  // ← pastikan select semua kolom
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
@@ -93,7 +102,10 @@ class DashboardController extends Controller
             'chartMonthly',
             'chartDaily',
             'recentBookings',
-            'customerBaru'
+            'customerBaru',
+            'paketTerlaris'
         ));
+
+
     }
 }

@@ -53,7 +53,7 @@ class DestinasiController extends Controller
     public function destroyProvinsi($id)
     {
         $provinsi = Provinsi::findOrFail($id);
-        
+
         if ($provinsi->kota()->count() > 0) {
             return back()->with('error', 'Provinsi tidak dapat dihapus karena masih memiliki ' . $provinsi->kota()->count() . ' kota. Hapus semua kota terlebih dahulu.');
         }
@@ -100,11 +100,11 @@ class DestinasiController extends Controller
         $kota = Kota::findOrFail($id);
         $paketCount = $kota->paketWisata()->count();
 
-            if ($paketCount > 0) {
-                return back()->with('error', 'Kota tidak dapat dihapus karena masih digunakan oleh paket wisata!');
-            }
+        if ($paketCount > 0) {
+            return back()->with('error', 'Kota tidak dapat dihapus karena masih digunakan oleh paket wisata!');
+        }
 
-            $kota->delete();
+        $kota->delete();
 
         return back()->with('success', 'Kota berhasil dihapus.');
     }

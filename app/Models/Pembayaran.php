@@ -23,11 +23,11 @@ class Pembayaran extends Model
     ];
 
     protected $casts = [
-        'id_booking'    => 'integer',
-        'jumlah_bayar'  => 'integer',
+        'id_booking' => 'integer',
+        'jumlah_bayar' => 'integer',
         'tanggal_bayar' => 'datetime',
-        'created_at'    => 'datetime',
-        
+        'created_at' => 'datetime',
+
     ];
 
     public function booking()
@@ -36,7 +36,7 @@ class Pembayaran extends Model
     }
 
     public function paymentGateway()
-{
-    return $this->hasOne(PaymentGateway::class, 'id_pembayaran', 'id_pembayaran');
-}
+    {
+        return $this->hasOne(PaymentGateway::class, 'id_pembayaran', 'id_pembayaran');
+    }
 }

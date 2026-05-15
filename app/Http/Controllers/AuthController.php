@@ -158,7 +158,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard.beranda-admin')->with('success', 'Login berhasil');
         }
 
-        return redirect()->route('dashboard.user')->with('success', 'Login berhasil');
+        return redirect()->intended(route('dashboard.user'));
     }
 
     public function logout()

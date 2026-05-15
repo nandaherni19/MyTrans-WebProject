@@ -13,4 +13,4 @@ Route::get('/kota-by-provinsi/{id}', function ($id) {
 
 // routes/api.php
 Route::post('/midtrans/notification', [MidtransCallbackController::class, 'handle']);
-Route::post('/midtrans/webhook', [MidtransCallbackController::class, 'handle']); 
+Route::post('/midtrans/webhook', [MidtransCallbackController::class, 'handle']);

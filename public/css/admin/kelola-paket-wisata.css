@@ -1,5 +1,3 @@
-
-
 .paket-topbar {
     display: flex;
     justify-content: space-between;
@@ -23,7 +21,6 @@
     display: flex;
     flex-direction: column;
 }
-
 
 .content-header h1 {
     font-size: 18px;
@@ -51,9 +48,7 @@
     cursor: pointer;
 }
 
-/* =======================
-   GRID
-======================= */
+/* GRID */
 .paket-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(280px, 1fr));
@@ -70,9 +65,7 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
-/* =======================
-   CARD
-======================= */
+/* CARD */
 .paket-card {
     background: #fff;
     border: 1px solid #e5e7eb;
@@ -88,7 +81,7 @@
 
 .paket-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
 }
 
 /* IMAGE */
@@ -229,9 +222,9 @@
     background: #dc2626;
 }
 
-/* =======================
+/* 
    EMPTY
-======================= */
+ */
 .empty-box {
     background: #fff;
     padding: 24px;
@@ -239,9 +232,9 @@
     text-align: center;
 }
 
-/* =======================
+/* 
    MODAL BASE
-======================= */
+ */
 .modal-overlay,
 .delete-modal-overlay {
     display: none;
@@ -259,9 +252,7 @@
     display: flex;
 }
 
-/* =======================
-   MODAL BOX
-======================= */
+/* MODAL BOX*/
 .tambah-modal {
     width: 100%;
     max-width: 900px;
@@ -304,9 +295,7 @@
     padding: 0;
 }
 
-/* =======================
-   FORM GRID
-======================= */
+/* FORM GRID */
 .tambah-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -358,20 +347,22 @@
 }
 
 /* text di dalam */
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__rendered {
     color: #000;
     padding-left: 0;
 }
 
 /* panah dropdown */
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__arrow {
     height: 100%;
     right: 10px;
 }
 
-/* =======================
-   MODAL ACTIONS
-======================= */
+/* MODAL ACTIONS */
 .tambah-actions {
     display: flex;
     justify-content: flex-end;
@@ -397,9 +388,7 @@
     background: #d1d5db;
 }
 
-/* =======================
-   DELETE MODAL
-======================= */
+/* DELETE MODAL */
 .delete-modal-box {
     width: 720px;
     max-width: 95%;
@@ -501,9 +490,7 @@
     background: #e14b48;
 }
 
-/* =======================
-   RESPONSIVE
-======================= */
+/* RESPONSIVE*/
 @media (max-width: 1200px) {
     .paket-grid {
         grid-template-columns: repeat(2, minmax(280px, 1fr));
@@ -511,12 +498,151 @@
 }
 
 @media (max-width: 768px) {
+
+    .paket-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .paket-title h1 {
+        font-size: 20px;
+    }
+
     .content-header {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
     }
 
     .paket-grid {
         grid-template-columns: 1fr;
+    }
+
+    .paket-wrapper {
+        padding: 14px;
+    }
+
+    .paket-card {
+        min-height: auto;
+    }
+
+    .tambah-modal {
+        padding: 20px 16px;
+        border-radius: 16px;
+        max-height: 95vh;
+    }
+
+    .tambah-title {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+
+    .tambah-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tambah-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-modal-primary,
+    .btn-modal-secondary {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .delete-modal-box {
+        width: 95%;
+        border-radius: 18px;
+    }
+
+    .delete-header {
+        padding: 20px;
+        gap: 12px;
+    }
+
+    .delete-header h2 {
+        font-size: 18px;
+    }
+
+    .warning-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .delete-body {
+        padding: 24px 20px 16px;
+    }
+
+    .delete-body h3 {
+        font-size: 16px;
+    }
+
+    .delete-body p {
+        font-size: 14px;
+    }
+
+    .delete-actions {
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px 20px 24px;
+    }
+
+    .btn-cancel-delete,
+    .btn-confirm-delete {
+        width: 100%;
+        min-width: unset;
+        font-size: 15px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .paket-title h1 {
+        font-size: 18px;
+    }
+
+    .paket-title p {
+        font-size: 12px;
+    }
+
+    .paket-body h3 {
+        font-size: 16px;
+    }
+
+    .paket-price {
+        font-size: 16px;
+    }
+
+    .paket-actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        height: 38px;
+        font-size: 13px;
+    }
+
+    .paket-wrapper {
+        padding: 10px;
+        border-radius: 16px;
     }
 }

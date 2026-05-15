@@ -39,7 +39,7 @@ class PaketWisataUserController extends Controller
                 return true;
             });
 
-        return view('guest.katalogpaketwisata', compact('pakets'));
+        return view('dashboard.user.katalogpaketwisata', compact('pakets'));
     }
 
     public function detail($id)
@@ -53,13 +53,13 @@ class PaketWisataUserController extends Controller
     {
         $paket = PaketWisata::with(['kota.provinsi', 'kendaraan'])->findOrFail($id);
 
-        return view('guest.detailpaket', compact('paket'));
+        return view('dashboard.user.detailpaket', compact('paket'));
     }
 
     public function kendaraanTersedia(Request $request)
     {
         $tanggalBerangkat = $request->tanggal_berangkat;
-        $tanggalKembali   = $request->tanggal_kembali;
+        $tanggalKembali = $request->tanggal_kembali;
 
         if (!$tanggalBerangkat || !$tanggalKembali) {
             return response()->json(Kendaraan::all()->map(function ($k) {
@@ -73,11 +73,11 @@ class PaketWisataUserController extends Controller
             ->whereIn('ms_booking.status_booking', ['pending', 'aktif'])
             ->where(function ($q) use ($tanggalBerangkat, $tanggalKembali) {
                 $q->whereBetween('ms_booking.tanggal_berangkat', [$tanggalBerangkat, $tanggalKembali])
-                ->orWhereBetween('ms_booking.tanggal_kembali', [$tanggalBerangkat, $tanggalKembali])
-                ->orWhere(function ($q2) use ($tanggalBerangkat, $tanggalKembali) {
-                    $q2->where('ms_booking.tanggal_berangkat', '<=', $tanggalBerangkat)
-                        ->where('ms_booking.tanggal_kembali', '>=', $tanggalKembali);
-                });
+                    ->orWhereBetween('ms_booking.tanggal_kembali', [$tanggalBerangkat, $tanggalKembali])
+                    ->orWhere(function ($q2) use ($tanggalBerangkat, $tanggalKembali) {
+                        $q2->where('ms_booking.tanggal_berangkat', '<=', $tanggalBerangkat)
+                            ->where('ms_booking.tanggal_kembali', '>=', $tanggalKembali);
+                    });
             })
             ->pluck('tr_booking_kendaraan.id_kendaraan')
             ->toArray();

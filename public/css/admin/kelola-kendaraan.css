@@ -75,7 +75,7 @@
 
 .kendaraan-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .kendaraan-card img {
@@ -136,13 +136,13 @@
 
 .btn-edit,
 .btn-delete {
-  display: inline-flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
 
-    height: 36px;          
-    padding: 0 14px;       
+    height: 36px;
+    padding: 0 14px;
 
     border: none;
     border-radius: 10px;
@@ -213,7 +213,7 @@ select {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.25);
+    background: rgba(0, 0, 0, 0.25);
     justify-content: center;
     align-items: center;
     z-index: 9999;
@@ -261,7 +261,7 @@ select {
     border: none;
 }
 
-/* ================= DELETE MODAL KENDARAAN ================= */
+/*  DELETE MODAL KENDARAAN  */
 .delete-modal-overlay {
     display: none;
     position: fixed;
@@ -381,67 +381,164 @@ select {
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-    .kendaraan-grid {
-        grid-template-columns: 1fr;
+
+    .kendaraan-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 
-    .tambah-grid {
-        grid-template-columns: 1fr;
+    .kendaraan-title h1 {
+        font-size: 20px;
+    }
+
+    .kendaraan-title p {
+        font-size: 12px;
     }
 
     .content-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
     }
 
     .btn-primary {
         width: 100%;
+        justify-content: center;
+    }
+
+    .kendaraan-wrapper {
+        padding: 12px;
+    }
+
+    .kendaraan-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .kendaraan-card img {
+        height: 130px;
+    }
+
+    .kendaraan-body {
+        padding: 10px;
+    }
+
+    .kendaraan-body h3 {
+        font-size: 13px;
+        margin: 8px 0;
+    }
+
+    .kendaraan-price {
+        font-size: 15px;
+    }
+
+    .kendaraan-penumpang,
+    .kendaraan-plat {
+        font-size: 11px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+
+    .tambah-modal {
+        padding: 20px 16px;
+        border-radius: 16px;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .tambah-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .tambah-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-modal-primary,
+    .btn-modal-secondary {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
     }
 
     .delete-modal-box {
-    width: 95%;
-    border-radius: 20px;
+        width: 95%;
+        border-radius: 18px;
+    }
+
+    .delete-header {
+        padding: 20px;
+        gap: 12px;
+    }
+
+    .delete-header h2 {
+        font-size: 18px;
+    }
+
+    .warning-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .delete-body {
+        padding: 24px 20px 16px;
+    }
+
+    .delete-body h3 {
+        font-size: 16px;
+    }
+
+    .delete-body p {
+        font-size: 14px;
+    }
+
+    .delete-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 20px 24px;
+    }
+
+    .btn-cancel-delete,
+    .btn-confirm-delete {
+        width: 100%;
+        min-width: unset;
+        font-size: 15px;
+        padding: 12px;
+        border-radius: 12px;
+    }
 }
 
-.delete-header {
-    padding: 20px;
-    gap: 14px;
-}
+@media (max-width: 480px) {
 
-.delete-header h2 {
-    font-size: 20px;
-}
+    .kendaraan-grid {
+        grid-template-columns: 1fr;
+    }
 
-.warning-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 26px;
-}
+    .kendaraan-card img {
+        height: 150px;
+    }
 
-.delete-body {
-    padding: 28px 20px 20px;
-}
+    .kendaraan-title h1 {
+        font-size: 18px;
+    }
 
-.delete-body h3 {
-    font-size: 18px;
-}
-
-.delete-body p {
-    font-size: 14px;
-}
-
-.delete-actions {
-    padding: 16px 20px 20px;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn-cancel-delete,
-.btn-confirm-delete {
-    width: auto;
-    min-width: 0;
-    font-size: 16px;
-    padding: 12px 20px;
-}
+    .kendaraan-price {
+        font-size: 14px;
+    }
 }

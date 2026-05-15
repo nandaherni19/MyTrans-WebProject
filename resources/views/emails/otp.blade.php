@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Kode OTP Verifikasi</title>
 </head>
+
 <body style="font-family: Arial, sans-serif; line-height: 1.6;">
     <h2>Halo 👋</h2>
     <p>Kode OTP verifikasi akun MyTrans Anda adalah:</p>
@@ -13,4 +15,5 @@
     <br>
     <p>Terima kasih,<br>Tim MyTrans</p>
 </body>
+
 </html>

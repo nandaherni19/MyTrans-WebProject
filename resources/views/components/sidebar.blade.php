@@ -1,4 +1,4 @@
-<!-- tombol  -->
+<!-- tombol burger -->
 <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 
 <aside class="sidebar">
@@ -11,18 +11,19 @@
                     <p>{{ ucfirst(Auth::user()->role) }}</p>
                 </div>
             </div>
+            <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
         </div>
 
         <nav class="sidebar-menu">
             <a href="{{ route('dashboard.beranda-admin') }}"
                 class="{{ request()->routeIs('dashboard.beranda-admin') ? 'active' : '' }}">
                 Dashboard
-                </a>
-            @if(Auth::user()->role === 'superadmin')
-            <a href="{{ route('dashboard.superadmin.kelola-pengguna') }}"
-                class="{{ request()->routeIs('dashboard.superadmin.kelola-pengguna') ? 'active' : '' }}">
-                Kelola pengguna
             </a>
+            @if(Auth::user()->role === 'superadmin')
+                <a href="{{ route('dashboard.superadmin.kelola-pengguna') }}"
+                    class="{{ request()->routeIs('dashboard.superadmin.kelola-pengguna') ? 'active' : '' }}">
+                    Kelola pengguna
+                </a>
             @endif
             <a href="{{ route('dashboard.superadmin.kelola-paket-wisata') }}"
                 class="{{ request()->routeIs('dashboard.superadmin.kelola-paket-wisata') ? 'active' : '' }}">
@@ -36,8 +37,8 @@
                 class="{{ request()->routeIs('dashboard.superadmin.kelola-kendaraan') ? 'active' : '' }}">
                 Kelola Kendaraan
             </a>
-            <a href="{{ route('dashboard.superadmin.kelola-data-booking') }}"
-                class="{{ request()->routeIs('dashboard.superadmin.kelola-data-booking') ? 'active' : '' }}">
+            <a href="{{ route('booking.index') }}"
+                class="{{ request()->routeIs('booking.index') ? 'active' : '' }}">
                 Data Booking
             </a>
             <a href="{{ route('dashboard.superadmin.kelola-laporan-transaksi') }}"
@@ -51,27 +52,28 @@
         <a href="{{ route('dashboard.superadmin.profile') }}"
             class="menu-profile {{ request()->routeIs('dashboard.superadmin.profile') ? 'active-bottom' : '' }}">
             👤 Profil Saya
-            </a>
-
-            <button class="menu-logout" type="button" onclick="bukaModalLogout()">
-                ⛔ Keluar
-            </button>
-        </div>
+        </a>
+        <button class="menu-logout" type="button" onclick="bukaModalLogout()">
+            ⛔ Keluar
+        </button>
+    </div>
 </aside>
 
 <!-- overlay gelap -->
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('active');
-    document.querySelector('.sidebar-overlay').classList.toggle('active');
-}
-function bukaModalLogout() {
-    document.getElementById('modal-logout').classList.add('active');
-}
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('active');
+        document.querySelector('.sidebar-overlay').classList.toggle('active');
+        document.body.classList.toggle('sidebar-open');
+    }
 
-function tutupModalLogout() {
-    document.getElementById('modal-logout').classList.remove('active');
-}
+    function bukaModalLogout() {
+        document.getElementById('modal-logout').classList.add('active');
+    }
+
+    function tutupModalLogout() {
+        document.getElementById('modal-logout').classList.remove('active');
+    }
 </script>

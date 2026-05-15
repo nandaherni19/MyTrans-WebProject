@@ -54,27 +54,27 @@ class MidtransCallbackController extends Controller
         $fraudStatus = $request->input('fraud_status');
 
         if ($transactionStatus === 'settlement' || ($transactionStatus === 'capture' && $fraudStatus !== 'challenge')) {
-    $statusPembayaran = 'berhasil';
-} elseif ($transactionStatus === 'pending') {
-    $statusPembayaran = 'pending';
-} elseif ($transactionStatus === 'expire') {
-    $statusPembayaran = 'expired';
-} else {
-    $statusPembayaran = 'gagal';
-}
+            $statusPembayaran = 'berhasil';
+        } elseif ($transactionStatus === 'pending') {
+            $statusPembayaran = 'pending';
+        } elseif ($transactionStatus === 'expire') {
+            $statusPembayaran = 'expired';
+        } else {
+            $statusPembayaran = 'gagal';
+        }
 
-// $pembayaran->update([
+        // $pembayaran->update([
 //     'transaction_status' => $statusPembayaran,
 //     'tanggal_bayar' => $statusPembayaran === 'berhasil' ? now() : null,
 // ]);
 
-// PaymentGateway::where('gateway_order_id', $orderId)->update([
+        // PaymentGateway::where('gateway_order_id', $orderId)->update([
 //     'gateway_transaction_id' => $request->input('transaction_id'),
 //     'transaction_status' => $transactionStatus,
 //     'raw_response' => json_encode($request->all()),
 // ]);
 
-//     if ($booking) {
+        //     if ($booking) {
 //     if ($statusPembayaran === 'berhasil') {
 //         $booking->status_booking = 'aktif';
 //     } elseif (in_array($statusPembayaran, ['gagal', 'expired'])) {
@@ -83,32 +83,32 @@ class MidtransCallbackController extends Controller
 //         $booking->status_booking = 'pending';
 //     }
 
-//     $booking->save();
+        //     $booking->save();
 // }
 
-if ($pembayaran->transaction_status !== 'berhasil') {
-    $pembayaran->update([
-        'transaction_status' => $statusPembayaran,
-        'tanggal_bayar' => $statusPembayaran === 'berhasil' ? now() : null,
-    ]);
-}
+        if ($pembayaran->transaction_status !== 'berhasil') {
+            $pembayaran->update([
+                'transaction_status' => $statusPembayaran,
+                'tanggal_bayar' => $statusPembayaran === 'berhasil' ? now() : null,
+            ]);
+        }
 
-PaymentGateway::where('gateway_order_id', $orderId)->update([
-    'gateway_transaction_id' => $request->input('transaction_id'),
-    'transaction_status' => $transactionStatus,
-    'raw_response' => json_encode($request->all()),
-]);
+        PaymentGateway::where('gateway_order_id', $orderId)->update([
+            'gateway_transaction_id' => $request->input('transaction_id'),
+            'transaction_status' => $transactionStatus,
+            'raw_response' => json_encode($request->all()),
+        ]);
 
-if ($booking && $booking->status_booking !== 'aktif') {
-    if ($statusPembayaran === 'berhasil') {
-        $booking->status_booking = 'aktif';
-    } elseif (in_array($statusPembayaran, ['gagal', 'expired'])) {
-        $booking->status_booking = 'batal';
-    } else {
-        $booking->status_booking = 'pending';
-    }
-    $booking->save();
-}
+        if ($booking && $booking->status_booking !== 'aktif') {
+            if ($statusPembayaran === 'berhasil') {
+                $booking->status_booking = 'aktif';
+            } elseif (in_array($statusPembayaran, ['gagal', 'expired'])) {
+                $booking->status_booking = 'batal';
+            } else {
+                $booking->status_booking = 'pending';
+            }
+            $booking->save();
+        }
 
         return response()->json([
             'message' => 'Notification handled successfully'
@@ -117,25 +117,28 @@ if ($booking && $booking->status_booking !== 'aktif') {
     // MidtransController.php — tambahkan logika ini di webhook handler
     public function webhook(Request $request)
     {
-        $payload           = $request->all();
-        $orderId           = $payload['order_id'] ?? null;
+        $payload = $request->all();
+        $orderId = $payload['order_id'] ?? null;
         $transactionStatus = $payload['transaction_status'] ?? null;
-        $fraudStatus       = $payload['fraud_status'] ?? null;
+        $fraudStatus = $payload['fraud_status'] ?? null;
 
         // order_id format: PAY-{id_booking}-{timestamp}
-        $parts     = explode('-', $orderId);
+        $parts = explode('-', $orderId);
         $bookingId = $parts[1] ?? null;
 
-        if (!$bookingId) return response()->json(['message' => 'Invalid order id'], 400);
+        if (!$bookingId)
+            return response()->json(['message' => 'Invalid order id'], 400);
 
         $pembayaran = Pembayaran::where('id_booking', $bookingId)
             ->orderByDesc('id_pembayaran')
             ->first();
 
-        if (!$pembayaran) return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
+        if (!$pembayaran)
+            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
 
         $booking = Booking::find($bookingId);
-        if (!$booking) return response()->json(['message' => 'Booking tidak ditemukan'], 404);
+        if (!$booking)
+            return response()->json(['message' => 'Booking tidak ditemukan'], 404);
 
         // Tentukan status pembayaran
         if ($transactionStatus === 'capture' && $fraudStatus === 'accept') {
@@ -153,7 +156,7 @@ if ($booking && $booking->status_booking !== 'aktif') {
         // Update pembayaran
         $pembayaran->update([
             'transaction_status' => $statusPembayaran,
-            'tanggal_bayar'      => in_array($statusPembayaran, ['berhasil']) ? now() : null,
+            'tanggal_bayar' => in_array($statusPembayaran, ['berhasil']) ? now() : null,
         ]);
 
         // Update status booking otomatis
@@ -169,7 +172,7 @@ if ($booking && $booking->status_booking !== 'aktif') {
 
         $booking->update([
             'status_booking' => $statusBooking,
-            'updated_at'     => now(),
+            'updated_at' => now(),
         ]);
 
         return response()->json(['message' => 'Webhook handled']);

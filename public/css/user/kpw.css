@@ -1,20 +1,7 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+html,
 body {
-    font-family: Arial, sans-serif;
-    background: #efefef;
-    color: #111;
-    overflow: hidden;
-}
-
-html, body {
     overflow-x: hidden;
 }
-
 
 /* HERO TITLE */
 .hero-title {
@@ -96,7 +83,7 @@ html, body {
 }
 
 .catalog-card img {
-    width: calc(100% - 22px); 
+    width: calc(100% - 22px);
     height: 150px;
     object-fit: cover;
     display: block;
@@ -196,7 +183,6 @@ html, body {
     align-items: center;
     width: 100%;
     overflow: hidden;
-
 }
 
 .footer-left,
@@ -316,10 +302,6 @@ html, body {
 }
 
 @media (max-width: 768px) {
-    .nav-menu {
-        display: none;
-    }
-
     .search-section {
         flex-direction: column;
         align-items: stretch;

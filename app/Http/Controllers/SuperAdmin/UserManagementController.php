@@ -12,20 +12,20 @@ class UserManagementController extends Controller
     {
         $query = User::query();
 
-    // SEARCH (nama / email)
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nama', 'like', '%' . $request->search . '%')
-            ->orWhere('email', 'like', '%' . $request->search . '%');
-        });
-    }
+        // SEARCH (nama / email)
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
 
-    // FILTER ROLE
-    if ($request->filled('role')) {
-        $query->where('role', $request->role);
-    }
+        // FILTER ROLE
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
 
-    $users = $query->paginate(10)->withQueryString();
+        $users = $query->paginate(10)->withQueryString();
 
         return view('dashboard.superadmin.kelola-pengguna', compact('users'));
     }

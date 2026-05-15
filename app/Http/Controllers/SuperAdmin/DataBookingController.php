@@ -10,6 +10,7 @@ use App\Models\PaketWisata;
 use App\Models\Pembayaran;
 use App\Models\Penumpang;
 use App\Models\User;
+use App\Http\Resources\BookingResource;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -18,164 +19,50 @@ class DataBookingController extends Controller
     public function index(Request $request)
     {
         $page = $request->query('page', 'index');
-        $id   = $request->query('id');
-
-        $pakets = PaketWisata::with([
-            'kota.provinsi',
-                'kendaraan',
-                'kotaLayanan',
-                'titikJemput'
-            ])
-            ->where('status', 'aktif')
-            ->where(function ($q) {
-                // Paket biasa selalu tampil semua
-                $q->where('tipe', 'paket')
-                ->orWhere(function ($q2) {
-                    // Open trip hanya tampil jika tanggal belum lewat
-                    $q2->where('tipe', 'open_trip')
-                        ->where('tanggal_berangkat', '>=', Carbon::today());
-                });
-            })
-            ->get();
-        $users        = User::where('role', 'user')->get();
-        $allKendaraan = Kendaraan::all();
+        $id = $request->query('id');
 
         $bookings = Booking::with([
             'paket.kota.provinsi',
             'pelanggan',
             'kendaraans',
             'kotaLayanan',
-            'titikJemput',
             'pembayaranTerakhir',
             'pembayarans'
-        ])->get()->map(function ($item) {
-            $kendaraanText = $item->kendaraans->map(function ($k) {
-                return $k->nama_kendaraan;
-            })->implode(', ');
+        ])->get();
 
-            $lokasi = '-';
-            if ($item->paket && $item->paket->kota) {
-                $lokasi = $item->paket->kota->nama_kota;
-                if ($item->paket->kota->provinsi) {
-                    $lokasi .= ', ' . $item->paket->kota->provinsi->nama_provinsi;
-                }
-            }
-
-            // Cari pembayaran yang punya refund (pending/selesai)
-            $pembayaranRefund = $item->pembayarans
-                ->whereIn('status_refund', ['pending', 'selesai'])
-                ->first();
-
-            return [
-                'id_booking'            => 'BK' . str_pad($item->id_booking, 3, '0', STR_PAD_LEFT),
-                'nama'                  => optional($item->pelanggan)->nama ?? '-',
-                'telepon'               => optional($item->pelanggan)->no_hp ?? '-',
-                'email'                 => optional($item->pelanggan)->email ?? '-',
-                'alamat'                => optional($item->pelanggan)->alamat ?? '-',
-                'wisata'                => optional($item->paket)->nama_paket ?? '-',
-                'tipe_booking'          => $item->tipe_booking,
-                'tipe_booking_label'    => $item->tipe_booking === 'open_trip' ? 'Open Trip' : 'Paket Wisata',
-                'tipe_pembayaran_label' => strtoupper($item->tipe_pembayaran ?? '-'),
-                'opsi_pembayaran_label' => $item->opsi_pembayaran === 'dp' ? 'DP 25%' : 'Lunas',
-                'metode_pembayaran'     => optional($item->pembayaranTerakhir)->metode_pembayaran ?? '-',
-                'kode_pembayaran'       => optional($item->pembayaranTerakhir)->kode_pembayaran ?? '-',
-                'jumlah_bayar' => 'Rp ' . number_format(
-                    $item->pembayarans
-                        ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-                        ->sum('jumlah_bayar'),
-                    0, ',', '.'
-                ),
-                'lokasi'                => $lokasi,
-                'kota_layanan'  => optional($item->kotaLayanan)->nama_kota ?? '-',
-                'titik_jemput'  => optional($item->titikJemput)->nama ?? '-',
-                'alamat_jemput' => $item->alamat_jemput ?? '-',
-                'tanggal_berangkat'     => $item->tanggal_berangkat
-                    ? Carbon::parse($item->tanggal_berangkat)->translatedFormat('d F Y')
-                    : '-',
-                'tanggal_kembali'       => $item->tanggal_kembali
-                    ? Carbon::parse($item->tanggal_kembali)->translatedFormat('d F Y')
-                    : '-',
-                'tanggal_berangkat_raw' => $item->tanggal_berangkat
-                    ? Carbon::parse($item->tanggal_berangkat)->format('Y-m-d')
-                    : null,
-                'tanggal_kembali_raw'   => $item->tanggal_kembali
-                    ? Carbon::parse($item->tanggal_kembali)->format('Y-m-d')
-                    : null,
-                'tanggal_sort'          => $item->tanggal_berangkat,
-                'jumlah_peserta'        => $item->jumlah_peserta . ' Orang',
-                'kendaraan'             => $kendaraanText ?: '-',
-                'kendaraan_list'        => $item->kendaraans,
-                'status_booking'        => $item->status_booking,
-                'status_booking_label'  => ucfirst($item->status_booking),
-                'status_pembayaran'     => optional($item->pembayaranTerakhir)->transaction_status ?? 'pending',
-                'tipe_pembayaran'       => $item->tipe_pembayaran ?? '-',
-                'opsi_pembayaran'       => $item->opsi_pembayaran ?? '-',
-                'tanggal_booking'       => $item->created_at
-                    ? Carbon::parse($item->created_at)->translatedFormat('d F Y')
-                    : '-',
-                'harga_per_orang'       => $item->paket
-                    ? 'Rp ' . number_format($item->paket->harga, 0, ',', '.')
-                    : '-',
-                'total_pembayaran'      => 'Rp ' . number_format($item->total_biaya, 0, ',', '.'),
-
-                'jumlah_refund' => optional($pembayaranRefund)->jumlah_refund ?? 0,
-                'status_refund' => optional($pembayaranRefund)->status_refund ?? 'tidak_ada',
-                'sisa_bayar' => max(
-                    ($item->total_biaya ?? 0) - $item->pembayarans
-                        ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-                        ->sum('jumlah_bayar'),
-                    0
-                ),
-            ];
-        });
-
-        $bookingData = $bookings
+        $bookingData = collect(
+            BookingResource::collection($bookings)->resolve()
+        )
             ->sortByDesc('tanggal_sort')
             ->values()
-            ->mapWithKeys(fn($item) => [$item['id_booking'] => $item]);
+            ->mapWithKeys(fn($item) => [
+                $item['id_booking'] => $item
+            ]);
 
         $currentId = $id ?? ($bookingData->keys()->first() ?? null);
-        $current   = $currentId ? ($bookingData[$currentId] ?? null) : null;
-
-        $kendaraanDipakaiIds = [];
-
-        if ($page === 'edit' && $currentId) {
-            $bookingId   = (int) str_replace('BK', '', $currentId);
-            $bookingEdit = Booking::find($bookingId);
-
-            if ($bookingEdit) {
-                $kendaraanDipakaiIds = DB::table('tr_booking_kendaraan')
-                    ->join('ms_booking', 'tr_booking_kendaraan.id_booking', '=', 'ms_booking.id_booking')
-                    ->where('ms_booking.id_booking', '!=', $bookingEdit->id_booking)
-                    ->whereIn('ms_booking.status_booking', ['pending', 'aktif'])
-                    ->where(function ($q) use ($bookingEdit) {
-                        $q->whereBetween('ms_booking.tanggal_berangkat', [
-                                $bookingEdit->tanggal_berangkat,
-                                $bookingEdit->tanggal_kembali,
-                            ])
-                            ->orWhereBetween('ms_booking.tanggal_kembali', [
-                                $bookingEdit->tanggal_berangkat,
-                                $bookingEdit->tanggal_kembali,
-                            ])
-                            ->orWhere(function ($q2) use ($bookingEdit) {
-                                $q2->where('ms_booking.tanggal_berangkat', '<=', $bookingEdit->tanggal_berangkat)
-                                    ->where('ms_booking.tanggal_kembali', '>=', $bookingEdit->tanggal_kembali);
-                            });
-                    })
-                    ->pluck('tr_booking_kendaraan.id_kendaraan')
-                    ->toArray();
-            }
-        }
+        $current = $currentId
+            ? ($bookingData[$currentId] ?? null)
+            : null;
 
         return view('dashboard.superadmin.kelola-data-booking', [
-            'page'                => $page,
-            'id'                  => $id,
-            'bookingData'         => $bookingData,
-            'current'             => $current,
-            'allKendaraan'        => $allKendaraan,
-            'kendaraanDipakaiIds' => $kendaraanDipakaiIds,
-            'pakets'              => $pakets,
-            'users'               => $users,
+            'page' => $page,
+            'id' => $id,
+            'bookingData' => $bookingData,
+            'current' => $current,
+
+            'pakets' => PaketWisata::with([
+                'kota.provinsi',
+                'kendaraan',
+                'kotaLayanan'
+            ])
+                ->where('status', 'aktif')
+                ->get(),
+
+            'users' => User::where('role', 'user')->get(),
+
+            'allKendaraan' => Kendaraan::all(),
+
+            'kendaraanDipakaiIds' => [],
         ]);
     }
 
@@ -185,11 +72,11 @@ class DataBookingController extends Controller
             return back()->with('error', 'ID booking tidak valid.');
         }
 
-        $bookingId = (int) str_replace('BK', '', $id);
-        $booking   = Booking::with('pembayaranTerakhir')->findOrFail($bookingId);
+        $bookingId = is_numeric($id) ? $id : (int) str_replace('BK', '', $id);
+        $booking = Booking::findOrFail($bookingId);
 
         $request->validate([
-            'status_booking'    => 'required|in:pending,aktif,selesai,batal',
+            'status_booking' => 'required|in:pending,aktif,selesai,batal',
             'status_pembayaran' => 'required|in:pending,berhasil,gagal,expired',
             'kendaraan_checked' => 'nullable|array',
             'kendaraan_checked.*' => 'exists:ms_kendaraan,id_kendaraan',
@@ -210,20 +97,27 @@ class DataBookingController extends Controller
 
         $dataUpdate = [
             'status_booking' => $statusBooking,
-            'updated_at'     => now(),
+            'updated_at' => now(),
         ];
 
         if ($booking->tipe_booking === 'paket') {
             $dataUpdate['tanggal_berangkat'] = $request->tanggal_berangkat;
-            $dataUpdate['tanggal_kembali']   = $request->tanggal_kembali;
+            $dataUpdate['tanggal_kembali'] = $request->tanggal_kembali;
         }
 
         $booking->update($dataUpdate);
+        if ($booking->pembayaranTerakhir) {
 
-        if ($booking->pembayaranTerakhir) { 
-            $booking->pembayaranTerakhir->update([
-            'transaction_status' => $statusPembayaran,
-            ]);
+            $dataPembayaran = [
+                'transaction_status' => $statusPembayaran,
+            ];
+
+            // kalau pembayaran berhasil dan tanggal belum ada
+            if ($statusPembayaran === 'berhasil' && !$booking->pembayaranTerakhir->tanggal_bayar) {
+                $dataPembayaran['tanggal_bayar'] = now();
+            }
+
+            $booking->pembayaranTerakhir->update($dataPembayaran);
         }
 
         // Sync kendaraan (hanya untuk paket)
@@ -236,12 +130,13 @@ class DataBookingController extends Controller
                         ->join('ms_booking', 'tr_booking_kendaraan.id_booking', '=', 'ms_booking.id_booking')
                         ->where('tr_booking_kendaraan.id_kendaraan', $idKendaraan)
                         ->where('ms_booking.id_booking', '!=', $booking->id_booking)
+                        ->where('ms_booking.created_at', '<=', $booking->created_at)
                         ->whereIn('ms_booking.status_booking', ['pending', 'aktif'])
                         ->where(function ($q) use ($booking) {
                             $q->whereBetween('ms_booking.tanggal_berangkat', [
-                                    $booking->tanggal_berangkat,
-                                    $booking->tanggal_kembali,
-                                ])
+                                $booking->tanggal_berangkat,
+                                $booking->tanggal_kembali,
+                            ])
                                 ->orWhereBetween('ms_booking.tanggal_kembali', [
                                     $booking->tanggal_berangkat,
                                     $booking->tanggal_kembali,
@@ -267,29 +162,28 @@ class DataBookingController extends Controller
         }
 
         return redirect()
-            ->route('dashboard.superadmin.kelola-data-booking')
+            ->route('booking.index')
             ->with('success', 'Update berhasil.');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'id_users'          => 'required|exists:ms_users,id_users',
-            'id_paket'          => 'required|exists:ms_paket_wisata,id_paket',
-            'jumlah_peserta'    => 'required|integer|min:1',
-            'tipe_pembayaran'   => 'required|in:qris,cash',
-            'opsi_pembayaran'   => 'required|in:dp,lunas',
+            'id_users' => 'required|exists:ms_users,id_users',
+            'id_paket' => 'required|exists:ms_paket_wisata,id_paket',
+            'jumlah_peserta' => 'required|integer|min:1',
+            'tipe_pembayaran' => 'required|in:qris,cash',
+            'opsi_pembayaran' => 'required|in:dp,lunas',
             'status_pembayaran_awal' => 'nullable|in:pending,berhasil',
-            'id_kendaraan'      => 'nullable|array',
-            'id_kendaraan.*'    => 'exists:ms_kendaraan,id_kendaraan',
-            'id_kota_layanan'  => 'required|exists:ms_kota,id_kota',
-            'id_titik_jemput'  => 'nullable|exists:ms_titik_jemput,id_titik_jemput',
-            'alamat_jemput'    => 'nullable|string|max:255',
+            'id_kendaraan' => 'nullable|array',
+            'id_kendaraan.*' => 'exists:ms_kendaraan,id_kendaraan',
+            'id_kota_layanan' => 'required|exists:ms_kota,id_kota',
+            'alamat_jemput' => 'nullable|string|max:255',
             'tanggal_berangkat' => 'nullable|date',
-            'tanggal_kembali'   => 'nullable|date|after_or_equal:tanggal_berangkat',
+            'tanggal_kembali' => 'nullable|date|after_or_equal:tanggal_berangkat',
         ]);
 
-        $paket         = PaketWisata::with('kendaraan')->findOrFail($request->id_paket);
+        $paket = PaketWisata::with('kendaraan')->findOrFail($request->id_paket);
         $jumlahPeserta = (int) $request->jumlah_peserta;
 
         if ($paket->tipe === 'open_trip') {
@@ -298,7 +192,7 @@ class DataBookingController extends Controller
                     'jumlah_peserta' => 'Sisa kursi open trip hanya ' . $paket->sisa_kursi . ' kursi.'
                 ])->withInput();
             }
-            
+
             // Validasi tanggal tidak lewat (double check di backend)
             if (Carbon::parse($paket->tanggal_berangkat)->isPast()) {
                 return back()->withErrors([
@@ -307,10 +201,10 @@ class DataBookingController extends Controller
             }
 
             $tanggalBerangkat = $paket->tanggal_berangkat;
-            $tanggalKembali   = $paket->tanggal_kembali;
-            $idKendaraan      = $paket->id_kendaraan;
-            $idKendaraanList  = null;
-            $totalBiaya       = $paket->harga * $jumlahPeserta;
+            $tanggalKembali = $paket->tanggal_kembali;
+            $idKendaraan = $paket->id_kendaraan;
+            $idKendaraanList = null;
+            $totalBiaya = $paket->harga * $jumlahPeserta;
 
         } else {
             if ($jumlahPeserta < $paket->min_peserta) {
@@ -326,6 +220,7 @@ class DataBookingController extends Controller
             }
 
             $idKendaraanList = $request->id_kendaraan ?? [];
+            
 
             if (empty($idKendaraanList)) {
                 return back()->withErrors([
@@ -343,9 +238,9 @@ class DataBookingController extends Controller
             $totalSewaKendaraan = Kendaraan::whereIn('id_kendaraan', $idKendaraanList)->sum('harga_sewa');
 
             $tanggalBerangkat = $request->tanggal_berangkat;
-            $tanggalKembali   = $request->tanggal_kembali;
-            $idKendaraan      = null;
-            $totalBiaya       = ($paket->harga * $jumlahPeserta) + $totalSewaKendaraan;
+            $tanggalKembali = $request->tanggal_kembali;
+            $idKendaraan = null;
+            $totalBiaya = ($paket->harga * $jumlahPeserta) + $totalSewaKendaraan;
         }
 
         $jumlahBayar = $request->opsi_pembayaran === 'dp'
@@ -356,21 +251,20 @@ class DataBookingController extends Controller
 
         try {
             $booking = Booking::create([
-                'jumlah_peserta'    => $jumlahPeserta,
-                'total_biaya'       => $totalBiaya,
-                'status_booking'    => 'pending',
-                'tipe_booking'      => $paket->tipe,
-                'tipe_pembayaran'   => $request->tipe_pembayaran,
-                'opsi_pembayaran'   => $request->opsi_pembayaran,
-                'id_paket'          => $paket->id_paket,
-                'id_users'          => $request->id_users,
+                'jumlah_peserta' => $jumlahPeserta,
+                'total_biaya' => $totalBiaya,
+                'status_booking' => 'pending',
+                'tipe_booking' => $paket->tipe,
+                'tipe_pembayaran' => $request->tipe_pembayaran,
+                'opsi_pembayaran' => $request->opsi_pembayaran,
+                'id_paket' => $paket->id_paket,
+                'id_users' => $request->id_users,
                 'id_kota_layanan' => $request->id_kota_layanan,
-                'id_titik_jemput' => $request->id_titik_jemput,
-                'alamat_jemput'   => $request->alamat_jemput,
+                'alamat_jemput' => $request->alamat_jemput,
                 'tanggal_berangkat' => $tanggalBerangkat,
-                'tanggal_kembali'   => $tanggalKembali,
-                'created_at'        => now(),
-                'updated_at'        => now(),
+                'tanggal_kembali' => $tanggalKembali,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             $statusAwal = 'pending';
@@ -391,47 +285,47 @@ class DataBookingController extends Controller
             if ($statusBookingAwal !== 'pending') {
                 $booking->update([
                     'status_booking' => $statusBookingAwal,
-                    'updated_at'     => now(),
+                    'updated_at' => now(),
                 ]);
             }
 
             if ($paket->tipe === 'open_trip') {
                 DB::table('tr_booking_kendaraan')->insert([
-                    'id_booking'   => $booking->id_booking,
+                    'id_booking' => $booking->id_booking,
                     'id_kendaraan' => $idKendaraan,
-                    
+
                 ]);
 
                 for ($i = 0; $i < $jumlahPeserta; $i++) {
                     Penumpang::create([
                         'id_booking' => $booking->id_booking,
-                        'id_users'   => $request->id_users,
+                        'id_users' => $request->id_users,
                     ]);
                 }
             } else {
                 foreach ($idKendaraanList as $idK) {
                     DB::table('tr_booking_kendaraan')->insert([
-                        'id_booking'   => $booking->id_booking,
+                        'id_booking' => $booking->id_booking,
                         'id_kendaraan' => $idK,
-                        
+
                     ]);
                 }
             }
 
             Pembayaran::create([
-                'id_booking'         => $booking->id_booking,
-                'jumlah_bayar'       => $jumlahBayar,
-                'tanggal_bayar'      => null,
-                'metode_pembayaran'  => $request->tipe_pembayaran,
+                'id_booking' => $booking->id_booking,
+                'jumlah_bayar' => $jumlahBayar,
+                'tanggal_bayar' => $statusAwal === 'berhasil' ? now() : null,
+                'metode_pembayaran' => $request->tipe_pembayaran,
                 'transaction_status' => $statusAwal,
                 'kode_pembayaran' => 'TRX-' . $booking->id_booking . '-' . time(),
-                'created_at'         => now(),
+                'created_at' => now(),
             ]);
 
             DB::commit();
 
             return redirect()
-                ->route('dashboard.superadmin.kelola-data-booking')
+                ->route('booking.index')
                 ->with('success', 'Booking manual berhasil dibuat.');
 
         } catch (\Throwable $e) {
@@ -439,11 +333,12 @@ class DataBookingController extends Controller
             return back()->with('error', 'Gagal membuat booking: ' . $e->getMessage())->withInput();
         }
     }
-    
+
     public function kendaraanTersedia(Request $request)
     {
         $tanggalBerangkat = $request->tanggal_berangkat;
-        $tanggalKembali   = $request->tanggal_kembali;
+        $tanggalKembali = $request->tanggal_kembali;
+        $currentBookingId = $request->current_booking_id;
 
         if (!$tanggalBerangkat || !$tanggalKembali) {
             return response()->json(Kendaraan::all());
@@ -452,13 +347,16 @@ class DataBookingController extends Controller
         $dipakaiIds = DB::table('tr_booking_kendaraan')
             ->join('ms_booking', 'tr_booking_kendaraan.id_booking', '=', 'ms_booking.id_booking')
             ->whereIn('ms_booking.status_booking', ['pending', 'aktif'])
+            ->when($currentBookingId, function ($q) use ($currentBookingId) {
+                $q->where('ms_booking.id_booking', '!=', $currentBookingId);
+            })
             ->where(function ($q) use ($tanggalBerangkat, $tanggalKembali) {
                 $q->whereBetween('ms_booking.tanggal_berangkat', [$tanggalBerangkat, $tanggalKembali])
-                ->orWhereBetween('ms_booking.tanggal_kembali', [$tanggalBerangkat, $tanggalKembali])
-                ->orWhere(function ($q2) use ($tanggalBerangkat, $tanggalKembali) {
-                    $q2->where('ms_booking.tanggal_berangkat', '<=', $tanggalBerangkat)
-                        ->where('ms_booking.tanggal_kembali', '>=', $tanggalKembali);
-                });
+                    ->orWhereBetween('ms_booking.tanggal_kembali', [$tanggalBerangkat, $tanggalKembali])
+                    ->orWhere(function ($q2) use ($tanggalBerangkat, $tanggalKembali) {
+                        $q2->where('ms_booking.tanggal_berangkat', '<=', $tanggalBerangkat)
+                            ->where('ms_booking.tanggal_kembali', '>=', $tanggalKembali);
+                    });
             })
             ->pluck('tr_booking_kendaraan.id_kendaraan')
             ->toArray();
@@ -470,7 +368,7 @@ class DataBookingController extends Controller
 
         return response()->json($kendaraans);
     }
-    
+
     public function lunasi(Request $request, $id)
     {
         if (!str_starts_with($id, 'BK')) {
@@ -478,7 +376,7 @@ class DataBookingController extends Controller
         }
 
         $bookingId = (int) str_replace('BK', '', $id);
-        $booking   = Booking::with('pembayaranTerakhir')->findOrFail($bookingId);
+        $booking = Booking::with('pembayaranTerakhir')->findOrFail($bookingId);
 
         if ($booking->status_booking !== 'aktif') {
             return back()->with('error', 'Booking tidak dalam status aktif.');
@@ -491,7 +389,7 @@ class DataBookingController extends Controller
         $sudahBayar = $booking->pembayarans()
             ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
             ->sum('jumlah_bayar');
-        $sisa       = $booking->total_biaya - $sudahBayar;
+        $sisa = $booking->total_biaya - $sudahBayar;
 
         if ($sisa <= 0) {
             return back()->with('error', 'Pembayaran sudah lunas.');
@@ -504,19 +402,19 @@ class DataBookingController extends Controller
         try {
             // Tambah record pembayaran baru untuk sisa
             Pembayaran::create([
-                'id_booking'         => $booking->id_booking,
-                'jumlah_bayar'       => $sisa,
-                'tanggal_bayar'      => now(),
-                'metode_pembayaran'  => $metodePelunasan,
+                'id_booking' => $booking->id_booking,
+                'jumlah_bayar' => $sisa,
+                'tanggal_bayar' => now(),
+                'metode_pembayaran' => $metodePelunasan,
                 'transaction_status' => 'berhasil',
-                'kode_pembayaran'    => 'LUNAS-' . $booking->id_booking . '-' . time(),
-                'created_at'         => now(),
+                'kode_pembayaran' => 'LUNAS-' . $booking->id_booking . '-' . time(),
+                'created_at' => now(),
             ]);
 
             // Update opsi pembayaran jadi lunas
             $booking->update([
                 'opsi_pembayaran' => 'lunas',
-                'updated_at'      => now(),
+                'updated_at' => now(),
             ]);
 
             DB::commit();
@@ -538,231 +436,252 @@ class DataBookingController extends Controller
         }
 
         $bookingId = (int) str_replace('BK', '', $id);
-        $booking   = Booking::findOrFail($bookingId);
+        $booking = Booking::findOrFail($bookingId);
 
         $sudahBayar = $booking->pembayarans()
-    ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-    ->sum('jumlah_bayar');
+            ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
+            ->sum('jumlah_bayar');
         $booking->pembayarans()->sum('jumlah_bayar');
-        $sisa       = $booking->total_biaya - $sudahBayar;
+        $sisa = $booking->total_biaya - $sudahBayar;
 
         return response()->json([
-            'sisa'        => (int) $sisa,
+            'sisa' => (int) $sisa,
             'sisa_format' => 'Rp ' . number_format($sisa, 0, ',', '.'),
             'sudah_bayar' => (int) $sudahBayar,
+            'total_biaya' => (int) $booking->total_biaya,
         ]);
     }
 
     public function qrisPelunasan(Request $request, $id)
-{
-    if (!str_starts_with($id, 'BK')) {
-        return response()->json(['error' => 'ID tidak valid'], 400);
-    }
+    {
+        if (!str_starts_with($id, 'BK')) {
+            return response()->json(['error' => 'ID tidak valid'], 400);
+        }
 
-    $bookingId = (int) str_replace('BK', '', $id);
-    
-    $booking = Booking::with(['pembayarans', 'pelanggan'])->findOrFail($bookingId);
+        $bookingId = (int) str_replace('BK', '', $id);
 
-    $sudahBayar = $booking->pembayarans()
-        ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-        ->sum('jumlah_bayar');
+        $booking = Booking::with(['pembayarans', 'pelanggan'])->findOrFail($bookingId);
 
-    $sisa = max($booking->total_biaya - $sudahBayar, 0);
+        $sudahBayar = $booking->pembayarans()
+            ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
+            ->sum('jumlah_bayar');
 
-    if ($sisa <= 0) {
-        return response()->json(['error' => 'Sudah lunas'], 400);
-    }
+        $sisa = max($booking->total_biaya - $sudahBayar, 0);
 
-    \Midtrans\Config::$serverKey    = config('midtrans.server_key');
-    \Midtrans\Config::$isProduction = config('midtrans.is_production');
-    \Midtrans\Config::$isSanitized  = true;
-    \Midtrans\Config::$is3ds        = true;
+        if ($sisa <= 0) {
+            return response()->json(['error' => 'Sudah lunas'], 400);
+        }
 
-    $orderId = 'LUNAS-' . $booking->id_booking . '-' . time();
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
 
-    $params = [
-        'transaction_details' => [
-            'order_id'     => $orderId,
-            'gross_amount' => (int) $sisa,
-        ],
-        'payment_type' => 'qris',
-        'qris'         => ['acquirer' => 'gopay'],
-        'customer_details' => [
-            'first_name' => optional($booking->pelanggan)->nama ?? 'Pelanggan',
-            'email'      => optional($booking->pelanggan)->email ?? 'noemail@example.com', // ← fix: jangan kosong
-            'phone'      => optional($booking->pelanggan)->no_hp ?? '08000000000',         // ← fix: jangan kosong
-        ],
-        'custom_expiry' => [                                      // ← tambahan
-            'order_time'      => now()->format('Y-m-d H:i:s O'),
-            'expiry_duration' => 24,
-            'unit'            => 'hour',
-        ],
-    ];
+        $orderId = 'LUNAS-' . $booking->id_booking . '-' . time();
 
-    try {
-        $response      = \Midtrans\CoreApi::charge($params);
-        $responseArray = json_decode(json_encode($response), true);
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $sisa,
+            ],
+            'payment_type' => 'qris',
+            'qris' => ['acquirer' => 'gopay'],
+            'customer_details' => [
+                'first_name' => optional($booking->pelanggan)->nama ?? 'Pelanggan',
+                'email' => optional($booking->pelanggan)->email ?? 'noemail@example.com', // ← fix: jangan kosong
+                'phone' => optional($booking->pelanggan)->no_hp ?? '08000000000',         // ← fix: jangan kosong
+            ],
+            'custom_expiry' => [                                      // ← tambahan
+                'order_time' => now()->format('Y-m-d H:i:s O'),
+                'expiry_duration' => 24,
+                'unit' => 'hour',
+            ],
+        ];
 
-        // Debug: log full response
-        \Log::info('Midtrans QRIS Pelunasan Response', $responseArray);
+        try {
+            $response = \Midtrans\CoreApi::charge($params);
+            $responseArray = json_decode(json_encode($response), true);
 
-        $qrUrl = null;
+            // Debug: log full response
+            \Log::info('Midtrans QRIS Pelunasan Response', $responseArray);
 
-        // Cek di actions
-        if (!empty($responseArray['actions'])) {
-            foreach ($responseArray['actions'] as $action) {
-                if (in_array(($action['name'] ?? ''), [
-                    'generate-qr-code',
-                    'generate-qr-code-v2',
-                ])) {
-                    $qrUrl = $action['url'] ?? null;
-                    break;
+            $qrUrl = null;
+
+            // Cek di actions
+            if (!empty($responseArray['actions'])) {
+                foreach ($responseArray['actions'] as $action) {
+                    if (
+                        in_array(($action['name'] ?? ''), [
+                            'generate-qr-code',
+                            'generate-qr-code-v2',
+                        ])
+                    ) {
+                        $qrUrl = $action['url'] ?? null;
+                        break;
+                    }
                 }
+            }
+
+            // Fallback: kadang Midtrans sandbox taruh di qr_string atau actions berbeda
+            if (!$qrUrl && !empty($responseArray['qr_string'])) {
+                // Generate QR dari string menggunakan Google Charts API sebagai fallback
+                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='
+                    . urlencode($responseArray['qr_string']);
+            }
+
+            if (!$qrUrl) {
+                \Log::error('QR URL tidak ditemukan', $responseArray);
+                return response()->json([
+                    'error' => 'QR URL tidak ditemukan dari Midtrans',
+                    'debug' => $responseArray  // tampil di console browser
+                ], 500);
+            }
+
+            // Simpan pembayaran
+            $pembayaran = Pembayaran::create([
+                'id_booking' => $booking->id_booking,
+                'jumlah_bayar' => $sisa,
+                'tanggal_bayar' => null,
+                'metode_pembayaran' => 'qris',
+                'transaction_status' => 'pending',
+                'kode_pembayaran' => $orderId,
+                'created_at' => now(),
+            ]);
+
+            // Simpan ke payment gateway juga (sebelumnya tidak ada - ini bug!)
+            \App\Models\PaymentGateway::create([
+                'id_pembayaran' => $pembayaran->id_pembayaran,
+                'gateway_name' => 'midtrans',
+                'gateway_order_id' => $orderId,
+                'gateway_transaction_id' => $responseArray['transaction_id'] ?? null,
+                'payment_type' => 'qris',
+                'qr_url' => $qrUrl,
+                'expired_at' => now()->addDay(),
+                'transaction_status' => 'pending',
+                'raw_response' => json_encode($responseArray),
+            ]);
+
+            return response()->json([
+                'qr_url' => $qrUrl,
+                'order_id' => $orderId,
+                'sisa' => 'Rp ' . number_format($sisa, 0, ',', '.'),
+            ]);
+
+        } catch (\Throwable $e) {
+            \Log::error('Midtrans Error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function batal($id)
+    {
+        if (!str_starts_with($id, 'BK')) {
+            return back()->with('error', 'ID booking tidak valid.');
+        }
+
+        $bookingId = (int) str_replace('BK', '', $id);
+        $booking = Booking::with(['pembayarans'])->findOrFail($bookingId);
+
+        if (in_array($booking->status_booking, ['selesai', 'batal'])) {
+            return back()->with('error', 'Booking tidak bisa dibatalkan.');
+        }
+
+        // Hitung TOTAL semua pembayaran berhasil
+        $sudahBayar = $booking->pembayarans()
+            ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
+            ->sum('jumlah_bayar');
+
+        // Hitung refund jika pembayaran sudah lunas
+        $jumlahRefund = 0;
+
+        if ($sudahBayar >= $booking->total_biaya) {
+            $jumlahRefund = floor($sudahBayar * 0.85);
+        }
+
+        // Update semua pembayaran pending → gagal
+        $booking->pembayarans()
+            ->where('transaction_status', 'pending')
+            ->update(['transaction_status' => 'gagal']);
+
+        // Update booking
+        $booking->update([
+            'status_booking' => 'batal',
+            'updated_at' => now(),
+        ]);
+
+        // Simpan refund hanya di pembayaran PERTAMA yang berhasil
+        // Set semua ke tidak_ada dulu
+        $booking->pembayarans()
+            ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
+            ->update([
+                'jumlah_refund' => null,
+                'status_refund' => 'tidak_ada',
+            ]);
+
+        // Baru set refund di pembayaran pertama saja
+        if ($jumlahRefund > 0) {
+            $pembayaranPertama = $booking->pembayarans()
+                ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
+                ->oldest('id_pembayaran')
+                ->first();
+
+            if ($pembayaranPertama) {
+                $pembayaranPertama->update([
+                    'jumlah_refund' => $jumlahRefund,
+                    'status_refund' => 'pending',
+                ]);
             }
         }
 
-        // Fallback: kadang Midtrans sandbox taruh di qr_string atau actions berbeda
-        if (!$qrUrl && !empty($responseArray['qr_string'])) {
-            // Generate QR dari string menggunakan Google Charts API sebagai fallback
-            $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' 
-                    . urlencode($responseArray['qr_string']);
+        $pesan = 'Booking berhasil dibatalkan.';
+        if ($jumlahRefund > 0) {
+            $pesan .= ' Refund 85%: Rp ' . number_format($jumlahRefund, 0, ',', '.') . '. Silakan transfer ke pelanggan.';
+        } else {
+            $pesan .= ' Tidak ada refund (DP hangus).';
         }
 
-        if (!$qrUrl) {
-            \Log::error('QR URL tidak ditemukan', $responseArray);
-            return response()->json([
-                'error' => 'QR URL tidak ditemukan dari Midtrans',
-                'debug' => $responseArray  // tampil di console browser
-            ], 500);
+        return redirect()
+            ->route('booking.index', [
+                'page' => 'detail',
+                'id' => $id
+            ])
+            ->with('success', $pesan);
+    }
+
+    public function refundSelesai($id)
+    {
+        if (!str_starts_with($id, 'BK')) {
+            return back()->with('error', 'ID booking tidak valid.');
         }
 
-        // Simpan pembayaran
-        $pembayaran = Pembayaran::create([
-            'id_booking'         => $booking->id_booking,
-            'jumlah_bayar'       => $sisa,
-            'tanggal_bayar'      => null,
-            'metode_pembayaran'  => 'qris',
-            'transaction_status' => 'pending',
-            'kode_pembayaran'    => $orderId,
-            'created_at'         => now(),
-        ]);
+        $bookingId = (int) str_replace('BK', '', $id);
 
-        // Simpan ke payment gateway juga (sebelumnya tidak ada - ini bug!)
-        \App\Models\PaymentGateway::create([
-            'id_pembayaran'          => $pembayaran->id_pembayaran,
-            'gateway_name'           => 'midtrans',
-            'gateway_order_id'       => $orderId,
-            'gateway_transaction_id' => $responseArray['transaction_id'] ?? null,
-            'payment_type'           => 'qris',
-            'qr_url'                 => $qrUrl,
-            'expired_at'             => now()->addDay(),
-            'transaction_status'     => 'pending',
-            'raw_response'           => json_encode($responseArray),
-        ]);
-
-        return response()->json([
-            'qr_url'   => $qrUrl,
-            'order_id' => $orderId,
-            'sisa'     => 'Rp ' . number_format($sisa, 0, ',', '.'),
-        ]);
-
-    } catch (\Throwable $e) {
-        \Log::error('Midtrans Error: ' . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-}
-public function batal($id)
-{
-    if (!str_starts_with($id, 'BK')) {
-        return back()->with('error', 'ID booking tidak valid.');
-    }
-
-    $bookingId = (int) str_replace('BK', '', $id);
-    $booking   = Booking::with(['pembayarans'])->findOrFail($bookingId);
-
-    if (in_array($booking->status_booking, ['selesai', 'batal'])) {
-        return back()->with('error', 'Booking tidak bisa dibatalkan.');
-    }
-
-    // Hitung TOTAL semua pembayaran berhasil
-    $sudahBayar = $booking->pembayarans()
-        ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-        ->sum('jumlah_bayar');
-
-    // Hitung refund dari total (hanya jika lunas)
-    $jumlahRefund = 0;
-    if ($booking->opsi_pembayaran === 'lunas' && $sudahBayar > 0) {
-        $jumlahRefund = floor($sudahBayar * 0.85);
-    }
-
-    // Update semua pembayaran pending → gagal
-    $booking->pembayarans()
-        ->where('transaction_status', 'pending')
-        ->update(['transaction_status' => 'gagal']);
-
-    // Update booking
-    $booking->update([
-        'status_booking' => 'batal',
-        'updated_at'     => now(),
-    ]);
-
-    // Simpan refund hanya di pembayaran PERTAMA yang berhasil
-    // Set semua ke tidak_ada dulu
-    $booking->pembayarans()
-        ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-        ->update([
-            'jumlah_refund' => null,
-            'status_refund' => 'tidak_ada',
-        ]);
-
-    // Baru set refund di pembayaran pertama saja
-    if ($jumlahRefund > 0) {
-        $pembayaranPertama = $booking->pembayarans()
-            ->whereIn('transaction_status', ['berhasil', 'settlement', 'capture'])
-            ->oldest('id_pembayaran')
+        $pembayaran = Pembayaran::where('id_booking', $bookingId)
+            ->where('status_refund', 'pending')
+            ->latest('id_pembayaran')
             ->first();
 
-        if ($pembayaranPertama) {
-            $pembayaranPertama->update([
-                'jumlah_refund' => $jumlahRefund,
-                'status_refund' => 'pending',
-            ]);
+        if (!$pembayaran) {
+            return back()->with('error', 'Tidak ada refund pending.');
         }
+
+        $pembayaran->update([
+            'status_refund' => 'selesai',
+        ]);
+
+        return back()->with('success', 'Refund berhasil ditandai selesai.');
     }
-
-    $pesan = 'Booking berhasil dibatalkan.';
-    if ($jumlahRefund > 0) {
-        $pesan .= ' Refund 85%: Rp ' . number_format($jumlahRefund, 0, ',', '.') . '. Silakan transfer ke pelanggan.';
-    } else {
-        $pesan .= ' Tidak ada refund (DP hangus).';
+    public function show($id)
+    {
+        return redirect()->route('booking.index', [
+            'page' => 'detail',
+            'id' => $id
+        ]);
     }
-
-    return redirect()
-        ->route('dashboard.superadmin.kelola-data-booking', ['page' => 'detail', 'id' => $id])
-        ->with('success', $pesan);
-}
-
-public function refundSelesai($id)
+    public function edit($id)
 {
-    if (!str_starts_with($id, 'BK')) {
-        return back()->with('error', 'ID booking tidak valid.');
-    }
-
-    $bookingId = (int) str_replace('BK', '', $id);
-
-    $pembayaran = Pembayaran::where('id_booking', $bookingId)
-        ->where('status_refund', 'pending')
-        ->latest('id_pembayaran')
-        ->first();
-
-    if (!$pembayaran) {
-        return back()->with('error', 'Tidak ada refund pending.');
-    }
-
-    $pembayaran->update([
-        'status_refund' => 'selesai',
+    return redirect()->route('booking.index', [
+        'page' => 'edit',
+        'id' => $id
     ]);
-
-    return back()->with('success', 'Refund berhasil ditandai selesai.');
 }
 }

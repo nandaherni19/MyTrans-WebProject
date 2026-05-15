@@ -83,16 +83,6 @@ class PaketWisata extends Model
         return $this->status;
     }
 
-    public function titikJemput()
-    {
-        return $this->belongsToMany(
-            TitikJemput::class,
-            'tr_titik_jemput',
-            'id_paket',
-            'id_titik_jemput'
-        );
-    }
-
     public function kotaLayanan()
     {
         return $this->belongsToMany(

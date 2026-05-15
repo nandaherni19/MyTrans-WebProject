@@ -14,11 +14,13 @@ class RiwayatBookingUserController extends Controller
         $riwayat = collect();
 
         $bookings = Booking::with([
-                'paket.kota.provinsi',
-                'pembayarans',
-                'pembayaranTerakhir'
-            ])
+            'paket.kota.provinsi',
+            'pembayarans',
+            'pembayaranTerakhir'
+        ])
             ->where('id_users', $user->id_users)
+             // booking 3 bulan terakhir
+            ->where('created_at', '>=', now()->subMonths(3))
             ->get();
 
         foreach ($bookings as $item) {
@@ -41,11 +43,11 @@ class RiwayatBookingUserController extends Controller
 
             $sisaBayar = $item->total_biaya - $sudahBayar;
 
-           // tentukan label pembayaran
+            // tentukan label pembayaran
             if ($sisaBayar > 0) {
-            $paymentLabel = 'DP';
+                $paymentLabel = 'DP';
             } else {
-            $paymentLabel = 'Lunas';
+                $paymentLabel = 'Lunas';
             }
 
             $riwayat->push([
@@ -54,17 +56,17 @@ class RiwayatBookingUserController extends Controller
                 'judul' => $judul,
                 'booking_id' => 'BK' . str_pad($item->id_booking, 3, '0', STR_PAD_LEFT),
                 'lokasi' => $lokasi,
-                'tanggal' => $item->tanggal_berangkat,
+                'tanggal' => $item->created_at,
                 'jumlah_peserta' => $item->jumlah_peserta,
                 'status' => $item->status_booking,
                 'metode_pembayaran' => $item->pembayaranTerakhir->metode_pembayaran ?? '-',
                 'sisa_bayar' => $sisaBayar,
-                'detail_url' => route('dashboard.user.detailpesanan', ['booking', $item->id_booking]),
+                'detail_url' => route('dashboard.user.detailpesanan', $item->id_booking),
                 'payment_label' => $paymentLabel,
             ]);
         }
 
-        
+
         if ($filter !== 'semua') {
             $riwayat = $riwayat->filter(function ($item) use ($filter) {
                 return strtolower($item['jenis']) === strtolower($filter);

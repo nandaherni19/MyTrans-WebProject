@@ -1,18 +1,4 @@
-/* * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #dfe8f6;
-    color: #111827;
-    overflow: auto;
-} */
-
-/* ================= PAGE ================= */
-
+/*  PAGE  */
 .profile-page {
     width: 100%;
     max-width: 1200px;
@@ -20,7 +6,7 @@ body {
     padding: 36px 24px;
 }
 
-/* ================= HEADER ================= */
+/*  HEADER  */
 
 .page-header h1 {
     font-size: 24px;
@@ -33,8 +19,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* ================= ALERT ================= */
-
+/*  ALERT  */
 .alert-success {
     background: #d1fae5;
     color: #065f46;
@@ -43,8 +28,7 @@ body {
     margin-bottom: 18px;
 }
 
-/* ================= HERO ================= */
-
+/*  HERO  */
 .profile-hero-card {
     background: #f8f8f8;
     border-radius: 18px;
@@ -91,20 +75,20 @@ body {
     bottom: 0;
     right: 0;
     transform: translate(30%, 30%);
-    
+
     width: 32px;
     height: 32px;
-    
+
     background: #3b82f6;
     color: #fff;
-    
+
     border-radius: 50%;
     border: 2px solid #fff;
-    
+
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     cursor: pointer;
     font-size: 14px;
 }
@@ -147,7 +131,7 @@ body {
     color: #0f172a;
 }
 
-/* ================= TABS ================= */
+/*  TABS  */
 
 .profile-tabs {
     display: flex;
@@ -166,9 +150,9 @@ body {
     color: #111827;
     text-decoration: none;
     transition: 0.2s;
-     border: none;        
-    outline: none;       
-    box-shadow: none;    
+    border: none;
+    outline: none;
+    box-shadow: none;
 }
 
 .tab-btn.active {
@@ -176,7 +160,7 @@ body {
     color: #fff;
 }
 
-/* ================= CARD ================= */
+/*  CARD  */
 
 .profile-info-card {
     background: #f8f8f8;
@@ -196,7 +180,7 @@ body {
     margin-bottom: 18px;
 }
 
-/* ================= GRID ================= */
+/*  GRID  */
 
 .info-grid {
     display: grid;
@@ -229,14 +213,14 @@ body {
     color: #374151;
 }
 
-/* ================= FULL WIDTH ================= */
+/*  FULL WIDTH  */
 
 .full-width {
     grid-column: 1 / -1;
     width: 100%;
 }
 
-/* ================= INPUT ================= */
+/*  INPUT  */
 
 .form-input {
     width: 100%;
@@ -248,7 +232,7 @@ body {
     outline: none;
 }
 
-/* ================= PASSWORD BOX ================= */
+/*  PASSWORD BOX  */
 
 .password-input-wrapper {
     width: 100%;
@@ -270,7 +254,7 @@ body {
     font-size: 14px;
 }
 
-/* ================= SECURITY ================= */
+/*  SECURITY  */
 
 .security-tip-card {
     margin-top: 18px;
@@ -295,7 +279,7 @@ body {
     color: #6b7280;
 }
 
-/* ================= BUTTON ================= */
+/*  BUTTON  */
 
 .profile-action {
     display: flex;
@@ -350,16 +334,146 @@ body {
     cursor: pointer;
 }
 
-
-/* ================= RESPONSIVE ================= */
+/*  RESPONSIVE  */
 
 @media (max-width: 768px) {
-    .info-grid {
-        grid-template-columns: 1fr;
+
+    .profile-page {
+        padding: 20px 14px;
+    }
+
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .page-header p {
+        font-size: 12px;
     }
 
     .profile-hero-card {
         flex-direction: column;
         align-items: flex-start;
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .profile-hero-name h2 {
+        font-size: 18px;
+    }
+
+    .profile-tabs {
+        border-radius: 12px;
+    }
+
+    .tab-btn {
+        font-size: 13px;
+        padding: 12px;
+    }
+
+    .profile-info-card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .info-title h3 {
+        font-size: 16px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .info-box {
+        font-size: 13px;
+        min-height: 46px;
+        padding: 12px;
+    }
+
+    .form-input {
+        height: 46px;
+        font-size: 13px;
+    }
+
+    .password-input-wrapper {
+        min-height: 50px;
+    }
+
+    .password-input-wrapper input {
+        height: 50px;
+        font-size: 13px;
+    }
+
+    .edit-action-wrapper {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+        justify-content: center;
+        min-width: unset;
+    }
+
+    .profile-action {
+        justify-content: stretch;
+        margin-top: 16px;
+    }
+
+    .btn-edit {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        display: flex;
+    }
+
+    .security-tip-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .security-text h4 {
+        font-size: 14px;
+    }
+
+    .security-text p {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .profile-page {
+        padding: 14px 10px;
+    }
+
+    .page-header h1 {
+        font-size: 18px;
+    }
+
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .avatar-icon i {
+        font-size: 32px;
+    }
+
+    .profile-hero-card .avatar-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .avatar-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+
+    .tab-btn {
+        font-size: 12px;
+        padding: 10px 8px;
     }
 }

@@ -1,17 +1,9 @@
-/* MAIN */
-/* .main-content {
-    flex: 1;
-    padding: 24px 18px 24px 18px;
-} */
-
 .lokasi-topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
-
-
 
 .lokasi-title h1 {
     font-size: 26px;
@@ -23,7 +15,6 @@
     font-size: 13px;
     color: #6b7280;
 }
-
 
 .container {
     padding: 20px;
@@ -160,7 +151,7 @@
     border-radius: 10px;
     background: #f8f8f8;
     padding: 0 16px;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     font-size: 10px;
     color: #222;
 }
@@ -179,7 +170,7 @@
     color: #fff;
     font-size: 10px;
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     cursor: pointer;
 }
 
@@ -195,7 +186,7 @@
     justify-content: center;
     font-size: 10px;
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 /* GENERAL FORM */
@@ -227,7 +218,7 @@
     border-radius: 12px;
     background: #f7f7f7;
     padding: 0 18px;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     font-size: 10px;
     color: #1a1a1a;
 }
@@ -392,7 +383,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     justify-content: center;
     align-items: center;
     z-index: 9999;
@@ -404,7 +395,7 @@
     background: #fff;
     border-radius: 18px;
     padding: 24px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
     animation: fadeIn 0.2s ease;
 }
 
@@ -540,7 +531,7 @@
     background: #fff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .delete-header {
@@ -601,7 +592,6 @@
     align-items: center;
     gap: 8px;
 }
-
 @media (max-width: 900px) {
     .page-top {
         flex-direction: column;
@@ -611,6 +601,7 @@
 
     .tabs {
         flex-wrap: wrap;
+        gap: 10px;
     }
 
     .two-col {
@@ -620,6 +611,11 @@
     .card-header {
         flex-direction: column;
         gap: 10px;
+    }
+
+    .card-header .btn-tambah {
+        width: 100%;
+        justify-content: center;
     }
 
     .provinsi-form-row,
@@ -633,5 +629,167 @@
 
     .item-list {
         max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .lokasi-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .lokasi-title h1 {
+        font-size: 20px;
+    }
+
+    .lokasi-title p {
+        font-size: 12px;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .tabs {
+        gap: 8px;
+        padding: 8px 10px;
+        justify-content: flex-start;
+    }
+
+    .tabs a {
+        font-size: 12px;
+    }
+
+    .card-box {
+        padding: 14px 14px 18px;
+        border-radius: 12px;
+    }
+
+    .item-card {
+        padding: 12px 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .item-info h3 {
+        font-size: 12px;
+    }
+
+    .item-info p {
+        font-size: 9px;
+    }
+
+    .item-actions {
+        gap: 8px;
+    }
+
+    .icon-edit,
+    .icon-delete {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+
+    .icon-edit i,
+    .icon-delete i {
+        font-size: 14px;
+    }
+
+    .modal-box {
+        width: 95%;
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .modal-box h2 {
+        font-size: 16px;
+        margin-bottom: 14px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-kembali,
+    .btn-hapus {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .delete-box {
+        width: 95%;
+        border-radius: 16px;
+    }
+
+    .delete-header {
+        padding: 16px 18px;
+        gap: 12px;
+    }
+
+    .delete-header h2 {
+        font-size: 16px;
+    }
+
+    .warning-icon {
+        width: 46px;
+        height: 46px;
+        font-size: 20px;
+    }
+
+    .delete-body {
+        padding: 18px;
+    }
+
+    .delete-body h3 {
+        font-size: 15px;
+    }
+
+    .delete-body p {
+        font-size: 13px;
+    }
+
+    .form-actions-inline {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .btn-simpan,
+    .btn-batal {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .lokasi-title h1 {
+        font-size: 18px;
+    }
+
+    .tabs a {
+        font-size: 11px;
+    }
+
+    .page-top h1 {
+        font-size: 20px;
+    }
+
+    .btn-kembali {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card-header h2 {
+        font-size: 13px;
+    }
+
+    .form-group input,
+    .form-group select {
+        height: 40px;
+        font-size: 12px;
     }
 }

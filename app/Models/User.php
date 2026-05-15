@@ -11,9 +11,8 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-
-    protected $table = 'ms_users';     
-    protected $primaryKey = 'id_users'; 
+    protected $table = 'ms_users';
+    protected $primaryKey = 'id_users';
     public $timestamps = true;
 
     protected $fillable = [
@@ -43,9 +42,7 @@ class User extends Authenticatable
     public $incrementing = true;
     protected $keyType = 'int';
 
-    /**
-     * Relations
-     */
+    // Relations
     public function booking()
     {
         return $this->hasMany(Booking::class, 'id_users', 'id_users');
