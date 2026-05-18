@@ -25,7 +25,7 @@ class UserManagementController extends Controller
             $query->where('role', $request->role);
         }
 
-        $users = $query->paginate(10)->withQueryString();
+        $users = $query->get();
 
         return view('dashboard.superadmin.kelola-pengguna', compact('users'));
     }

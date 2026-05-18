@@ -6,39 +6,39 @@
 @endpush
 
 @section('content')
-    <div class="content-header">
-        <div>
-            <h1>Kelola Pengguna</h1>
-            <p>Kelola Pengguna dan Perbarui Data Pengguna</p>
-        </div>
-
-        <div class="header-actions">
-            <form method="GET" class="filter-form">
-
-                <input type="text" name="search" placeholder="Cari nama / email..." value="{{ request('search') }}">
-
-                <select name="role">
-                    <option value="">Semua Role</option>
-                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="superadmin" {{ request('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
-                    <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
-                </select>
-
-                <button type="submit">Filter</button>
-            </form>
-
-            <button class="btn-add" onclick="openTambah()">
-                <i class="fa-solid fa-plus"></i>
-                <span>Tambah Pengguna</span>
-            </button>
-        </div>
-    </div>
-
-    @if(session('success'))
-        <div class="alert-success">{{ session('success') }}</div>
-    @endif
-
     <div class="main-scroll">
+        <div class="content-header">
+            <div>
+                <h1>Kelola Pengguna</h1>
+                <p>Kelola Pengguna dan Perbarui Data Pengguna</p>
+            </div>
+
+            <div class="header-actions">
+                <form method="GET" class="filter-form">
+
+                    <input type="text" name="search" placeholder="Cari nama / email..." value="{{ request('search') }}">
+
+                    <select name="role">
+                        <option value="">Semua Role</option>
+                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="superadmin" {{ request('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
+                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                    </select>
+
+                    <button type="submit">Filter</button>
+                </form>
+
+                <button class="btn-add" onclick="openTambah()">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Pengguna</span>
+                </button>
+            </div>
+        </div>
+
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+
         <section class="user-card">
             <h3>Daftar Pengguna</h3>
 
