@@ -22,6 +22,11 @@
                 Paket Wisata
             </a>
 
+            <a href="{{ route('dashboard.user.katalogkendaraan') }}"
+                class="{{ request()->routeIs('dashboard.user.katalogkendaraan*') ? 'active' : '' }}">
+                Kendaraan
+            </a>
+
             <a href="{{ route('dashboard.user.riwayatbooking') }}"
                 class="{{ request()->routeIs('dashboard.user.riwayatbooking*') ? 'active' : '' }}">
                 Riwayat
@@ -42,6 +47,11 @@
             <a href="{{ route('guest.katalogpaketwisata') }}"
                 class="{{ request()->routeIs('guest.katalogpaketwisata*') ? 'active' : '' }}">
                 Paket Wisata
+            </a>
+
+            <a href="{{ route('guest.katalogkendaraan') }}"
+                class="{{ request()->routeIs('guest.katalogkendaraan*') ? 'active' : '' }}">
+                Kendaraan
             </a>
 
             <a href="{{ route('welcome') }}#tentang">

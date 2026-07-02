@@ -420,7 +420,7 @@ class DataBookingController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('dashboard.superadmin.kelola-data-booking', ['page' => 'detail', 'id' => $id])
+                ->route('booking.index', ['page' => 'detail', 'id' => $id])
                 ->with('success', 'Pelunasan berhasil dikonfirmasi.');
 
         } catch (\Throwable $e) {

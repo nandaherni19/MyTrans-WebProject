@@ -1,0 +1,455 @@
+/* ================================
+   KATALOG KENDARAAN - CSS
+================================ */
+
+html, body {
+    overflow-x: hidden;
+}
+
+/* HERO */
+.hero-title {
+    background: #2563eb;
+    color: white;
+    text-align: center;
+    padding: 22px 20px 16px;
+}
+
+.hero-title h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.hero-title p {
+    font-size: 14px;
+}
+
+/* ================================
+   LAYOUT WRAPPER
+================================ */
+
+.catalog-wrapper {
+    max-width: 1100px;
+    margin: 24px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 20px;
+}
+
+/* ================================
+   FILTER SIDEBAR
+================================ */
+
+.filter-sidebar {
+    background: #fff;
+    border: 1.5px solid #4b8cff;
+    border-radius: 18px;
+    padding: 18px;
+    height: fit-content;
+}
+
+.filter-sidebar h3 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.filter-group {
+    margin-bottom: 14px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.filter-group select,
+.filter-group input[type="text"] {
+    width: 100%;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 12px;
+    outline: none;
+    background: #fafafa;
+    color: #1a1a2e;
+}
+
+.filter-group input[type="range"] {
+    width: 100%;
+    padding: 6px 0;
+    border: none;
+    background: none;
+    
+    accent-color: #2563eb;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    margin-top: 3px;
+}
+
+/* CHIP FILTER */
+.chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.chip {
+    border: 1.5px solid #4b8cff;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #2563eb;
+    background: #fff;
+    transition: .15s;
+    user-select: none;
+}
+
+.chip.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+/* PROMO BANNER */
+.promo-banner {
+    background: #1a1a2e;
+    border-radius: 14px;
+    padding: 14px;
+    margin-top: 16px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.promo-banner::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: rgba(37, 99, 235, .35);
+    border-radius: 50%;
+}
+
+.promo-banner p {
+    font-size: 11px;
+    opacity: .7;
+    margin-bottom: 4px;
+}
+
+.promo-banner h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.promo-btn {
+    display: inline-block;
+    background: #f59e0b;
+    color: #1a1a2e;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* ================================
+CATALOG CONTENT
+================================ */
+
+.catalog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.catalog-header h2 {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+}
+
+.sort-select {
+    border: 1px solid #d6d6d6;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    outline: none;
+    color: #333;
+    background: #fff;
+}
+
+/* ================================
+CATALOG GRID & CARD
+================================ */
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.catalog-card {
+    background: #fff;
+    border: 1.5px solid #4b8cff;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: .2s;
+}
+
+.catalog-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(37, 99, 235, .12);
+}
+
+/* CARD IMAGE */
+.card-image {
+    position: relative;
+    padding: 10px 10px 0;
+}
+
+.card-image img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+}
+
+/* STATUS BADGE */
+.badge-status {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.badge-premium {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #fef3c7;
+    color: #b45309;
+    z-index: 2;
+}
+
+.status-tersedia {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-terbatas {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.status-tidak {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* CARD BODY */
+.catalog-body {
+    padding: 12px 14px 14px;
+}
+
+.card-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #1a1a2e;
+}
+
+.card-type {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.facility-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.fac-icon {
+    font-size: 11px;
+    color: #555;
+    background: #f0f4ff;
+    padding: 3px 7px;
+    border-radius: 6px;
+}
+
+.card-desc {
+    font-size: 11.5px;
+    color: #666;
+    line-height: 1.55;
+    margin-bottom: 10px;
+}
+
+.cap-row {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.cap-row span {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+/* PRICE */
+.price-section small {
+    display: block;
+    font-size: 11px;
+    color: #888;
+}
+
+.price-section h4 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin: 2px 0;
+}
+
+.price-section p {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+}
+
+/* CARD BUTTONS */
+.card-action {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btn-detail,
+.btn-booking {
+    flex: 1;
+    text-align: center;
+    padding: 9px 0;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    display: inline-block;
+}
+
+.btn-detail {
+    border: 1.5px solid #4b8cff;
+    color: #2563eb;
+    background: #fff;
+}
+
+.btn-booking {
+    background: #2563eb;
+    color: #fff;
+}
+
+.btn-booking.disabled {
+    background: #e5e7eb;
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* EMPTY STATE */
+.empty-box {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    grid-column: 1 / -1;
+}
+
+/* PAGINATION */
+.pagination-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.page-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid #d6d6d6;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    color: #555;
+    text-decoration: none;
+}
+
+.page-btn.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+}
+
+.page-btn:hover:not(.active) {
+    background: #f0f4ff;
+    border-color: #4b8cff;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 992px) {
+    .catalog-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-sidebar {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .catalog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-card {
+        max-width: 420px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .card-action {
+        flex-direction: column;
+    }
+}

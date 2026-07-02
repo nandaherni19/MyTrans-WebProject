@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Kota;
+use App\Models\Kendaraan;
 
 class Booking extends Model
 {

@@ -190,6 +190,93 @@
         </div>
     </section>
 
+<section class="paket-section">
+
+    <div class="paket-header">
+        <div>
+            <div class="section-label">Armada Kami</div>
+            <h2 class="section-title">Kendaraan Populer</h2>
+        </div>
+
+        <a href="{{ route('guest.katalogkendaraan') }}"
+        class="btn-lihat-semua">
+            Lihat Semua →
+        </a>
+    </div>
+
+    <div class="kendaraan-grid-home">
+
+        @foreach($kendaraanTerbaru as $kendaraan)
+
+        <div class="kendaraan-card-home">
+
+            <div class="card-image">
+
+                <img
+                    src="{{ $kendaraan->foto_kendaraan
+                        ? asset('storage/'.$kendaraan->foto_kendaraan)
+                        : asset('img/default.png') }}"
+                    alt="{{ $kendaraan->nama_kendaraan }}">
+
+                <span class="kendaraan-status-home">
+                    {{ ucfirst($kendaraan->status_kendaraan) }}
+                </span>
+
+            </div>
+
+            <div class="kendaraan-body-home">
+
+                    <div class="kendaraan-title-row">
+                        <h3>{{ $kendaraan->nama_kendaraan }}</h3>
+                    </div>
+
+                    <p class="card-type">
+                        🚘 {{ ucfirst($kendaraan->jenis_kendaraan) }}
+                    </p>
+
+                    <p class="card-desc">
+                        Kendaraan nyaman dan siap digunakan untuk perjalanan wisata maupun kebutuhan transportasi lainnya.
+                    </p>
+
+                    <p class="cap-row">
+                        👥 Kapasitas:
+                        <span>{{ $kendaraan->kapasitas }} Orang</span>
+                    </p>
+                    
+                    <div class="kendaraan-divider-home"></div>
+
+                    <div class="kendaraan-price-home">
+                         Rp {{ number_format($kendaraan->harga_sewa,0,',','.') }}
+                    </div>
+
+                    <span class="kendaraan-unit-home">
+                        /hari
+                    </span>
+
+                   <div class="kendaraan-action-home">
+
+                        <a href="{{ route('dashboard.user.detailkendaraan', $kendaraan->id_kendaraan) }}"
+                            class="btn-detail-home">
+                            Lihat Detail
+                        </a>
+
+                        <a href="{{ route('dashboard.user.detailkendaraan', $kendaraan->id_kendaraan) }}"
+                            class="btn-booking-home">
+                            Pesan Sekarang
+                        </a>
+
+                    </div>
+
+                </div>
+
+        </div>
+
+        @endforeach
+
+    </div>
+
+</section>
+
     <!-- CTA -->
     <section class="cta-section">
         <h2>Siap Memulai Petualangan Anda?</h2>
@@ -198,7 +285,7 @@
             @auth
                 <a href="{{ route('dashboard.user.katalogpaketwisata') }}" class="btn-cta-primary">🎟️ Booking Sekarang</a>
                 <a href="{{ route('dashboard.user.requestbooking') }}" class="btn-cta-outline">Request Wisata</a>
-            @else
+            @else         
                 <a href="{{ route('login') }}" class="btn-cta-primary">🎟️ Booking Sekarang</a>
                 <a href="{{ route('login') }}" class="btn-cta-outline">Request Wisata</a>
             @endauth
@@ -229,7 +316,7 @@
 
                 <div class="footer-contact-list">
                     <div class="contact-col">
-                        <p>📞 085664837559</p>
+                        <p>📞 +6282140360481</p>
                         <p>📷 @myTranss_</p>
                         <p>🎵 @Pariwisataku_</p>
                     </div>

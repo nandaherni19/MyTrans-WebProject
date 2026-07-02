@@ -38,13 +38,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Budget Per Orang</label>
-                    <input type="number" id="budget" placeholder="Contoh: 1500000">
-                </div>
-
-                <small class="note">Estimasi budget per orang dalam Rupiah</small>
-
-                <div class="form-group">
                     <label>Keterangan Tambahan *</label>
                     <textarea id="keterangan" rows="4"
                         placeholder="Ceritakan keinginan trip Anda, kebutuhan khusus, preferensi akomodasi, dll"
@@ -79,7 +72,6 @@
             const berangkat = document.getElementById('tanggal_keberangkatan').value;
             const kembali = document.getElementById('tanggal_kembali').value;
             const peserta = document.getElementById('jumlah_peserta').value;
-            const budget = document.getElementById('budget').value;
             const keterangan = document.getElementById('keterangan').value;
 
             // Validasi
@@ -99,14 +91,9 @@
             pesan += `Tanggal Berangkat: ${berangkat}\n`;
             pesan += `Tanggal Kembali: ${kembali}\n`;
             pesan += `Jumlah Peserta: ${peserta} orang\n`;
-
-            if (budget) {
-                pesan += `Budget: Rp ${budget}/orang\n`;
-            }
-
             pesan += `\nKeterangan Tambahan:\n${keterangan}`;
 
-            const noAdmin = '6285664837559';
+            const noAdmin = '6282140360481';
             const url = `https://wa.me/${noAdmin}?text=${encodeURIComponent(pesan)}`;
 
             // Popup sukses

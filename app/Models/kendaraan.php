@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PaketWisata;
+use App\Models\Booking;
 
 class Kendaraan extends Model
 {
@@ -15,10 +16,11 @@ class Kendaraan extends Model
         'nama_kendaraan',
         'jenis_kendaraan',
         'kapasitas',
-        'plat_nomor',
+        // 'plat_nomor',
         'harga_sewa',
         'status_kendaraan',
-        'foto_kendaraan'
+        'foto_kendaraan',
+        // 'fasilitas'
     ];
 
     public function paketWisata()

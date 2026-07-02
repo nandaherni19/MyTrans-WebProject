@@ -23,7 +23,6 @@ class KendaraanController extends Controller
             'nama_kendaraan' => 'required',
             'jenis_kendaraan' => 'required|in:bus,elf,hiace,mobil',
             'kapasitas' => 'required|integer|min:1',
-            'plat_nomor' => 'required',
             'harga_sewa' => 'required|numeric|min:0',
             'status_kendaraan' => 'required|in:tersedia,tidak_tersedia,maintenance',
             'foto_kendaraan' => 'nullable|image|mimes:jpg,jpeg,png|max:512'
@@ -45,6 +44,7 @@ class KendaraanController extends Controller
     }
 
     public function update(Request $request, $id)
+
     {
         $kendaraan = Kendaraan::findOrFail($id);
 
@@ -52,7 +52,6 @@ class KendaraanController extends Controller
             'nama_kendaraan' => 'required',
             'jenis_kendaraan' => 'required|in:bus,elf,hiace,mobil',
             'kapasitas' => 'required|integer|min:1',
-            'plat_nomor' => 'required',
             'harga_sewa' => 'required|numeric|min:0',
             'status_kendaraan' => 'required|in:tersedia,tidak_tersedia,maintenance',
             'foto_kendaraan' => 'nullable|image|mimes:jpg,jpeg,png|max:512'

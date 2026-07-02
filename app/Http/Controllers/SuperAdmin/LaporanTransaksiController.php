@@ -167,7 +167,7 @@ class LaporanTransaksiController extends Controller
     }
 
     // ===== EXPORT XLSX =====
-    public function exportXLS(Request $request)
+    public function exportXls(Request $request)
     {
         $dariTanggal = $request->query('dari_tanggal');
         $sampaiTanggal = $request->query('sampai_tanggal');

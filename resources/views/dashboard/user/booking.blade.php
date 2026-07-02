@@ -87,7 +87,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label>No KTP <span>*</span></label>
                                 <div class="input-box {{ $errors->has('no_ktp') ? 'input-error' : '' }}">
                                     <input type="text" name="no_ktp" placeholder="Masukkan No KTP"
@@ -97,7 +97,7 @@
                                 @error('no_ktp')
                                     <small class="error-text">{{ $message }}</small>
                                 @enderror
-                            </div>
+                            </div> -->
 
                             <div class="form-group no-margin">
                                 <label>No Telepon <span>*</span></label>
@@ -237,7 +237,7 @@
                         <div class="booking-card payment-card">
                             <h3 class="card-title">Metode Pembayaran</h3>
 
-                            <div class="payment-method qris selected" id="qrisToggle" style="cursor: pointer;">
+                            <!-- <div class="payment-method qris selected" id="qrisToggle" style="cursor: pointer;">
                                 <div class="payment-icon qr-icon">▦</div>
                                 <div class="payment-text">
                                     <strong>QRIS</strong>
@@ -260,9 +260,9 @@
                                         <strong>Qris - Lunas</strong>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
-                            {{-- TAMBAHAN CASH --}}
+                            {{--  CASH --}}
                             <div class="payment-method cash" id="cashToggle" style="cursor: pointer;">
                                 <div class="payment-icon cash-icon">
                                     <i class="fa-solid fa-wallet"></i>
@@ -291,7 +291,11 @@
                             </div>
 
                             <input type="hidden" name="tipe_pembayaran" id="tipe_pembayaran"
-                                value="{{ old('tipe_pembayaran') }}">
+                                value="cash">
+
+                             <!-- <input type="hidden" name="tipe_pembayaran" id="tipe_pembayaran"
+                                value="{{ old('tipe_pembayaran') }}"> -->
+                                
                             <input type="hidden" name="opsi_pembayaran" id="opsi_pembayaran"
                                 value="{{ old('opsi_pembayaran') }}">
 
@@ -413,11 +417,19 @@
                                 </strong>
                             </div>
 
-                            <button type="submit" class="pay-btn" id="btnBayar"
-                                style="border: none; cursor: pointer; width: 100%;">
+                            <button type="button" class="pay-btn" id="btnBayar"
+                                style="border: none; cursor: pointer; width: 100%;"
+                                onclick="kirimKeWA()">
                                 <i class="fa-solid fa-credit-card"></i>
                                 Konfirmasi & Bayar
                             </button>
+
+<!-- 
+                             <button type="submit" class="pay-btn" id="btnBayar"
+                                style="border: none; cursor: pointer; width: 100%;">
+                                <i class="fa-solid fa-credit-card"></i>
+                                Konfirmasi & Bayar
+                            </button> -->
 
                             <div class="summary-notes">
                                 <div><i class="fa-solid fa-circle-check"></i> Konfirmasi booking dalam 24 Jam</div>
@@ -431,7 +443,7 @@
         </section>
     @endif
 
-    @if($page === 'qris')
+    <!-- @if($page === 'qris')
         <section class="qris-page">
             <h1 class="qris-title">Kode Pembayaran</h1>
 
@@ -603,7 +615,7 @@
             </div>
 
         </section>
-    @endif
+    @endif -->
 
 
     @if($page === 'cash')
@@ -708,7 +720,7 @@
                             Untuk pembayaran tunai, silakan hubungi admin kami melalui WhatsApp
                             untuk mendapatkan instruksi lebih lanjut.
                         </p>
-                        <a href="https://wa.me/6285664837559?text=Halo admin, saya ingin konfirmasi booking ID {{ $bookingData['id_booking'] ?? '-' }}"
+                        <a href="https://wa.me/6282140360481?text=Halo admin, saya ingin konfirmasi booking ID {{ $bookingData['id_booking'] ?? '-' }}"
                             class="btn-wa" target="_blank" onclick="setTimeout(() => {
                                     window.location.href='{{ route('dashboard.user.riwayatbooking') }}';
                                 }, 1000)">
@@ -723,6 +735,56 @@
 
     @push('scripts')
     <script>
+
+    function kirimKeWA() {
+    const opsiInput = document.getElementById('opsi_pembayaran');
+
+    // Validasi: pastikan user sudah pilih DP atau Lunas
+    if (!opsiInput.value) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Pilih opsi pembayaran',
+            text: 'Silakan pilih Cash - DP atau Cash - Lunas terlebih dahulu.',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    // Ambil data dari form
+    const nama         = document.querySelector('input[name="nama"]')?.value || '-';
+    const email        = document.querySelector('input[name="email"]')?.value || '-';
+    const noHp         = document.querySelector('input[name="no_hp"]')?.value || '-';
+    const peserta      = document.getElementById('jumlah_peserta')?.value || '-';
+    const catatan      = document.querySelector('input[name="catatan"]')?.value || '-';
+    const opsi         = opsiInput.value === 'dp' ? 'Cash - DP (Down Payment)' : 'Cash - Lunas';
+    const total        = document.getElementById('totalPembayaran')?.innerText || '-';
+    const tglBerangkat = document.getElementById('tanggal_berangkat')?.value || '-';
+    const tglKembali   = document.getElementById('tanggal_kembali')?.value || '-';
+
+    const paket = "{{ $paket ? $paket->nama_paket : ($request ? 'Custom Trip (Request)' : '-') }}";
+
+    // Susun pesan WA
+    const pesan = `Halo Admin, saya ingin melakukan booking:%0A%0A`
+        + `*Nama:* ${nama}%0A`
+        + `*Email:* ${email}%0A`
+        + `*No HP:* ${noHp}%0A`
+        + `*Paket:* ${paket}%0A`
+        + `*Jumlah Peserta:* ${peserta} orang%0A`
+        + `*Tanggal Berangkat:* ${tglBerangkat}%0A`
+        + `*Tanggal Kembali:* ${tglKembali}%0A`
+        + `*Metode Pembayaran:* ${opsi}%0A`
+        + `*Total Pembayaran:* Rp ${total}%0A`
+        + `*Catatan:* ${catatan}`;
+
+    // Buka WhatsApp admin di tab baru
+    window.open(`https://wa.me/6282140360481?text=${pesan}`, '_blank');
+
+    // Submit form setelah jeda 1 detik
+    setTimeout(() => {
+        document.querySelector('form').submit();
+    }, 1000);
+}
+
         document.addEventListener('DOMContentLoaded', function () {
             const qrisToggle = document.getElementById('qrisToggle');
             const cashToggle = document.getElementById('cashToggle');
@@ -814,21 +876,21 @@
             }
             updateRingkasan();
 
-            if (qrisToggle) {
-                qrisToggle.addEventListener('click', function () {
-                    opsiQris.style.display = 'block';
-                    opsiCash.style.display = 'none';
-                    tipeInput.value = 'qris';
-                    opsiInput.value = '';
-                    resetRadio();
-                    setLunas();
-                });
-            }
+            // if (qrisToggle) {
+            //     qrisToggle.addEventListener('click', function () {
+            //         opsiQris.style.display = 'block';
+            //         opsiCash.style.display = 'none';
+            //         tipeInput.value = 'qris';
+            //         opsiInput.value = '';
+            //         resetRadio();
+            //         setLunas();
+            //     });
+            // }
 
             if (cashToggle) {
                 cashToggle.addEventListener('click', function () {
                     opsiCash.style.display = 'block';
-                    opsiQris.style.display = 'none';
+                    // opsiQris.style.display = 'none';
                     tipeInput.value = 'cash';
                     opsiInput.value = '';
                     resetRadio();
@@ -836,25 +898,25 @@
                 });
             }
 
-            if (pilihDp) {
-                pilihDp.addEventListener('click', function () {
-                    resetRadio();
-                    radioDp.classList.add('active');
-                    tipeInput.value = 'qris';
-                    opsiInput.value = 'dp';
-                    setDp();
-                });
-            }
+            // if (pilihDp) {
+            //     pilihDp.addEventListener('click', function () {
+            //         resetRadio();
+            //         radioDp.classList.add('active');
+            //         tipeInput.value = 'qris';
+            //         opsiInput.value = 'dp';
+            //         setDp();
+            //     });
+            // }
 
-            if (pilihPelunasan) {
-                pilihPelunasan.addEventListener('click', function () {
-                    resetRadio();
-                    radioPelunasan.classList.add('active');
-                    tipeInput.value = 'qris';
-                    opsiInput.value = 'lunas';
-                    setLunas();
-                });
-            }
+            // if (pilihPelunasan) {
+            //     pilihPelunasan.addEventListener('click', function () {
+            //         resetRadio();
+            //         radioPelunasan.classList.add('active');
+            //         tipeInput.value = 'qris';
+            //         opsiInput.value = 'lunas';
+            //         setLunas();
+            //     });
+            // }
 
             if (pilihCashDp) {
                 pilihCashDp.addEventListener('click', function () {
@@ -1279,51 +1341,51 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+        // document.addEventListener('DOMContentLoaded', function () {
 
-            const bookingId = "{{ $bookingData['id_booking'] ?? '' }}";
-            let sudahMuncul = false;
+        //     const bookingId = "{{ $bookingData['id_booking'] ?? '' }}";
+        //     let sudahMuncul = false;
 
-            const intervalCheck = setInterval(checkPaymentStatus, 5000);
+        //     const intervalCheck = setInterval(checkPaymentStatus, 5000);
 
-            async function checkPaymentStatus() {
-                if (!bookingId || sudahMuncul) return;
+        //     async function checkPaymentStatus() {
+        //         if (!bookingId || sudahMuncul) return;
 
-                try {
-                    const response = await fetch(`/booking/check-status/${bookingId}`);
-                    const data = await response.json();
+        //         try {
+        //             const response = await fetch(`/booking/check-status/${bookingId}`);
+        //             const data = await response.json();
 
-                    console.log(data);
+        //             console.log(data);
 
-                    if (
-                        data.status_pembayaran === 'berhasil' ||
-                        data.status_booking === 'lunas' ||
-                        data.status_booking === 'dp_lunas'
+        //             if (
+        //                 data.status_pembayaran === 'berhasil' ||
+        //                 data.status_booking === 'lunas' ||
+        //                 data.status_booking === 'dp_lunas'
 
-                    ) {
-                        sudahMuncul = true;
+        //             ) {
+        //                 sudahMuncul = true;
 
-                        // hentikan polling
-                        clearInterval(intervalCheck);
+        //                 // hentikan polling
+        //                 clearInterval(intervalCheck);
 
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Pembayaran Berhasil',
-                            text: 'Pembayaran berhasil dilakukan!',
-                            confirmButtonText: 'Lihat Riwayat',
-                            timer: 4000,
-                            timerProgressBar: true
-                        }).then(() => {
-                            // redirect ke halaman riwayat booking
-                            window.location.href = "{{ route('dashboard.user.riwayatbooking') }}";
-                        });
-                    }
+        //                 Swal.fire({
+        //                     icon: 'success',
+        //                     title: 'Pembayaran Berhasil',
+        //                     text: 'Pembayaran berhasil dilakukan!',
+        //                     confirmButtonText: 'Lihat Riwayat',
+        //                     timer: 4000,
+        //                     timerProgressBar: true
+        //                 }).then(() => {
+        //                     // redirect ke halaman riwayat booking
+        //                     window.location.href = "{{ route('dashboard.user.riwayatbooking') }}";
+        //                 });
+        //             }
 
-                } catch (error) {
-                    console.log('Gagal check status pembayaran');
-                }
-            }
-        });
+        //         } catch (error) {
+        //             console.log('Gagal check status pembayaran');
+        //         }
+        //     }
+        // });
     </script>
 </main>
 @endsection

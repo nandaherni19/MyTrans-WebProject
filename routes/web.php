@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SuperAdmin\PaketWisataController;
 use App\Http\Controllers\SuperAdmin\DestinasiController;
@@ -18,23 +19,28 @@ use App\Http\Controllers\User\RiwayatBookingUserController;
 use App\Models\Booking;
 use App\Http\Controllers\MidtransTestController;
 use App\Http\Controllers\User\MidtransCallbackController;
+use App\Http\Controllers\User\KendaraanUserController;
 
 Route::post('/midtrans/webhook', [MidtransCallbackController::class, 'handle']);
 
 // home - landing page
-// Route::get('/welcome', [GuestController::class, 'welcome'])->name('welcome'); (ubah)
 Route::get('/', [GuestController::class, 'welcome'])->name('welcome');
 
 Route::get('/paket-wisata', [PaketWisataUserController::class, 'guestIndex'])
     ->name('guest.katalogpaketwisata');
 Route::get('/paket-wisata/detail/{id}', [PaketWisataUserController::class, 'guestDetail'])
     ->name('guest.detailpaket');
+Route::get('/kendaraan', [KendaraanUserController::class, 'guestIndex'])
+    ->name('guest.katalogkendaraan');
+Route::get('/kendaraan/detail/{id}', [KendaraanUserController::class, 'guestDetail'])
+    ->name('guest.detailkendaraan');
 
 // ================= LOGOUT =================
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', function () {
     return redirect()->route('login');
 });
+
 // ================= REGISTER =================
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
@@ -62,49 +68,58 @@ Route::get('/dashboard/admin', [SuperAdminDashboardController::class, 'index'])
     ->name('dashboard.beranda-admin');
 
 // DASHBOARD SUPERADMIN - KELOLA PENGGUNA
-Route::prefix('/dashboard/superadmin/kelola-pengguna')->controller(UserManagementController::class)->middleware(['auth', 'role:superadmin'])->group(function () {
-    Route::get('/', 'index')->name('dashboard.superadmin.kelola-pengguna');
-    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-pengguna.store');
-    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-pengguna.update');
-    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-pengguna.delete');
-});
+Route::prefix('/dashboard/superadmin/kelola-pengguna')
+    ->middleware(['auth', 'role:superadmin'])
+    ->group(function () {
+        Route::get('/', [UserManagementController::class, 'index'])->name('dashboard.superadmin.kelola-pengguna');
+        Route::post('/store', [UserManagementController::class, 'store'])->name('dashboard.superadmin.kelola-pengguna.store');
+        Route::put('/update/{id}', [UserManagementController::class, 'update'])->name('dashboard.superadmin.kelola-pengguna.update');
+        Route::delete('/delete/{id}', [UserManagementController::class, 'destroy'])->name('dashboard.superadmin.kelola-pengguna.delete');
+    });
 
 // DASHBOARD SUPERADMIN - KELOLA PAKET WISATA
-Route::prefix('/dashboard/superadmin/kelola-paket-wisata')->controller(PaketWisataController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
-    Route::get('/', 'index')->name('dashboard.superadmin.kelola-paket-wisata');
-    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-paket-wisata.store');
-    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-paket-wisata.update');
-    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-paket-wisata.delete');
-});
+Route::prefix('/dashboard/superadmin/kelola-paket-wisata')
+    ->middleware(['auth', 'role:admin,superadmin'])
+    ->group(function () {
+        Route::get('/', [PaketWisataController::class, 'index'])->name('dashboard.superadmin.kelola-paket-wisata');
+        Route::post('/store', [PaketWisataController::class, 'store'])->name('dashboard.superadmin.kelola-paket-wisata.store');
+        Route::put('/update/{id}', [PaketWisataController::class, 'update'])->name('dashboard.superadmin.kelola-paket-wisata.update');
+        Route::delete('/delete/{id}', [PaketWisataController::class, 'destroy'])->name('dashboard.superadmin.kelola-paket-wisata.delete');
+    });
 
-Route::middleware(['auth', 'role:admin,superadmin'])->prefix('/dashboard/superadmin/kelola-destinasi')->group(function () {
-    Route::get('/{section?}/{mode?}', [DestinasiController::class, 'index'])
-        ->name('dashboard.superadmin.kelola-destinasi');
+// DASHBOARD SUPERADMIN - KELOLA DESTINASI
+Route::middleware(['auth', 'role:admin,superadmin'])
+    ->prefix('/dashboard/superadmin/kelola-destinasi')
+    ->group(function () {
+        Route::get('/{section?}/{mode?}', [DestinasiController::class, 'index'])
+            ->name('dashboard.superadmin.kelola-destinasi');
 
-    // Provinsi
-    Route::post('/provinsi/store', [DestinasiController::class, 'storeProvinsi'])
-        ->name('dashboard.superadmin.kelola-destinasi.provinsi.store');
-    Route::put('/provinsi/update/{id}', [DestinasiController::class, 'updateProvinsi'])
-        ->name('dashboard.superadmin.kelola-destinasi.provinsi.update');
-    Route::delete('/provinsi/delete/{id}', [DestinasiController::class, 'destroyProvinsi'])
-        ->name('dashboard.superadmin.kelola-destinasi.provinsi.delete');
+        // Provinsi
+        Route::post('/provinsi/store', [DestinasiController::class, 'storeProvinsi'])
+            ->name('dashboard.superadmin.kelola-destinasi.provinsi.store');
+        Route::put('/provinsi/update/{id}', [DestinasiController::class, 'updateProvinsi'])
+            ->name('dashboard.superadmin.kelola-destinasi.provinsi.update');
+        Route::delete('/provinsi/delete/{id}', [DestinasiController::class, 'destroyProvinsi'])
+            ->name('dashboard.superadmin.kelola-destinasi.provinsi.delete');
 
-    // Kota
-    Route::post('/kota/store', [DestinasiController::class, 'storeKota'])
-        ->name('dashboard.superadmin.kelola-destinasi.kota.store');
-    Route::put('/kota/update/{id}', [DestinasiController::class, 'updateKota'])
-        ->name('dashboard.superadmin.kelola-destinasi.kota.update');
-    Route::delete('/kota/delete/{id}', [DestinasiController::class, 'destroyKota'])
-        ->name('dashboard.superadmin.kelola-destinasi.kota.delete');
-});
+        // Kota
+        Route::post('/kota/store', [DestinasiController::class, 'storeKota'])
+            ->name('dashboard.superadmin.kelola-destinasi.kota.store');
+        Route::put('/kota/update/{id}', [DestinasiController::class, 'updateKota'])
+            ->name('dashboard.superadmin.kelola-destinasi.kota.update');
+        Route::delete('/kota/delete/{id}', [DestinasiController::class, 'destroyKota'])
+            ->name('dashboard.superadmin.kelola-destinasi.kota.delete');
+    });
 
 // DASHBOARD SUPERADMIN - KELOLA KENDARAAN
-Route::prefix('/dashboard/superadmin/kelola-kendaraan')->controller(KendaraanController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
-    Route::get('/', 'index')->name('dashboard.superadmin.kelola-kendaraan');
-    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-kendaraan.store');
-    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-kendaraan.update');
-    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-kendaraan.delete');
-});
+Route::prefix('/dashboard/superadmin/kelola-kendaraan')
+    ->middleware(['auth', 'role:admin,superadmin'])
+    ->group(function () {
+        Route::get('/', [KendaraanController::class, 'index'])->name('dashboard.superadmin.kelola-kendaraan');
+        Route::post('/store', [KendaraanController::class, 'store'])->name('dashboard.superadmin.kelola-kendaraan.store');
+        Route::put('/update/{id}', [KendaraanController::class, 'update'])->name('dashboard.superadmin.kelola-kendaraan.update');
+        Route::delete('/delete/{id}', [KendaraanController::class, 'destroy'])->name('dashboard.superadmin.kelola-kendaraan.delete');
+    });
 
 // DASHBOARD SUPERADMIN - KELOLA DATA BOOKING
 Route::get(
@@ -121,14 +136,12 @@ Route::prefix('/dashboard/superadmin/kelola-data-booking')
         Route::get('/{id}/edit', [DataBookingController::class, 'edit'])->name('booking.edit');
         Route::post('/store', [DataBookingController::class, 'store'])->name('booking.store');
         Route::put('/update/{id}', [DataBookingController::class, 'update'])->name('booking.update');
-        Route::delete('/delete/{id}', [DataBookingController::class, 'destroy'])->name('booking.delete');
-        
-        // Route tambahan yang harus masuk grup agar namanya jadi booking.batal dll
+        // Route::delete('/delete/{id}', [DataBookingController::class, 'destroy'])->name('booking.delete');
         Route::get('/sisa/{id}', [DataBookingController::class, 'getSisa'])->name('booking.sisa');
         Route::post('/{id}/lunasi', [DataBookingController::class, 'lunasi'])->name('booking.lunasi');
         Route::post('/qris-pelunasan/{id}', [DataBookingController::class, 'qrisPelunasan'])->name('booking.qris-pelunasan');
         Route::patch('/{id}/batal', [DataBookingController::class, 'batal'])->name('booking.batal');
-        Route::patch('/{id}/refund-selesai', [DataBookingController::class, 'refund-selesai'])->name('booking.refund-selesai');
+        Route::patch('/{id}/refund-selesai', [DataBookingController::class, 'refundSelesai'])->name('booking.refund-selesai');
         Route::get('/kendaraan-tersedia', [DataBookingController::class, 'kendaraanTersedia'])->name('booking.kendaraan-tersedia');
     });
 
@@ -157,17 +170,16 @@ Route::patch(
     [DataBookingController::class, 'refundSelesai']
 )->name('dashboard.superadmin.kelola-data-booking.refund-selesai');
 
-// Route::get('/booking/detail', [BookingController::class, 'detail']);
-Route::prefix('/dashboard/superadmin/kelola-laporan-transaksi')->controller(LaporanTransaksiController::class)->middleware(['auth', 'role:admin,superadmin'])->group(function () {
-    Route::get('/', 'index')->name('dashboard.superadmin.kelola-laporan-transaksi');
-
-
-    Route::get('/export-xls', 'exportXls')
-        ->name('dashboard.superadmin.kelola-laporan-transaksi.export-xls');
-    Route::post('/store', 'store')->name('dashboard.superadmin.kelola-laporan-transaksi.store');
-    Route::put('/update/{id}', 'update')->name('dashboard.superadmin.kelola-laporan-transaksi.update');
-    Route::delete('/delete/{id}', 'destroy')->name('dashboard.superadmin.kelola-laporan-transaksi.delete');
-});
+// DASHBOARD SUPERADMIN - KELOLA LAPORAN TRANSAKSI
+Route::prefix('/dashboard/superadmin/kelola-laporan-transaksi')
+    ->middleware(['auth', 'role:admin,superadmin'])
+    ->group(function () {
+        Route::get('/', [LaporanTransaksiController::class, 'index'])->name('dashboard.superadmin.kelola-laporan-transaksi');
+        Route::get('/export-xls', [LaporanTransaksiController::class, 'exportXls'])->name('dashboard.superadmin.kelola-laporan-transaksi.export-xls');
+        // Route::post('/store', [LaporanTransaksiController::class, 'store'])->name('dashboard.superadmin.kelola-laporan-transaksi.store');
+        // Route::put('/update/{id}', [LaporanTransaksiController::class, 'update'])->name('dashboard.superadmin.kelola-laporan-transaksi.update');
+        // Route::delete('/delete/{id}', [LaporanTransaksiController::class, 'destroy'])->name('dashboard.superadmin.kelola-laporan-transaksi.delete');
+    });
 
 Route::get(
     '/superadmin/laporan-transaksi/export-pdf',
@@ -190,30 +202,26 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
         ->name('dashboard.superadmin.profile-password-update');
 });
 
-//LAPORAN TRANSAKSI
+// LAPORAN TRANSAKSI
 Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])
     ->name('laporan-transaksi.index');
 
 // ================= DASHBOARD USER =================
-// Route::get('/dashboard/user', [UserDashboardController::class, 'index'])
 Route::get('/dashboard/user', [GuestController::class, 'welcome'])
     ->middleware(['auth', 'role:user'])
     ->name('dashboard.user');
 
 // ================= PROFILE USER =================
 Route::middleware(['auth', 'role:user'])->group(function () {
-    // Hapus 4 GET lama, ganti jadi 1:
     Route::get('/dashboard/user/profile', [UserProfileController::class, 'show'])
         ->name('dashboard.user.profile');
-
-    // POST tetap 2, tidak berubah:
     Route::post('/dashboard/user/profile-update', [UserProfileController::class, 'update'])
         ->name('dashboard.user.profile-update');
     Route::post('/dashboard/user/profile-password-update', [UserProfileController::class, 'updatePassword'])
         ->name('dashboard.user.profile-password-update');
 });
 
-//RIWAYAT BOOKING - USER
+// RIWAYAT BOOKING - USER
 Route::get(
     '/dashboard/user/riwayatbooking/{filter?}/{page?}',
     [RiwayatBookingUserController::class, 'index']
@@ -221,7 +229,6 @@ Route::get(
 
 // DETAIL PESANAN - USER
 Route::get('/dashboard/user/detail-pesanan/{id}', function ($id) {
-
     $data = Booking::with([
         'paket.kota.provinsi',
         'pembayaranTerakhir',
@@ -230,25 +237,39 @@ Route::get('/dashboard/user/detail-pesanan/{id}', function ($id) {
     ])->findOrFail($id);
 
     return view('dashboard.user.detailpesanan', compact('data'));
-
 })->middleware(['auth', 'role:user'])
     ->name('dashboard.user.detailpesanan');
 
 // PAKET WISATA - USER
 Route::get('/dashboard/user/katalogpaketwisata', [PaketWisataUserController::class, 'index'])
-    ->name('dashboard.user.katalogpaketwisata')
-;
+    ->name('dashboard.user.katalogpaketwisata');
 Route::get('/dashboard/user/detailpaket/{id}', [PaketWisataUserController::class, 'detail'])
-    ->name('dashboard.user.detailpaket')
-;
+    ->name('dashboard.user.detailpaket');
 Route::get('/dashboard/user/requestbooking', function () {
     return view('dashboard.user.requestbooking');
 })->middleware(['auth', 'role:user'])->name('dashboard.user.requestbooking');
+
+// KATALOG KENDARAAN
+Route::get('/dashboard/user/katalogkendaraan', [KendaraanUserController::class, 'index'])
+    ->name('dashboard.user.katalogkendaraan');
+Route::get('/dashboard/user/detailkendaraan/{id}', [KendaraanUserController::class, 'detail'])
+    ->name('dashboard.user.detailkendaraan');
+
+// FORM BOOKING KENDARAAN
+Route::get('/dashboard/user/booking-kendaraan/{id}', [KendaraanUserController::class, 'booking'])
+    ->middleware(['auth', 'role:user'])
+    ->name('dashboard.user.booking-kendaraan');
+
+// SIMPAN BOOKING KENDARAAN
+Route::post('/dashboard/user/booking-kendaraan/store', [KendaraanUserController::class, 'storeBooking'])
+    ->middleware(['auth', 'role:user'])
+    ->name('dashboard.user.booking-kendaraan.store');
 
 // BOOKING - dari Paket Wisata
 Route::get('/dashboard/user/booking/paket/{id_paket}', [BookingController::class, 'bookingPaket'])
     ->middleware(['auth', 'role:user'])
     ->name('dashboard.user.booking.paket');
+
 // KENDARAAN TERSEDIA (AJAX)
 Route::get('/dashboard/user/kendaraan-tersedia', [PaketWisataUserController::class, 'kendaraanTersedia'])
     ->middleware(['auth', 'role:user'])
@@ -265,8 +286,7 @@ Route::get('/dashboard/user/booking/cash/{id}', [BookingController::class, 'show
     ->name('dashboard.user.booking.cash');
 
 // CEK STATUS PEMBAYARAN MIDTRANS
-Route::get('/dashboard/user/cek-status-pembayaran/{id}', [BookingController::class, 'cekStatusPembayaran'])
-    ->middleware(['auth', 'role:user'])
+Route::get('/dashboard/user/cek-status-pembayaran/{id}', [BookingController::class, 'checkStatus'])    ->middleware(['auth', 'role:user'])
     ->name('dashboard.user.cek-status-pembayaran');
 
 // SUBMIT FORM BOOKING

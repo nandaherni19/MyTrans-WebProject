@@ -37,24 +37,21 @@
             </div>
 
             <div class="actions">
-                <button onclick="openQris()" class="btn-qris payment-choice" type="button" id="btnQris">
-                    <i class="fa-solid fa-qrcode"></i>
-                    Bayar via QRIS
-                </button>
-
+            @if($sisaBayar > 0)
                 <button onclick="openCash()" class="btn-whatsapp payment-choice" type="button" id="btnCash">
                     <i class="fa-brands fa-whatsapp"></i>
-                    Bayar Cash
+                Bayar Cash
                 </button>
+            @endif
 
-                <a href="{{ route('dashboard.user.detailpesanan', $booking->id_booking) }}" class="btn-outline">
-                    <i class="fa-solid fa-receipt"></i>
-                    Detail Pesanan
-                </a>
-            </div>
+    <a href="{{ route('dashboard.user.detailpesanan', $booking->id_booking) }}" class="btn-outline">
+        <i class="fa-solid fa-receipt"></i>
+        Detail Pesanan
+    </a>
+</div>
         </div>
 
-        <div id="qrisModal" class="modal">
+        <!-- <div id="qrisModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeQris()">&times;</span>
                 <h3>Scan QRIS untuk Pelunasan</h3>
@@ -63,7 +60,7 @@
                     <p>Loading QRIS...</p>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div id="cashModal" class="modal">
             <div class="modal-content">
@@ -109,7 +106,7 @@
                         . '. Sisa bayar: Rp ' . number_format($sisaBayar, 0, ',', '.');
                 @endphp
 
-                <a href="https://wa.me/6285664837559?text={{ urlencode($waMessage) }}" target="_blank" class="btn-primary"
+                <a href="https://wa.me/6282140360481?text={{ urlencode($waMessage) }}" target="_blank" class="btn-primary"
                     style="margin-top:15px; display:inline-flex; text-decoration:none;">
                     <i class="fa-brands fa-whatsapp"></i>
                     Konfirmasi via WhatsApp
@@ -121,63 +118,79 @@
 
 @push('scripts')
     <script>
-        let interval;
+        // Cek status setiap 5 detik
+const pollingInterval = setInterval(() => {
+    fetch(`/booking/check-status/{{ $booking->id_booking }}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status_pembayaran === 'berhasil') {
+                clearInterval(pollingInterval);
+                // Reload halaman agar tombol bayar hilang otomatis
+                window.location.reload();
+            }
+        })
+        .catch(() => {});
+}, 5000);
 
-        function startCheckStatus() {
-            interval = setInterval(() => {
-                fetch(`/booking/check-status/{{ $booking->id_booking }}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status_pembayaran === 'berhasil') {
-                            clearInterval(interval);
 
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Pembayaran berhasil',
-                                text: 'Booking Anda sudah terkonfirmasi'
-                            }).then(() => {
-                                window.location.href = "{{ route('dashboard.user.detailpesanan', $booking->id_booking) }}";
-                            });
-                        }
-                    });
-            }, 3000);
-        }
 
-        function openQris() {
-            document.getElementById('btnQris').classList.add('active');
-            document.getElementById('btnCash').classList.remove('active');
+        // let interval;
 
-            document.getElementById('qrisModal').style.display = 'flex';
+        // function startCheckStatus() {
+        //     interval = setInterval(() => {
+        //         fetch(`/booking/check-status/{{ $booking->id_booking }}`)
+        //             .then(res => res.json())
+        //             .then(data => {
+        //                 if (data.status_pembayaran === 'berhasil') {
+        //                     clearInterval(interval);
 
-            fetch("{{ route('dashboard.user.booking.pelunasan.qris', $booking->id_booking) }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.qr_url) {
-                        document.getElementById('qrisContainer').innerHTML =
-                            `<img src="${data.qr_url}" width="250">`;
+        //                     Swal.fire({
+        //                         icon: 'success',
+        //                         title: 'Pembayaran berhasil',
+        //                         text: 'Booking Anda sudah terkonfirmasi'
+        //                     }).then(() => {
+        //                         window.location.href = "{{ route('dashboard.user.detailpesanan', $booking->id_booking) }}";
+        //                     });
+        //                 }
+        //             });
+        //     }, 3000);
+        // }
 
-                        // mulai cek status pembayaran
-                        startCheckStatus();
+        // function openQris() {
+        //     document.getElementById('btnQris').classList.add('active');
+        //     document.getElementById('btnCash').classList.remove('active');
 
-                    } else {
-                        document.getElementById('qrisContainer').innerHTML =
-                            `<p>Gagal load QRIS</p>`;
-                    }
-                });
-        }
+        //     document.getElementById('qrisModal').style.display = 'flex';
 
-        function closeQris() {
-            document.getElementById('qrisModal').style.display = 'none';
-        }
+        //     fetch("{{ route('dashboard.user.booking.pelunasan.qris', $booking->id_booking) }}", {
+        //         method: "POST",
+        //         headers: {
+        //             "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        //         }
+        //     })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             if (data.qr_url) {
+        //                 document.getElementById('qrisContainer').innerHTML =
+        //                     `<img src="${data.qr_url}" width="250">`;
+
+        //                 // mulai cek status pembayaran
+        //                 startCheckStatus();
+
+        //             } else {
+        //                 document.getElementById('qrisContainer').innerHTML =
+        //                     `<p>Gagal load QRIS</p>`;
+        //             }
+        //         });
+        // }
+
+        // function closeQris() {
+        //     document.getElementById('qrisModal').style.display = 'none';
+        // }
 
         function openCash() {
             document.getElementById('btnCash').classList.add('active');
-            document.getElementById('btnQris').classList.remove('active');
+            // document.getElementById('btnQris').classList.remove('active');
 
             document.getElementById('cashModal').style.display = 'flex';
         }

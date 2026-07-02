@@ -1,0 +1,502 @@
+/* ================================
+   DETAIL KENDARAAN - CSS
+================================ */
+
+html, body { overflow-x: hidden; }
+
+/* BREADCRUMB */
+.breadcrumb {
+    padding: 12px 24px;
+    font-size: 13px;
+    color: #888;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+.breadcrumb a { color: #2563eb; text-decoration: none; }
+.breadcrumb span { margin: 0 6px; }
+
+/* MAIN SECTION */
+.detail-section {
+    padding: 0 24px 60px;
+}
+.detail-container {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+.detail-left { flex: 1; min-width: 0; }
+.detail-right { width: 370px; flex-shrink: 0; }
+
+/* ================================
+   GALLERY
+================================ */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 8px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+.gallery-main {
+    grid-row: 1 / 3;
+    position: relative;
+}
+.gallery-main img,
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.gallery-sub {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+}
+.gallery-thumb { position: relative; overflow: hidden; }
+.gallery-thumb-last { position: relative; }
+.gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.gallery-overlay span {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    background: rgba(255,255,255,.2);
+    border: 1.5px solid #fff;
+    border-radius: 10px;
+    padding: 6px 14px;
+}
+
+/* ================================
+   TITLE AREA
+================================ */
+.vehicle-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+.badge-class {
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+.badge-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #555;
+}
+.badge-rating .star { color: #f59e0b; font-size: 14px; }
+.badge-rating a { color: #2563eb; font-size: 12px; text-decoration: none; margin-left: 4px; }
+
+.detail-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #1a1a2e;
+    line-height: 1.2;
+}
+.vehicle-meta {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+.vehicle-meta span { margin-right: 16px; }
+
+/* ================================
+   INFO BOX
+================================ */
+.info-box {
+    background: #f4f6fb;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+.info-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.info-icon.blue   { background: #dce9ff; }
+.info-icon.green  { background: #dff5e6; }
+.info-icon.purple { background: #eedcff; }
+.info-icon.orange { background: #fff0d9; }
+.info-label { font-size: 11px; color: #888; margin-bottom: 2px; }
+.info-item h4 { font-size: 13px; font-weight: 700; margin: 0; color: #1a1a2e; }
+
+/* ================================
+   TAB SWITCHER
+================================ */
+.tab-switcher {
+    background: #e5e7eb;
+    border-radius: 14px;
+    padding: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #555;
+    transition: .2s;
+}
+.tab-btn.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+/* TAB CONTENT */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.content-card {
+    background: #f4f6fb;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.content-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+}
+.content-card p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+/* CHECK LIST */
+.check-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+}
+.check-list li {
+    font-size: 13.5px;
+    color: #444;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+}
+.check-list li::before {
+    content: '✅';
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* ================================
+   BOOKING CARD
+================================ */
+.booking-card {
+    background: #fff;
+    border: 1.5px solid #e0e7ff;
+    border-radius: 20px;
+    padding: 22px;
+    position: sticky;
+    top: 16px;
+    box-shadow: 0 4px 20px rgba(37,99,235,.08);
+}
+.price-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 4px;
+}
+.booking-card h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #2563eb;
+    margin-bottom: 2px;
+}
+.per-hari {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 18px;
+}
+
+/* FORM BOOKING */
+.form-group {
+    margin-bottom: 12px;
+}
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+}
+.form-group input,
+.form-group select {
+    width: 100%;
+    border: 1.5px solid #e0e7ff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    outline: none;
+    background: #f8faff;
+    color: #1a1a2e;
+    box-sizing: border-box;
+}
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #2563eb;
+    background: #fff;
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* PRICE SUMMARY */
+.price-summary {
+    background: #f4f6fb;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 14px 0;
+    font-size: 13px;
+}
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #555;
+}
+.price-row:last-child {
+    margin-bottom: 0;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1a1a2e;
+    border-top: 1px solid #e0e7ff;
+    padding-top: 8px;
+    margin-top: 4px;
+}
+
+/* BOOKING BUTTON */
+.btn-booking-main {
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    background: #2563eb;
+    color: #fff;
+    padding: 14px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 10px;
+    border: none;
+    cursor: pointer;
+    transition: .2s;
+    box-sizing: border-box;
+}
+.btn-booking-main:hover { background: #1d4ed8; }
+
+.booking-note {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+/* BENEFIT */
+.benefit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+}
+.benefit-list li {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.booking-card hr {
+    border: none;
+    border-top: 1px solid #e0e7ff;
+    margin: 16px 0;
+}
+.booking-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #1a1a2e;
+}
+.help-text {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+}
+.btn-service {
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    border: 1.5px solid #d6d6d6;
+    background: #fff;
+    color: #333;
+    padding: 11px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: .2s;
+}
+.btn-service:hover {
+    border-color: #4b8cff;
+    color: #2563eb;
+}
+
+/* ================================
+   PILIHAN SERUPA
+================================ */
+.similar-section {
+    max-width: 1180px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+}
+.similar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.similar-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+.similar-header a {
+    font-size: 13px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+.similar-sub {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+    margin-bottom: 20px;
+}
+.similar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+.similar-card {
+    background: #fff;
+    border: 1.5px solid #e0e7ff;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: .2s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+}
+.similar-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(37,99,235,.1);
+}
+.similar-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+}
+.similar-body {
+    padding: 12px 14px;
+}
+.similar-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #1a1a2e;
+}
+.similar-meta {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+}
+.similar-price {
+    font-size: 15px;
+    font-weight: 800;
+    color: #2563eb;
+}
+.similar-price span {
+    font-size: 11px;
+    font-weight: 400;
+    color: #aaa;
+    margin-left: 3px;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 1024px) {
+    .detail-container { flex-direction: column; }
+    .detail-right { width: 100%; }
+    .booking-card { position: static; }
+    .similar-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .detail-section { padding: 0 16px 40px; }
+    .gallery-grid { grid-template-rows: 160px 160px; }
+    .detail-title { font-size: 22px; }
+    .info-box { flex-direction: column; }
+    .tab-switcher { grid-template-columns: 1fr; }
+    .check-list { grid-template-columns: 1fr; }
+    .similar-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+}

@@ -606,7 +606,7 @@
                     {{-- REFUND --}}
                     @if(($current['status_refund'] ?? 'tidak_ada') === 'pending')
                         <form method="POST"
-                            action="{{ route('dashboard.superadmin.kelola-data-booking.refund-selesai', $current['id_booking']) }}">
+                            action="{{ route('booking.refund-selesai', $current['id_booking']) }}">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="btn-save" style="background:#16a34a;">
@@ -662,11 +662,11 @@
                             <i class="fa-solid fa-money-bill-wave"></i> Cash — Konfirmasi Uang Diterima
                         </button>
 
-                        {{-- QRIS --}}
+                        <!-- {{-- QRIS --}}
                         <button type="button" class="btn-save" style="background:#2563eb; width:100%;"
                             onclick="buatQrisPelunasan(currentLunasiId)">
                             <i class="fa-solid fa-qrcode"></i> QRIS — Generate QR Code
-                        </button>
+                        </button> -->
 
                         <button type="button" class="btn-cancel" style="width:100%;" onclick="tutupModalLunasi()">
                             Batal
@@ -675,7 +675,7 @@
                 </div>
             </div>
 
-            {{-- Modal QR Pelunasan --}}
+            <!-- {{-- Modal QR Pelunasan --}}
             <div id="modalQrisPelunasan"
                 style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
                 <div style="background:#fff; border-radius:16px; padding:32px; max-width:400px; width:90%; text-align:center;">
@@ -686,7 +686,7 @@
                     <p style="font-size:12px; color:#6b7280;">Scan QR ini untuk melunasi sisa pembayaran</p>
                     <button onclick="tutupQris()" class="btn-cancel" style="margin-top:16px; width:100%;">Tutup</button>
                 </div>
-            </div>
+            </div> -->
 
             {{-- Form hidden untuk lunasi cash --}}
             <form id="formLunasiCash" method="POST" style="display:none;">

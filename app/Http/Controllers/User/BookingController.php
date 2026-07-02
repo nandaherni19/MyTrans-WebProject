@@ -56,13 +56,13 @@ class BookingController extends Controller
         $request->validate([
             'id_paket' => 'required|exists:ms_paket_wisata,id_paket',
             'jumlah_peserta' => 'required|integer|min:1',
-            'tipe_pembayaran' => 'required|in:qris,cash',
+            'tipe_pembayaran' => 'required|in:cash',
             'opsi_pembayaran' => 'required|in:dp,lunas',
             'id_kendaraan' => 'nullable|array',
             'id_kendaraan.*' => 'exists:ms_kendaraan,id_kendaraan',
             'tanggal_berangkat' => 'nullable|date|after_or_equal:today',
             'tanggal_kembali' => 'nullable|date|after_or_equal:tanggal_berangkat',
-            'no_ktp' => 'required|digits:16',
+            // 'no_ktp' => 'required|digits:16',
 
             'id_kota_layanan' => 'required|exists:ms_kota,id_kota',
 
@@ -70,8 +70,8 @@ class BookingController extends Controller
                 ? 'required|string|max:255'
                 : 'nullable',
         ], [
-            'no_ktp.required' => 'No KTP wajib diisi.',
-            'no_ktp.digits' => 'No KTP harus 16 digit angka.',
+            // 'no_ktp.required' => 'No KTP wajib diisi.',
+            // 'no_ktp.digits' => 'No KTP harus 16 digit angka.',
         ]);
 
         // $paket = PaketWisata::with('kendaraan')->findOrFail($request->id_paket);

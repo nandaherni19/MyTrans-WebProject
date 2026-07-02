@@ -340,7 +340,7 @@
             . 'Saya ingin melakukan pembayaran cash, mohon instruksinya.';
         @endphp
 
-        <a href="https://wa.me/6285664837559?text={{ urlencode($pesanCash) }}" target="_blank"
+        <a href="https://wa.me/6282140360481?text={{ urlencode($pesanCash) }}" target="_blank"
           class="btn-primary btn-whatsapp">
           <i class="fa-brands fa-whatsapp"></i> Konfirmasi Pembayaran Cash
         </a>
@@ -386,7 +386,7 @@
             . 'Mohon konfirmasi pembatalan ini. Terima kasih.';
         @endphp
 
-        <a href="https://wa.me/6285664837559?text={{ urlencode($pesanBatal) }}" class="btn-primary btn-cancel"
+        <a href="https://wa.me/6282140360481?text={{ urlencode($pesanBatal) }}" class="btn-primary btn-cancel"
           onclick="return confirmCancel(event, this)">
           <i class="fa-brands fa-whatsapp"></i> Ajukan Pembatalan via WhatsApp
         </a>

@@ -12,7 +12,6 @@
             <p>Kelola dan Konfirmasi Kendaraan</p>
         </div>
 
-
         <div class="header-actions">
             <button type="button" class="btn-primary" onclick="openTambah()">
                 <i class="fa-solid fa-plus"></i>
@@ -41,7 +40,7 @@
                                 <div class="kendaraan-status">{{ $k->status_kendaraan }}</div>
                                 <h3>{{ $k->nama_kendaraan }}</h3>
                                 <p class="kendaraan-penumpang">👤 {{ $k->kapasitas }} Penumpang</p>
-                                <p class="kendaraan-plat">Plat Nomor {{ $k->plat_nomor }}</p>
+                                <!-- <p class="kendaraan-plat">Plat Nomor {{ $k->plat_nomor }}</p> -->
                                 <div class="kendaraan-divider"></div>
                                 <div class="kendaraan-price-row">
                                     <p class="kendaraan-price-label">Mulai dari</p>
@@ -60,7 +59,7 @@
                         '{{ $k->nama_kendaraan }}',
                         '{{ $k->jenis_kendaraan }}',
                         '{{ $k->kapasitas }}',
-                        '{{ $k->plat_nomor }}',
+                        // '{{ $k->plat_nomor }}',
                         '{{ $k->status_kendaraan }}',
                         '{{ $k->harga_sewa }}'
                     )">
@@ -123,10 +122,10 @@
                         <input type="number" name="kapasitas" min="6" required>
                     </div>
 
-                    <div class="tambah-group">
+                    <!-- <div class="tambah-group">
                         <label>Plat Nomor <span>*</span></label>
                         <input type="text" name="plat_nomor" placeholder="N 7144 AB" required>
-                    </div>
+                    </div> -->
 
                     <div class="tambah-group">
                         <label>Status <span>*</span></label>
@@ -205,10 +204,10 @@
                         </select>
                     </div>
 
-                    <div class="tambah-group">
+                    <!-- <div class="tambah-group">
                         <label>Plat Nomor <span>*</span></label>
                         <input type="text" id="editTrayek" name="plat_nomor" placeholder="N 7144 AB">
-                    </div>
+                    </div> -->
 
                     <div class="tambah-group">
                         <label>Harga per hari <span>*</span></label>
@@ -265,11 +264,11 @@
             document.getElementById('modalTambah').classList.remove('show');
         }
 
-        function openEdit(id, nama_kendaraan, jenis_kendaraan, kapasitas, plat_nomor, status_kendaraan, harga_sewa) {
+        function openEdit(id, nama_kendaraan, jenis_kendaraan, kapasitas, status_kendaraan, harga_sewa) {
             document.getElementById('editNama').value = nama_kendaraan;
             document.getElementById('editJenis').value = jenis_kendaraan;
             document.getElementById('editKapasitas').value = kapasitas;
-            document.getElementById('editTrayek').value = plat_nomor;
+            // document.getElementById('editTrayek').value = plat_nomor;
             document.getElementById('editStatus').value = status_kendaraan;
             document.getElementById('editHarga').value = harga_sewa;
 

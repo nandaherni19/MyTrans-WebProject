@@ -169,7 +169,7 @@
                             . "Apakah paket ini masih tersedia? Mohon info lengkapnya ya kak. Terima kasih.";
                     @endphp
 
-                    <a href="https://wa.me/6285664837559?text={{ $pesanWa }}" target="_blank" class="btn-service">
+                    <a href="https://wa.me/6282140360481?text={{ $pesanWa }}" target="_blank" class="btn-service">
                         Hubungi Customer Service
                     </a>
                 </div>
@@ -201,7 +201,7 @@
 
                 <div class="footer-contact-list">
                     <div class="contact-col">
-                        <p>📞 085664837559</p>
+                        <p>📞 +6282140360481</p>
                         <p>📷 @myTranss_</p>
                         <p>🎵 @Pariwisataku_</p>
                     </div>
